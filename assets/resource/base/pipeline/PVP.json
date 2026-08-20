@@ -344,7 +344,7 @@
     },
     "PVP_AutoBattleMAX": {
         "desc": "点击MAX Mini",
-        "max_hit": 5,
+        "max_hit": 30,
         "recognition": "OCR",
         "roi": [
             826,

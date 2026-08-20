@@ -133,6 +133,7 @@
         "next": ["Global_BackToQC1"]
     },
     "PVP_InsandboxAndlocAbnormal": {
+        "max_hit": 5,
         "recognition": "TemplateMatch",
         "template": "pvplocreset.png",
         "action": "Click",
@@ -216,6 +217,7 @@
     },
     "PVP_PerPetTask": {
         "desc": "宠物派遣。初始位置就在pvp图防错",
+        "max_hit": 5,
         "recognition": "Or",
         "any_of": ["StartGame_PerPetTask"],
         "action": "Click",
@@ -586,6 +588,7 @@
     },
     "PVP_BattleResult": {
         "desc": "反复战斗结果",
+        "max_hit": 40,
         "recognition": "OCR",
         "roi": [
             540,
@@ -868,6 +871,7 @@
     },
     "PVP_Sandplay_NoFindSrena": {
         "desc": "如果1不是结算页面,2找不到舞台物件.尝试点击箱庭内其他特征物变换位置",
+        "max_hit": 10,
         "recognition": "TemplateMatch",
         "template": [
             "pvp_nofind_UT_bk.png",

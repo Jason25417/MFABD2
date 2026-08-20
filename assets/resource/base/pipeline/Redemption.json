@@ -414,6 +414,7 @@
         ]
     },
     "Redemption_Evil_Redemption_Result": {
+        "max_hit": 20,
         "recognition": "OCR",
         "roi": [
             800,

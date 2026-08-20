@@ -122,6 +122,12 @@ def scan():
             for name, node in doc.items():
                 if not isinstance(node, dict):
                     continue
+                # 同名节点先到先得。PIPE_DIRS 里 base 排在平台包前面, 所以这里保留的是
+                # base 版本 —— 兜底字段必须写进 base: ADB 组合只加载 base, 而平台包是
+                # 字段级 merge, base 有了 max_hit 平台包会自动继承。若反过来只写平台包,
+                # ADB 组合就漏保护(2026-08-21 实测 StartGame_7dAD_Check 正是这样漏的)。
+                if name in nodes:
+                    continue
                 nodes[name] = (p, node)
                 for _k, ref in next_list(node):
                     if ref.startswith(JUMPBACK):

@@ -101,6 +101,7 @@
         ]
     },
     "SemiAuto_Evil_SemiautoTower_OnCk": {
+        "max_hit": 120,
         "recognition": "OCR",
         "roi": [
             676,
@@ -120,6 +121,7 @@
         ]
     },
     "SemiAuto_Evil_SemiautoTower_InManual": {
+        "max_hit": 120,
         "recognition": "OCR",
         "roi": [
             1035,
@@ -178,6 +180,7 @@
         ]
     },
     "SemiAuto_Evil_SemiautoTower_ToNextRound": {
+        "max_hit": 60,
         "recognition": "OCR",
         "roi": [
             1054,
@@ -375,6 +378,7 @@
         "focus": "半自动-连续精炼开始"
     },
     "SemiAuto_SRef_SequentialRefined": {
+        "max_hit": 300,
         "recognition": "And",
         "all_of": [
             {
@@ -441,6 +445,7 @@
         "focus": "连续精炼-最大值确认"
     },
     "SemiAuto_SRef_TabMax": {
+        "max_hit": 300,
         "recognition": "OCR",
         "roi": [
             826,
@@ -479,6 +484,7 @@
     },
     "SemiAuto_SRef_ButtStr": {
         "desc": "弹窗菜单,确认点击,进行精炼",
+        "max_hit": 300,
         "recognition": "OCR",
         "roi": [
             659,
@@ -496,6 +502,7 @@
         ]
     },
     "SemiAuto_SRef_Skip": {
+        "max_hit": 450,
         "recognition": "TemplateMatch",
         "roi": [
             1018,
@@ -513,6 +520,7 @@
     },
     "SemiAuto_SRef_Result": {
         "desc": "精炼结果",
+        "max_hit": 450,
         "recognition": "OCR",
         "roi": [
             610,

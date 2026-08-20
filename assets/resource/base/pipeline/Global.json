@@ -170,6 +170,7 @@
     },
     "Global_ToHomePage_HomeButton": {
         "desc": "找到run-点击返回主页",
+        "max_hit": 40,
         "recognition": "Or",
         "any_of": [
             "Rec_SandBox_Pin_Tpl",
@@ -208,6 +209,7 @@
     },
     "Global_ToHomePage_Crash": {
         "desc": "返回箱庭兜底策略,点主页图标-调传统卡带复位",
+        "max_hit": 5,
         "recognition": "TemplateMatch",
         "roi": [
             1135,
@@ -1114,6 +1116,7 @@
     },
     "Global_ERR_AtFish": {
         "desc": "钓鱼界面返回",
+        "max_hit": 10,
         "recognition": "TemplateMatch",
         "roi": [
             1168,
@@ -1133,6 +1136,7 @@
         ]
     },
     "Global_ERR_AtFish_SubMenu": {
+        "max_hit": 15,
         "recognition": "OCR",
         "roi": [
             704,

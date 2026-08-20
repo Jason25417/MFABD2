@@ -2723,6 +2723,7 @@
     },
     "Collect_Pack_Click": {
         "desc": "可复用地点击已决定卡带",
+        "max_hit": 80,
         "recognition": "Or",
         "any_of": [
             "Collect_QuickCart_Menu"
@@ -2744,6 +2745,7 @@
     },
     "Collect_FirstPack": {
         "desc": "事件图可能会有新卡带",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             413,
@@ -2762,6 +2764,7 @@
     },
     "Collect_FirstPack_Talk": {
         "desc": "初次卡带对话跳过",
+        "max_hit": 20,
         "recognition": "TemplateMatch",
         "roi": [
             915,

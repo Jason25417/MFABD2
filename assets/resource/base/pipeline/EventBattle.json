@@ -524,6 +524,7 @@
     },
     "Event_TouchNormalBattle": {
         "desc": "弹出菜单，点击战斗",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             647,
@@ -547,6 +548,7 @@
     },
     "Event_NormalBattleBack": {
         "desc": "奖励返回",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             558,
@@ -667,6 +669,7 @@
         ]
     },
     "Even_MamonoFollowUp_InMamono": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             99,
@@ -984,6 +987,7 @@
         "focus": "E.队伍漏配,尝试拿推荐部署"
     },
     "SeasonEvent_MamonoFollow_Team_Edit": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             644,
@@ -1000,6 +1004,7 @@
         ]
     },
     "SeasonEvent_MamonoFollow_Team_UsePreset": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             734,
@@ -1363,6 +1368,7 @@
         "focus": "快速完成OCR"
     },
     "Event_MiniGame_CLR_Enable": {
+        "max_hit": 10,
         "recognition": "And",
         "all_of": ["Anc_Ocr_Enable_Clr"],
         "action": "Click",

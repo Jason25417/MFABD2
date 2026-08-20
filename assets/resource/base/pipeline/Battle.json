@@ -123,6 +123,7 @@
     },
     "QuickHunt_ListCollapse": {
         "desc": "消除资源下拉菜单,否则遮蔽",
+        "max_hit": 10,
         "recognition": "TemplateMatch",
         "roi": [
             1067,
@@ -484,6 +485,7 @@
     },
     "QuickHunt_CollectMapAdventureRoute2_Switch_A": {
         "desc": "金币A关卡转经验B",
+        "max_hit": 10,
         "recognition": "And",
         "all_of": [
             "Rec_GoldGoblin_Clr"
@@ -503,6 +505,7 @@
     },
     "QuickHunt_CollectMapAdventureRoute2_Switch_B": {
         "desc": "经验B关卡转金币A",
+        "max_hit": 10,
         "recognition": "And",
         "all_of": [
             "Rec_ExpSlime_Clr"
@@ -619,6 +622,7 @@
     },
     "QuickHunt_CollectMapAdventureRouteDoubleCk2No_ToCentral": {
         "desc": "目的是不用中断、在主流程里把地图复位，配个其他中断使用。T1",
+        "max_hit": 15,
         "action": "Click",
         "target": [
             139,
@@ -694,6 +698,7 @@
         ]
     },
     "QuickHunt_CollectMapCrystalCave": {
+        "max_hit": 15,
         "recognition": "And",
         "all_of": [
             "QuickHunt_CollectMapAdventureRoute1"

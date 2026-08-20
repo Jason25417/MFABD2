@@ -192,13 +192,19 @@ def bound_for(name, node, value, swipe_value):
     return value
 
 
-def apply(files_filter, value, swipe_value):
+def apply(files_filter, value, swipe_value, plan=None):
+    """plan: {节点名: max_hit} —— 给定则按清单精确施工(值来自逐节点语义审查),
+    不给则按 bound_for 的启发式分档。清单模式仍只动"确实无界"的节点:
+    清单里已有 max_hit 的节点会被 classify 过滤掉, 避免重复插入。"""
     files, nodes, jb = scan()
     risky = classify(nodes, jb)
-    targets = [
-        (name, path) for name, path, _r, _act, _t, ck in risky
-        if ck and os.path.basename(path).replace(".json", "") in files_filter
-    ]
+    if plan is not None:
+        targets = [(name, path) for name, path, _r, _a, _t, _ck in risky if name in plan]
+    else:
+        targets = [
+            (name, path) for name, path, _r, _act, _t, ck in risky
+            if ck and os.path.basename(path).replace(".json", "") in files_filter
+        ]
     by_path = defaultdict(list)
     for name, path in targets:
         by_path[path].append(name)
@@ -217,7 +223,7 @@ def apply(files_filter, value, swipe_value):
                 continue
             indent = m.group(1) + "    "
             eol = "\r\n" if "\r\n" in text else "\n"
-            nv = bound_for(name, nodes[name][1], value, swipe_value)
+            nv = plan[name] if plan is not None else bound_for(name, nodes[name][1], value, swipe_value)
             insert = f"{indent}\"max_hit\": {nv},{eol}"
             pos = m.end()
             # m.end() 停在行尾(\r 之前或行末), 推进到下一行行首
@@ -248,15 +254,20 @@ def main():
     ap.add_argument("--value", type=int, default=10)
     ap.add_argument("--swipe-value", type=int, default=15)
     ap.add_argument("--root", default="", help="资源根目录(默认: 本仓库)")
+    ap.add_argument("--plan", default="", help='JSON 文件 {"节点名": max_hit}, 按清单精确施工')
     a = ap.parse_args()
     if a.root:
         set_root(a.root)
     if a.census:
         census()
     elif a.apply:
-        if not a.files:
-            print("--apply 需要 --files"); return 2
-        apply(set(a.files.split(",")), a.value, a.swipe_value)
+        plan = None
+        if a.plan:
+            plan = json.load(io.open(a.plan, encoding="utf-8"))
+            print(f"按清单施工: {len(plan)} 个节点 ({a.plan})")
+        elif not a.files:
+            print("--apply 需要 --files 或 --plan"); return 2
+        apply(set(a.files.split(",")) if a.files else set(), a.value, a.swipe_value, plan)
     else:
         ap.print_help()
 

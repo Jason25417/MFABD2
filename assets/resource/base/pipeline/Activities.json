@@ -508,6 +508,7 @@
     },
     "Activities_Fin": {
         "desc": "返回首页",
+        "max_hit": 10,
         "recognition": "And",
         "all_of": ["Activities_Index"],
         "action": "Click",

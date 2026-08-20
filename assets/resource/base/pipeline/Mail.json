@@ -25,6 +25,7 @@
         "focus": "GM.主页面已确认"
     },
     "Mail_NewRed": {
+        "max_hit": 10,
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
         "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
@@ -117,6 +118,7 @@
     },
     "Mail_TabBus": {
         "desc": "切换to月卡信箱",
+        "max_hit": 10,
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
         "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},

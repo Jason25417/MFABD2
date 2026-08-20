@@ -41,6 +41,7 @@
     },
     "Daily_EnterUnion": {
         "desc": "主菜单,公会存在红点标记",
+        "max_hit": 10,
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
         "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
@@ -86,6 +87,7 @@
     },
     "Daily_Union_Intnet_Err": {
         "desc": "公会页面连接错误",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             548,
@@ -249,6 +251,7 @@
     },
     "Daily_GetBusin_SubMenu_Claim": {
         "desc": "点击'一键获得'一键领取(结合色核)。#322 sunyink:原expected误写'获得/结算/回收'三子按钮,实应识别'一键获得'单按钮(现靠'获得'左侧优先+颜色AND兜底才未出bug);改识别词'键获得'(det易丢'一')。roi底边416致按钮(y≈600)出框恒miss,下延至500",
+        "max_hit": 10,
         "recognition": "And",
         "all_of": [
             {
@@ -282,6 +285,7 @@
     },
     "Daily_Busin_Enter": {
         "desc": "餐馆结算页，进入餐馆",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             699,
@@ -442,6 +446,7 @@
         ]
     },
     "Daily_Busin_DecorCoin_PickUp": {
+        "max_hit": 40,
         "recognition": "Or",
         "any_of": [
             "Rec_<Daily_Busin_DecorCoin_PickUp>_Tpl_01",
@@ -759,6 +764,7 @@
         ]
     },
     "Daily_Square_ToSquare": {
+        "max_hit": 10,
         "recognition": "TemplateMatch",
         "roi": [
             18,
@@ -811,6 +817,7 @@
         "focus": "ROM.梦幻广场"
     },
     "Daily_DailyIco_1": {
+        "max_hit": 10,
         "recognition": "TemplateMatch",
         "roi": [
             968,
@@ -837,6 +844,7 @@
         ]
     },
     "Daily_DailyIco_2": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             968,
@@ -1042,6 +1050,7 @@
         "focus": "[WRN]需要消除亲密度教程"
     },
     "Daily_Intimacy_RedHeart": {
+        "max_hit": 10,
         "recognition": "TemplateMatch",
         "roi": [
             101,

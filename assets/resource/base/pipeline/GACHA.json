@@ -7,6 +7,7 @@
     },
     "Gacha_EnterGacha": {
         "desc": "识别左下抽抽乐-点击抽卡",
+        "max_hit": 10,
         "recognition": "And",
         "all_of": [
             "Rec_HomePage_GA_Ocr",
@@ -379,6 +380,7 @@
     },
     "Gacha_5X": {
         "desc": "五星卡",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             519,
@@ -404,6 +406,7 @@
     },
     "Gacha_5X2": {
         "desc": "五星卡2",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             519,

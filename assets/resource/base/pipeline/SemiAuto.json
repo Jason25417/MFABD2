@@ -81,6 +81,7 @@
         "focus": "MM.向上行走。BM.箱庭地图pin确认"
     },
     "SemiAuto_Evil_SemiautoTower_On": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             1043,
@@ -287,6 +288,7 @@
         ]
     },
     "SemiAuto_LastNight_GoBattle": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             980,

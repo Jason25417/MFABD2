@@ -223,6 +223,7 @@
     },
     "AutoBattle_Egress_TurnBack_SkipTalk": {
         "desc": "场景转换,可能出现对话的跳过。战斗失败后,进旅馆。",
+        "max_hit": 35,
         "recognition": "TemplateMatch",
         "roi": [
             796,

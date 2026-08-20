@@ -266,6 +266,7 @@
     },
     "Fishing_InMap": {
         "desc": "进入地图选择界面",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             1097,
@@ -443,6 +444,7 @@
         ]
     },
     "Fishing_Move_NviGuide_SubOcr": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             294,
@@ -464,6 +466,7 @@
         ]
     },
     "Fishing_Move_NviGuide_CKMsgBox_Ocr": {
+        "max_hit": 10,
         "recognition": "Or",
         "any_of": ["Arbitrage_NviGuide_CKMsgBox_Ocr"],
         "action": "Click",

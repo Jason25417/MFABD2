@@ -307,6 +307,7 @@
         ]
     },
     "SemiAuto_LastNight_InBattle": {
+        "max_hit": 450,
         "recognition": "OCR",
         "roi": [
             45,
@@ -348,6 +349,7 @@
         ]
     },
     "SemiAuto_LastNight_ReCk": {
+        "max_hit": 30,
         "recognition": "OCR",
         "roi": [
             666,

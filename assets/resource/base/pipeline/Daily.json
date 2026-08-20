@@ -274,6 +274,7 @@
     },
     "Daily_GetBusinRewardBack": {
         "desc": "点击领取全部返回",
+        "max_hit": 15,
         "recognition": "Or",
         "any_of": ["Rec_Reward_Ocr"],
         "action": "Click",
@@ -330,6 +331,7 @@
     },
     "Daily_Busin_GiftGet": {
         "desc": "点击常客位置，获取水晶。",
+        "max_hit": 20,
         "recognition": "TemplateMatch",
         "roi": [
             71,
@@ -502,6 +504,7 @@
     },
     "Daily_Busin_DecorCoin_LocReset": {
         "desc": "餐厅视图复位系列流程",
+        "max_hit": 40,
         "recognition": "OCR",
         "roi": [
             91,
@@ -678,6 +681,7 @@
     },
     "Daily_Busin_StageUp": {
         "desc": "存在亮色按钮,餐厅星星阶段升级",
+        "max_hit": 3,
         "recognition": "And",
         "all_of": [
             {
@@ -698,6 +702,7 @@
     },
     "Daily_Busin_LevelUp": {
         "desc": "存在亮色按钮,餐厅等级阶段升级",
+        "max_hit": 5,
         "recognition": "And",
         "all_of": [
             {
@@ -734,6 +739,7 @@
     },
     "Daily_Busin_Quick_BackPVEPage_Str": {
         "desc": "目前roi位置为餐馆",
+        "max_hit": 20,
         "recognition": "TemplateMatch",
         "roi": [
             74,
@@ -885,6 +891,7 @@
         "focus": "ROM.导航中..."
     },
     "Daily_Pray": {
+        "max_hit": 15,
         "recognition": "OCR",
         "roi": [
             545,
@@ -1147,6 +1154,7 @@
     },
     "Daily_Intimacy_Up": {
         "desc": "可以谈心的对象 开始谈心",
+        "max_hit": 60,
         "recognition": "And",
         "all_of": [
             "Sub_Intimacy_Number",
@@ -1194,6 +1202,7 @@
             ]]
     },
     "Daily_Intimacy_Up_MSG": {
+        "max_hit": 60,
         "recognition": "OCR",
         "roi": [
             662,
@@ -1229,6 +1238,7 @@
     },
     "Daily_Intimacy_TalkSkip": {
         "desc": "点击对话快进",
+        "max_hit": 120,
         "recognition": "Or",
         "any_of": ["Fishing_InMap_TalkSkip"],
         "action": "Click",
@@ -1237,12 +1247,14 @@
     },
     "Daily_Intimacy_TalkSkip_Ck": {
         "desc": "对话快进可能出现的确认框",
+        "max_hit": 180,
         "recognition": "Or",
         "any_of": ["Fishing_InMap_TalkSkip_Ck"],
         "action": "Click",
         "post_delay": 2000
     },
     "Daily_Intimacy_TalkBox": {
+        "max_hit": 120,
         "recognition": "OCR",
         "roi": [
             380,

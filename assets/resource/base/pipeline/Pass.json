@@ -81,6 +81,7 @@
     },
     "Pass_SelectPassTask": {
         "desc": "确认通行证页面,选择通行证任务",
+        "max_hit": 20,
         "recognition": "Or",
         "any_of": [
             "Rec_<Pass_SelectPassTask>_Ocr01",

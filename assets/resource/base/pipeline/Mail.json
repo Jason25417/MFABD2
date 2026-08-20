@@ -75,6 +75,7 @@
     },
     "Mail_GetAll": {
         "desc": "普通(首页)全部领取",
+        "max_hit": 15,
         "recognition": "And",
         "all_of": [
             {
@@ -105,6 +106,7 @@
     },
     "Mail_GetAllBack": {
         "desc": "领取reward确认和消除",
+        "max_hit": 45,
         "recognition": "And",
         "all_of": ["Rec_Reward_Ocr"],
         "action": "Click",
@@ -143,6 +145,7 @@
     },
     "Mail_GetBusAll": {
         "desc": "商品右键全部领取",
+        "max_hit": 15,
         "recognition": "And",
         "all_of": ["Mail_GetAll"],
         "action": "Click",

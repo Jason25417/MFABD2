@@ -185,6 +185,7 @@
         "focus": "PM.主页面"
     },
     "Weekly_LastNight_HomePageSwipe": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             99,
@@ -311,6 +312,7 @@
         ]
     },
     "Weekly_LastNight_InBattle": {
+        "max_hit": 45,
         "recognition": "OCR",
         "roi": [
             45,
@@ -367,6 +369,7 @@
         ]
     },
     "Weekly_LastNight_MaybeNew": {
+        "max_hit": 15,
         "recognition": "OCR",
         "roi": [
             736,

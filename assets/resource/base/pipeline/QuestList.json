@@ -32,6 +32,7 @@
         ]
     },
     "RewardsDaily_InIndex": {
+        "max_hit": 10,
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
         "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},

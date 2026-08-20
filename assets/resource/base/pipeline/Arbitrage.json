@@ -27,6 +27,7 @@
     },
     "Arbitrage_Card5#_Goin": {
         "desc": "点击PVE本子5",
+        "max_hit": 10,
         "recognition": "TemplateMatch",
         "roi": [
             1005,
@@ -92,6 +93,7 @@
         "focus": "小地图发现商人"
     },
     "Arbitrage_NviGuide_Butt": {
+        "max_hit": 10,
         "recognition": "TemplateMatch",
         "roi": [
             208,
@@ -112,6 +114,7 @@
         "focus": "点击小地图导航按钮"
     },
     "Arbitrage_NviGuide_Merchant_Ocr": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             256,
@@ -133,6 +136,7 @@
         "focus": "点击商店"
     },
     "Arbitrage_NviGuide_CKMsgBox_Ocr": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             690,
@@ -224,6 +228,7 @@
         ]
     },
     "Arbitrage_Bargaining_Msgbox_Ck": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             648,
@@ -316,6 +321,7 @@
         ]
     },
     "Arbitrage_Merchant_Close_Ck": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             667,
@@ -2013,6 +2019,7 @@
     },
     "Arbitrage_Sell_Type_Ocr": {
         "desc": "类型确认为-出售",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             66,
@@ -2058,6 +2065,7 @@
     },
     "Arbitrage_Sell_PriceList": {
         "desc": "点击价目表按钮",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             863,
@@ -2397,6 +2405,7 @@
     },
     "Arbitrage_Sell_Button_Ocr": {
         "desc": "类型确认为-出售",
+        "max_hit": 10,
         "recognition": "Or",
         "any_of": ["Arbitrage_Sell_Type_Ocr"],
         "action": "Click",
@@ -2432,6 +2441,7 @@
     },
     "Arbitrage_Sell_PackShopSwich": {
         "desc": "需要[custom]传入正确的名称.出售卡带选择,空格删去匹配cus源,保留默认",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             236,
@@ -2483,6 +2493,7 @@
     },
     "Arbitrage_ItemList_Sorting_Type_Not": {
         "desc": "商店内,排序类型错误,切换(删除价格排序图像,因为除了价格图标,%图标但升序也是不对的)",
+        "max_hit": 10,
         "action": "Click",
         "target": [
             1152,
@@ -2565,6 +2576,7 @@
         "focus": "Arb.排序结果可以确认"
     },
     "Arbitrage_ItemList_Sorting_Remove": {
+        "max_hit": 10,
         "recognition": "Or",
         "any_of": ["Arbitrage_ItemList_Sorting_Type_Not_Change"],
         "action": "Click",
@@ -2803,6 +2815,7 @@
     },
     "Arbitrage_Cooking_SetupToSkill": {
         "desc": "技能菜单出口",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             110,

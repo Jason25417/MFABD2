@@ -24,6 +24,7 @@
     },
     "Global_HomeButton_Once": {
         "desc": "点击一次主页面图标",
+        "max_hit": 35,
         "recognition": "TemplateMatch",
         "roi": [
             1132,
@@ -78,6 +79,7 @@
     },
     "Global_QuickCart_MenuReset_2P": {
         "desc": "调出快速卡带1/2,操作",
+        "max_hit": 10,
         "recognition": "TemplateMatch",
         "template": [
             "QuickCartGeadai.png",
@@ -186,6 +188,7 @@
     },
     "Global_ToHomePage_Reset": {
         "desc": "其他页面，返回按钮",
+        "max_hit": 30,
         "recognition": "And",
         "all_of": [
             "Global_BackPageHub_Once"
@@ -257,6 +260,7 @@
     },
     "Global_ToSandBox_Reset": {
         "desc": "其他页面，返回按钮",
+        "max_hit": 30,
         "recognition": "And",
         "all_of": [
             "Global_BackPageHub_Once"
@@ -589,6 +593,7 @@
     },
     "Global_BackToQC_Gameplay_Anc": {
         "desc": "【快速卡带识别链-玩法页签入口_必须先声明Anc出口'QCPack' & Anc出口记得复位锚点'QCPack'】不许Patch。('QCPack_Regress'为预设复位链专用优先锚,业务方勿声明)",
+        "max_hit": 35,
         "recognition": "Or",
         "any_of": ["Global_QuickCart_MenuReset"],
         "action": "Click",
@@ -663,6 +668,7 @@
     },
     "Global_BackToQC_RewardBubble_TurnOFF": {
         "desc": "检查QC,卡带奖励气泡,若黄则点击关闭",
+        "max_hit": 20,
         "recognition": "And",
         "all_of": [
             {
@@ -692,6 +698,7 @@
     },
     "Global_CardMenu_RewardBubble_TurnOFF": {
         "desc": "检查QC,卡带奖励气泡,若黄则点击关闭",
+        "max_hit": 20,
         "recognition": "And",
         "all_of": [
             {

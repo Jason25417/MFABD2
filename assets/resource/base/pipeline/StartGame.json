@@ -441,6 +441,7 @@
     },
     "StartGame_NewChar": {
         "desc": "推出全新新角色识别",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             121,
@@ -729,6 +730,7 @@
         "focus": "[WRN]SM.意料外卡带-黄金竞技场"
     },
     "StartGame_LinkDown": {
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             489,
@@ -868,6 +870,7 @@
     },
     "StartGame_ModMsg": {
         "desc": "mod弹窗消除,缺乏信息瞎蒙的.",
+        "max_hit": 10,
         "recognition": "OCR",
         "expected": [
             "CONFIRM"

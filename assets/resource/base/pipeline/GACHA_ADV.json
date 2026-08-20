@@ -26,6 +26,7 @@
     },
     "GachaADV_GachaRed_Have": {
         "desc": "识别左下抽抽乐-红点存在-点击抽卡",
+        "max_hit": 10,
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
         "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
@@ -89,6 +90,7 @@
         "focus": "GA.抽抽乐页面"
     },
     "GachaADV_AREA1#": {
+        "max_hit": 10,
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
         "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
@@ -175,6 +177,7 @@
         "focus": "GA.抽抽乐页面"
     },
     "GachaADV_AREA2#": {
+        "max_hit": 10,
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
         "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
@@ -1221,6 +1224,7 @@
     },
     "GachaADV_5X": {
         "desc": "五星卡",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             519,
@@ -1246,6 +1250,7 @@
     },
     "GachaADV_5X2": {
         "desc": "五星卡2",
+        "max_hit": 10,
         "recognition": "OCR",
         "roi": [
             519,
@@ -1343,6 +1348,7 @@
     },
     "GachaADV_FinGacha": {
         "desc": "返回首页",
+        "max_hit": 10,
         "recognition": "And",
         "all_of": ["GachaADV_PageEnter_1#"],
         "action": "Click",

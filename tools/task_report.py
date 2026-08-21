@@ -43,9 +43,13 @@ WANT = {
     "Tasker.Task.Starting", "Tasker.Task.Succeeded", "Tasker.Task.Failed",
     "Node.Action.Succeeded", "Node.PipelineNode.Failed",
 }
-# 动作数少于这个值却报成功 = 疑似空转。取 3: 任何真做了事的任务至少要
-# 「进页面 + 做一下 + 收尾」三个动作; 实测正常任务的动作数在两位数以上。
+# 空转判据: 动作数少 **且** 耗时长。
+#
+# 只看动作数会误报天然短任务 —— 实测「[全局]结束游戏」就是 1 个动作 0 秒完事,
+# 它本来就只需点一下关闭。真正的空转特征是「进去了、耗了时间、却没做事」:
+# 要么一个动作都没有, 要么花了一分钟以上却只做了两三下。
 SUSPICIOUS_ACTIONS = 3
+SUSPICIOUS_SECONDS = 60
 
 
 def entry_titles():
@@ -136,6 +140,18 @@ def parse(paths, since):
     return tasks
 
 
+def dur_sec(a, b):
+    """两个时间戳之间的秒数; 无法计算时返回 None。"""
+    if not (a and b):
+        return None
+    from datetime import datetime
+    try:
+        return (datetime.strptime(b, "%Y-%m-%d %H:%M:%S")
+                - datetime.strptime(a, "%Y-%m-%d %H:%M:%S")).total_seconds()
+    except ValueError:
+        return None
+
+
 def dur(a, b):
     if not (a and b):
         return ""
@@ -177,7 +193,8 @@ def main():
         if t["outcome"] == "未完成":
             verdict = "⚠ 没走完(崩溃/超时/被杀)"
             incomplete.append((name, t))
-        elif t["actions"] < SUSPICIOUS_ACTIONS:
+        elif t["actions"] == 0 or (t["actions"] < SUSPICIOUS_ACTIONS
+                                    and (dur_sec(t["start"], t["end"]) or 0) >= SUSPICIOUS_SECONDS):
             # 这正是 default on_error -> Global_Null 把失败洗成成功的那一类
             verdict = f"⚠ 链路说成功但只做了 {t['actions']} 个动作 = 疑似空转"
             suspicious.append((name, t))

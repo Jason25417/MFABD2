@@ -184,10 +184,19 @@ def census():
 # RewardBubble: 逐个点掉奖励气泡, 合法命中数 = 气泡个数, 可能超过紧档。
 REPETITIVE = re.compile(r"Swip|Swipe|Move|Scroll|MapChange|Lift|RewardBubble|左移|右移|上移|下移|滚动")
 
+# 技能施放类: 合法次数由**账号天赋**决定, 不是流程决定的 —— 实测吸取 21 次/召集 14 次,
+# 而且这类流程的设计出口正是"OCR 到 N/N 次数用尽"。按普通点击的紧档封顶会造成双重损失:
+# 既拿不满次数, 又永远走不到设计出口, 于是在剩余卡带里空转。
+# (2026-08-21 实测: 我们把 Collect_Skill3_2 封在 10, 而账号有 21 次。)
+SKILL_LIKE = re.compile(r"Skill|技能")
+SKILL_VALUE = 40
+
 
 def bound_for(name, node, value, swipe_value):
     # 滑动/连续导航类节点: 合法重复次数天然高(实测导航地图连左移4次是正常路径),
     # 上限给宽(默认15), 只拦"永动", 不拦正常翻页。其余点击类给紧(默认5)。
+    if SKILL_LIKE.search(name):
+        return SKILL_VALUE
     act = action_type(node)
     if act in ("Swipe", "MultiSwipe"):
         return swipe_value

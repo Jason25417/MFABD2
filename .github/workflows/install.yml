@@ -1008,6 +1008,36 @@ jobs:
             (cd "$dir" && zip -r "../release_assets/$zip_name" .)
           done
 
+      - name: Package resource-only pack
+        env:
+          TAG: ${{ needs.meta.outputs.tag }}
+        run: |
+          # 资源专用包：只含 resource/ 与 interface.json。
+          #
+          # 为什么要它：适配改动几乎都落在 pipeline JSON 上，而全量包 200MB+。
+          # 让用户为几行 JSON 的适配重下 200MB 是纯浪费，也是发版当天被催更的来源之一。
+          # 资源热更这件事 mirrorchyan_release.yml 的 mirrorchyan_res 已经在做
+          # （pick_files 就是同一份清单），只是仅挂在 MirrorChyan 上、需要付费 CDK。
+          # 这里把同样的东西也放进 GitHub 免费通道，CI 成本是多打一个几 MB 的 zip。
+          #
+          # 排除 model/：OCR 模型是构建时从 MFABD2-Assets 注入的，与游戏版本无关，
+          # 却占资源目录的绝大部分（实测 82.5MB / 86.1MB）。装机的全量包里已经有了，
+          # 热更没有理由反复搬运。实测排除后 3.6MB，约为全量包的 1/58。
+          #
+          # 注意：MFAAvalonia 自带的更新器有已知 bug（见 mirrorchyan_release.yml 里的
+          # 注释：会误做全量更新并删掉 ocr），所以走 MFAA 更新器的用户仍应使用
+          # MirrorChyan 通道那个含 ocr 的包；本资源包面向自己管理更新的用户与脚本。
+          cd artifacts
+          win_dir=$(ls -d MFABD2-*-win-x86_64 2>/dev/null | head -1)
+          if [ -z "$win_dir" ] || [ ! -d "$win_dir/resource" ]; then
+            echo "::warning::找不到 win-x86_64 产物或其 resource 目录，跳过资源包"
+            exit 0
+          fi
+          (cd "$win_dir" && zip -r "../release_assets/MFABD2-RES-${TAG}.zip" \
+              resource interface.json -x 'resource/*/model/*' 'resource/model/*')
+          size=$(du -h "release_assets/MFABD2-RES-${TAG}.zip" | cut -f1)
+          echo "✅ 资源包 MFABD2-RES-${TAG}.zip ($size)，来源 $win_dir"
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b # v3.0.1
         with:

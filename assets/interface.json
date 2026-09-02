@@ -337,7 +337,7 @@
                         "Daily_Intimacy_HUB": {
                             "enabled": false
                         },
-                        "Daily_Square_Hub": {
+                        "Daily_Square_Switch": {
                             "enabled": false
                         }
                     }
@@ -396,10 +396,8 @@
                 {
                     "name": "广场祈求",
                     "pipeline_override": {
-                        "Daily_Square_Hub": {
-                            "enabled": true
-                        },
                         "Daily_Square_Switch": {
+                            "enabled": true,
                             "recognition": "DirectHit"
                         }
                     }
@@ -1624,7 +1622,7 @@
                 {
                     "name": "No",
                     "pipeline_override": {
-                        "Daily_Square_Hub": {
+                        "Daily_Square_Switch": {
                             "enabled": false
                         }
                     }

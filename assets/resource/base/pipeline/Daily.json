@@ -7,7 +7,7 @@
             "[JumpBack]Daily_VisitCabin_Hub",
             "[JumpBack]Daily_Busin_Hub",
             "[JumpBack]Daily_Intimacy_HUB",
-            "[JumpBack]Daily_Square_Hub",
+            "[JumpBack]Daily_Square_Switch",
             "Global_Hub_End"
         ]
     },
@@ -812,17 +812,10 @@
         ],
         "focus": "GO.快速卡带离开餐馆"
     },
-    "Daily_Square_Hub": {
-        "desc": "广场每日祈求jb1入口。enabled是interface的抓手,判据在Daily_Square_Switch。anchor仍由本节点设置,与next搬家无关",
+    "Daily_Square_Switch": {
+        "desc": "广场每日祈求的子模块入口,兼存档闸:本游戏日已祈求则不命中,上级next就此耗尽,退栈换下一个子模块。enabled是interface的抓手。闸摆在Daily_Square_Hub之前是有意的——Fishing_Move_Hub也借那个hub走到广场,闸若放在hub之后会连钓鱼一起挡住",
         "enabled": true,
         "max_hit": 1,
-        "anchor": {"QCPack": "Daily_Square_ToSquare"},
-        "next": [
-            "Daily_Square_Switch"
-        ]
-    },
-    "Daily_Square_Switch": {
-        "desc": "广场祈求存档闸:本游戏日已祈求则不命中,上级next就此耗尽,退栈换下一个子模块",
         "recognition": "Custom",
         "custom_recognition": "CheckCoolDown",
         "custom_recognition_param": {
@@ -832,6 +825,14 @@
         "pre_delay": 0,
         "post_delay": 0,
         "rate_limit": 0,
+        "next": [
+            "Daily_Square_Hub"
+        ]
+    },
+    "Daily_Square_Hub": {
+        "desc": "走到广场的公共子程序。日常祈求(经Daily_Square_Switch进来)与钓鱼(Fishing_Move_Hub直接进来)共用这条路,所以这里既不挂存档闸也不挂enabled抓手,两者都在Daily_Square_Switch上",
+        "max_hit": 1,
+        "anchor": {"QCPack": "Daily_Square_ToSquare"},
         "next": [
             "Daily_FantasiaSquare",
             "[JumpBack]Global_BackToQC_Lifeplay_Anc",

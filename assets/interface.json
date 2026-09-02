@@ -33,6 +33,17 @@
             ]
         },
         {
+            "name": "PlayCover",
+            "label": "PlayCover(iOS)",
+            "path": [
+                "./resource/base",
+                "./resource/playcover"
+            ],
+            "controller": [
+                "PlayCover"
+            ]
+        },
+        {
             "name": "PC",
             "path": [
                 "./resource/base",
@@ -43,16 +54,16 @@
             ]
         }
     ],
+    "global_option": [
+        "前置助手",
+        "存档名称"
+    ],
     "task": [
         {
             "name": "[全局]启动脚本(置顶)",
             "entry": "StartGame_Start",
             "default_check": true,
-            "description": "<b>最新版探测 &amp; 下载渠道：</b><br>[![正式版](https://img.shields.io/github/v/release/sunyink/MFABD2?label=仓库源·正式版&color=green&logo=github)](https://github.com/sunyink/MFABD2/releases/latest)<br>[![公测版](https://img.shields.io/github/v/tag/sunyink/MFABD2?include_prereleases&filter=%2Abeta%2A&label=仓库源·公测版&color=blue&logo=github)](https://github.com/sunyink/MFABD2/releases?q=beta)<br>[![Mirror酱](https://img.shields.io/badge/Mirror%E9%85%B1-镜像源·高速下载-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=MFABD2)<br>自动判断游戏运行状态，按需启动；处理更新弹框、支付失败等异常提示；完成后领取<b>主界面</b>奖励并执行<b>宠物派遣</b>。<br><b>注意：</b>网络环境请提前解决，脚本不处理网络问题。<br><b>首次运行前，务必查看 <code>使用帮助</code> 卡片！</b><br><br>PC端控制器（720P窗口化）资源适配尚不完整，仅供探索。",
-            "option": [
-                "前置助手",
-                "多存档"
-            ]
+            "description": "<b>最新版探测 &amp; 下载渠道：</b><br>[![正式版](https://img.shields.io/github/v/release/sunyink/MFABD2?label=仓库源·正式版&color=green&logo=github)](https://github.com/sunyink/MFABD2/releases/latest)<br>[![公测版](https://img.shields.io/github/v/tag/sunyink/MFABD2?include_prereleases&filter=%2Abeta%2A&label=仓库源·公测版&color=blue&logo=github)](https://github.com/sunyink/MFABD2/releases?q=beta)<br>[![Mirror酱](https://img.shields.io/badge/Mirror%E9%85%B1-镜像源·高速下载-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=MFABD2)<br>自动判断游戏运行状态，按需启动；处理更新弹框、支付失败等异常提示；完成后领取<b>主界面</b>奖励并执行<b>宠物派遣</b>。<br><b>注意：</b>网络环境请提前解决，脚本不处理网络问题。<br><b>首次运行前，务必查看 <code>使用帮助</code> 卡片！</b><br><br>PC端控制器（720P窗口化）资源适配尚不完整，仅供探索。"
         },
         {
             "name": "[执行]快速狩猎扫荡",
@@ -93,7 +104,6 @@
             "default_check": true,
             "description": "依次执行：<b>N稀有短剑打造</b> → <b>强化</b>与<b>分解</b> → <b>精炼</b>。<br>精炼仅以 SR 或 UR 稀有度装备为对象；首次运行无需提前锁定装备，非正常锁定的装备可能导致流程失败。<br><span style=\"background-color:rgba(255,160,0,0.2)\"><b>组合技：</b>同时启用<精炼等级上限过滤>与<精炼排序>，可构造低等级优先强化队列——当前首位装备超出等级限制后，自动推进到下一优先装备。</span>",
             "option": [
-                "跳过今日已完成",
                 "精炼装备阶级",
                 "仅精炼<17 或 <10",
                 "精炼按自定义标志排序",
@@ -157,6 +167,7 @@
             ],
             "option": [
                 "末日之书",
+                "小屋点赞",
                 "周常钓鱼"
             ],
             "description": "每周执行：访问<code>街机页面</code>、在<code>我的小屋</code>对随机访客点赞4次、打1轮<code>末日之书</code>、<code>钓鱼</code>1条。<br>周期触发器已实装，同周期内不会重复执行。"
@@ -253,13 +264,14 @@
             "name": "[半自动]自动钓鱼",
             "entry": "Fishing_Entry",
             "controller": [
-                "Adb"
+                "Adb",
+                "PlayCover"
             ],
             "option": [
                 "钓鱼地点",
                 "目标次数"
             ],
-            "description": "自动导航至指定钓鱼点，持续钓鱼至目标条数后结束。<br>注意：受鱼类判定复杂度影响，成功率因鱼种而异。适合挂机刷普通鱼类经验与兑换币。<br>Powered by XiaoXKKK"
+            "description": "自动导航至指定钓鱼点，持续钓鱼至目标条数后结束。<br>注意：受鱼类判定复杂度影响，成功率因鱼种而异。适合挂机刷普通鱼类经验与兑换币。<br><span style=\"color:Crimson;font-size:12px\">钓鱼模块重构进行中，当前为先行版，行为与参数可能随后续版本调整。</span>"
         },
         {
             "name": "[全局]结束游戏",
@@ -350,24 +362,10 @@
                 }
             ]
         },
-        "多存档": {
-            "type": "switch",
-            "description": "启用后按<b>存档名称</b>独立保存各实例刷取进度。<br>多实例运行时自动加载对应存档；运行途中更改存档号后，重新执行<b>任务启动</b>可使变更即时生效。",
-            "cases": [
-                {
-                    "name": "No"
-                },
-                {
-                    "name": "Yes",
-                    "option": [
-                        "存档名称"
-                    ]
-                }
-            ]
-        },
         "存档名称": {
             "type": "input",
-            "label": "",
+            "label": "多存档",
+            "description": "按<b>存档号</b>独立保存各实例的刷取进度，多实例运行时自动加载对应存档。<br>填 <b>0</b> 即为默认存档（无后缀），不需要额外开关。<br>运行途中更改存档号后，<b>下一个任务开始时自动生效</b>，无需重跑「启动脚本」。",
             "inputs": [
                 {
                     "name": "账号多开配置",
@@ -1260,6 +1258,24 @@
                 }
             ]
         },
+        "小屋点赞": {
+            "type": "switch",
+            "description": "在<code>我的小屋</code>对随机访客点赞4次。账号未解锁小屋时请关闭。",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "pipeline_override": {}
+                },
+                {
+                    "name": "No",
+                    "pipeline_override": {
+                        "Weekly_VisitCabin_Hub": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ]
+        },
         "周常钓鱼": {
             "description": "钓鱼1条，满足每周任务计数。关闭后跳过此项。",
             "type": "switch",
@@ -1527,11 +1543,17 @@
                     "name": "No",
                     "pipeline_override": {
                         "Arbitrage_Cooking_NubMenu_Max": {
-                            "action": "Click",
-                            "target": [
-                                576,
-                                563
-                            ]
+                            "recognition": "OCR",
+                            "roi": [
+                                415,
+                                520,
+                                220,
+                                100
+                            ],
+                            "expected": [
+                                "MAX"
+                            ],
+                            "action": "Click"
                         }
                     }
                 }
@@ -1756,32 +1778,32 @@
             "cases": [
                 {
                     "name": "半自动爬塔(从选层数界面开始)",
+                    "option": [
+                        "半自动爬塔时间上限"
+                    ],
                     "pipeline_override": {
                         "SemiAuto_TotalStart": {
-                            "next": [
-                                "SemiAuto_Evil_SemiautoTower_Start"
-                            ]
+                            "enabled": true
                         }
                     }
                 },
                 {
                     "name": "半自动末日之书(从‘去战斗’页面开始)",
                     "pipeline_override": {
-                        "SemiAuto_TotalStart": {
-                            "next": [
-                                "SemiAuto_LastNight_Start"
-                            ]
+                        "SemiAuto_LastNight_Start": {
+                            "enabled": true
                         }
-                    }
+                    },
+                    "option": [
+                        "末日之书时间上限"
+                    ]
                 },
                 {
                     "name": "连续精炼",
                     "description": "点击待强化装备,看到'连续精炼'后,开始运行",
                     "pipeline_override": {
-                        "SemiAuto_HomePage": {
-                            "next": [
-                                "SemiAuto_SequentialRefined_Str"
-                            ]
+                        "SemiAuto_SequentialRefined_Str": {
+                            "enabled": true
                         }
                     },
                     "option": [
@@ -1790,38 +1812,49 @@
                 }
             ]
         },
-        "跳过今日已完成": {
-        "type": "switch",
-        "label": "跳过今日已完成",
-        "description": "开启后，当天已经跑完的任务再次运行会直接跳过，不重复执行。<br>适合把脚本挂在定时任务里、或中断后重跑的场景。<br><b>默认关闭</b>，关闭时行为与以前完全一致。<br>完成记录按游戏日计（存于 agent_save_data.json），想强制重跑就把本开关关掉。<br><br>目前覆盖：装备制作&炼制日常。<br>其余任务待逐个评估后再纳入——邮件、通行证、活动页这类<b>全天都可能有新内容到账</b>的任务不适合按日跳过。",
-        "cases": [
-            {
-                "name": "No"
-            },
-            {
-                "name": "Yes",
-                "pipeline_override": {
-                    "Equip_HomePage": {
-                        "recognition": "Custom",
-                        "custom_recognition": "CheckCoolDown",
-                        "custom_recognition_param": {
-                            "card_name": "Equip_Daily",
-                            "cycle_type": "g_daily"
-                        }
-                    },
-                    "Equip_TouchRefiningBack": {
-                        "action": "Custom",
-                        "custom_action": "MarkComplete",
-                        "custom_action_param": {
-                            "card_name": "Equip_Daily",
-                            "cycle_type": "g_daily"
-                        }
+        "半自动爬塔时间上限": {
+            "type": "input",
+            "inputs": [
+                {
+                    "name": "半自动爬塔时间上限",
+                    "pipeline_type": "int",
+                    "default": "30",
+                    "verify": "^(\\d+)$",
+                    "pattern_msg": "应为非负整数",
+                    "description": "爬塔运行超过该时长后自动收工, 单位分钟。<br>爬塔流程本身没有终止条件(只能靠战败结束), 该时限是防止它无限跑下去的兜底。<br>填 <b>0</b> 表示不限时。"
+                }
+            ],
+            "pipeline_override": {
+                "SemiAuto_Evil_SemiautoTower_Timeout": {
+                    "custom_recognition_param": {
+                        "timer": "EvilTower",
+                        "minutes": "{半自动爬塔时间上限}"
                     }
                 }
             }
-        ]
-    },
-    "连续精炼次数": {
+        },
+        "末日之书时间上限": {
+            "type": "input",
+            "inputs": [
+                {
+                    "name": "末日之书时间上限",
+                    "pipeline_type": "int",
+                    "default": "30",
+                    "verify": "^(\\d+)$",
+                    "pattern_msg": "应为非负整数",
+                    "description": "运行超过该时长后自动收工, 单位分钟。<br>流程本身没有终止条件(只能靠战败结束), 该时限是防止它无限跑下去的兜底。<br>填 <b>0</b> 表示不限时。"
+                }
+            ],
+            "pipeline_override": {
+                "SemiAuto_LastNight_Timer": {
+                    "custom_action_param": {
+                        "timer": "LastNight",
+                        "minutes": "{末日之书时间上限}"
+                    }
+                }
+            }
+        },
+        "连续精炼次数": {
             "type": "input",
             "inputs": [
                 {
@@ -1850,10 +1883,7 @@
             "task": [
                 {
                     "name": "[全局]启动脚本(置顶)",
-                    "enabled": true,
-                    "option": {
-                        "前置助手": "按需"
-                    }
+                    "enabled": true
                 },
                 {
                     "name": "[执行]快速狩猎扫荡",
@@ -1937,10 +1967,7 @@
             "task": [
                 {
                     "name": "[全局]启动脚本(置顶)",
-                    "enabled": true,
-                    "option": {
-                        "前置助手": "按需"
-                    }
+                    "enabled": true
                 },
                 {
                     "name": "[执行]快速狩猎扫荡",
@@ -2055,7 +2082,7 @@
     },
     "interface_version": 2,
     "name": "MFABD2",
-    "title": "MFABD2 | 棕色尘埃2自动化助手(sunyink/MFABD2)v0.0.20 | 游戏版本：20260604 ( Casino Party )",
+    "title": "MFABD2 | 棕色尘埃2自动化助手(sunyink/MFABD2)v0.0.20 | 游戏版本：20260829 ( Untamed )",
     "github": "https://github.com/sunyink/MFABD2",
     "mirrorchyan_rid": "MFABD2",
     "mirrorchyan_multiplatform": true,

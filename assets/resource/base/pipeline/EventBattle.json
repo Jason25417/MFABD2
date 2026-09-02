@@ -89,9 +89,10 @@
         ]
     },
     "Event_MiniGame_Hub": {
-        "desc": "跑酷小游戏快速刷取.放在最后,会附带回到主页。enabled是interface的抓手,判据在Event_MiniGame_Switch",
+        "desc": "跑酷小游戏快速刷取.放在最后,会附带回到主页。enabled是interface的抓手,判据在Event_MiniGame_Switch。timeout必写——next只剩这一项,闸不命中时不写就会空转到默认20秒才退栈",
         "enabled": true,
         "max_hit": 1,
+        "timeout": 1,
         "next": [
             "Event_MiniGame_Switch"
         ]
@@ -106,7 +107,6 @@
         },
         "pre_delay": 0,
         "post_delay": 0,
-        "rate_limit": 0,
         "next": [
             "SeasonEvent_MiniGame_Start",
             "[JumpBack]Global_WaitingForLoading",
@@ -1417,7 +1417,6 @@
             "cycle_type": "g_daily"
         },
         "post_delay": 0,
-        "rate_limit": 0,
         "next": [
             "Global_ToHomePage"
         ],

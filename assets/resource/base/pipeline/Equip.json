@@ -1,6 +1,7 @@
 {
     "Equip_HomePage": {
-        "desc": "task入口,判据交给Equip_Daily_Switch。闸不通过时本节点next耗尽,整个task结束",
+        "desc": "task入口,判据交给Equip_Daily_Switch。闸不通过时本节点next耗尽,整个task结束。timeout必写——next只剩这一项,不写就会空转到默认20秒才肯退",
+        "timeout": 1,
         "next": [
             "Equip_Daily_Switch"
         ]
@@ -15,7 +16,6 @@
         },
         "pre_delay": 0,
         "post_delay": 0,
-        "rate_limit": 0,
         "next": [
             "Equip_Skill_Call",
             "[JumpBack]Global_ToSandBox"
@@ -1111,7 +1111,6 @@
             "cycle_type": "g_daily"
         },
         "post_delay": 0,
-        "rate_limit": 0,
         "next": [
             "Global_ToHomePage"
         ],

@@ -19,9 +19,10 @@
         ]
     },
     "Daily_Union_Hub": {
-        "desc": "公会签到jb1入口。enabled是interface的抓手,判据在Daily_Union_Switch",
+        "desc": "公会签到jb1入口。enabled是interface的抓手,判据在Daily_Union_Switch。timeout必写——next只剩这一项,闸不命中时不写就会空转到默认20秒才退栈",
         "enabled": true,
         "max_hit": 1,
+        "timeout": 1,
         "next": [
             "Daily_Union_Switch"
         ]
@@ -36,7 +37,6 @@
         },
         "pre_delay": 0,
         "post_delay": 0,
-        "rate_limit": 0,
         "next": [
             "Daily_Union_Hub_Post",
             "[JumpBack]Global_ToHomePage"
@@ -176,7 +176,6 @@
             "cycle_type": "g_daily"
         },
         "post_delay": 0,
-        "rate_limit": 0,
         "next": [
             "Global_ToHomePage_Enter",
             "Global_ToHomePage"
@@ -184,9 +183,10 @@
         "focus": "GOM.公会签到完成,已记录"
     },
     "Daily_Busin_Hub": {
-        "desc": "餐馆日结jb1入口。enabled是interface的抓手,判据在Daily_Busin_Switch",
+        "desc": "餐馆日结jb1入口。enabled是interface的抓手,判据在Daily_Busin_Switch。timeout必写——next只剩这一项,闸不命中时不写就会空转到默认20秒才退栈",
         "enabled": true,
         "max_hit": 1,
+        "timeout": 1,
         "next": [
             "Daily_Busin_Switch"
         ]
@@ -201,7 +201,6 @@
         },
         "pre_delay": 0,
         "post_delay": 0,
-        "rate_limit": 0,
         "next": [
             "Daily_Busin_Hub_Post",
             "[JumpBack]Global_ToHomePage"
@@ -728,7 +727,6 @@
             "cycle_type": "g_daily"
         },
         "post_delay": 0,
-        "rate_limit": 0,
         "next": [
             "Daily_Busin_Quick_BackPVEPage_Str",
             "Global_BackToPve_2#"
@@ -824,7 +822,6 @@
         },
         "pre_delay": 0,
         "post_delay": 0,
-        "rate_limit": 0,
         "next": [
             "Daily_Square_Hub"
         ]
@@ -986,7 +983,6 @@
             "cycle_type": "g_daily"
         },
         "post_delay": 0,
-        "rate_limit": 0,
         "next": [
             "Global_BackToQC1"
         ],
@@ -1056,9 +1052,10 @@
         ]
     },
     "Daily_Intimacy_HUB": {
-        "desc": "亲密度谈心jb1入口。enabled是interface的抓手,判据在Daily_Intimacy_Switch",
+        "desc": "亲密度谈心jb1入口。enabled是interface的抓手,判据在Daily_Intimacy_Switch。timeout必写——next只剩这一项,闸不命中时不写就会空转到默认20秒才退栈",
         "enabled": true,
         "max_hit": 1,
+        "timeout": 1,
         "next": [
             "Daily_Intimacy_Switch"
         ]
@@ -1073,7 +1070,6 @@
         },
         "pre_delay": 0,
         "post_delay": 0,
-        "rate_limit": 0,
         "next": [
             "Daily_Intimacy_Ready",
             "[JumpBack]Global_ToHomePage"
@@ -1415,7 +1411,6 @@
             "cycle_type": "g_daily"
         },
         "post_delay": 0,
-        "rate_limit": 0,
         "next": ["Global_ToHomePage"],
         "focus": "亲密度谈心完成,已记录"
     },

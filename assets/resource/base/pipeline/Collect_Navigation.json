@@ -505,9 +505,6 @@
         "next": [
             "Collect_C3_S2_Open_NviMap"
         ],
-        "on_error": [
-            "Collect_C3_S2_Open_NviMap"
-        ],
         "focus": "C3.关面板回战斗1"
     },
     "Collect_C3_S2_Open_NviMap": {
@@ -532,8 +529,8 @@
             "Collect_C3_S2_Open_NviMap"
         ],
         "on_error": [
-            "Collect_C3_S2_Open_NviMap",
-            "Collect_C3_S_Abort"
+            "Collect_C3_S_Abort",
+            "Global_Null"
         ],
         "focus": "C3.打开导航地图"
     },
@@ -605,8 +602,8 @@
             "Collect_C3_S5_Verify"
         ],
         "on_error": [
-            "Collect_C3_S5_Verify",
-            "Collect_C3_S_Abort"
+            "Collect_C3_S_Abort",
+            "Global_Null"
         ],
         "focus": "C3.打开导航地图复核战斗2"
     },
@@ -705,11 +702,6 @@
             "[JumpBack]Global_QuickCart_MenuReset",
             "[JumpBack]Global_ToSandBox"
         ],
-        "on_error": [
-            "Collect_QuickCart_FastUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
-        ],
         "focus": "C3.采集完成-退出卡带"
     },
     "Collect_C3_S_Abort": {
@@ -719,11 +711,6 @@
         "action": "DoNothing",
         "post_delay": 0,
         "next": [
-            "Collect_QuickCart_FastUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
-        ],
-        "on_error": [
             "Collect_QuickCart_FastUI",
             "[JumpBack]Global_QuickCart_MenuReset",
             "[JumpBack]Global_ToSandBox"
@@ -791,9 +778,6 @@
         "post_delay": 2000,
         "next": [
             "[JumpBack]Global_ToSandBox",
-            "Collect_S18_S2_Butt"
-        ],
-        "on_error": [
             "Collect_S18_S2_Butt"
         ],
         "focus": "S18.关面板回箱庭"
@@ -879,8 +863,8 @@
             "Collect_S18_S3_NviMap_Open"
         ],
         "on_error": [
-            "Collect_S18_S3_NviMap_Open",
-            "Collect_S18_S_Abort"
+            "Collect_S18_S_Abort",
+            "Global_Null"
         ],
         "focus": "S18.打开导航地图(酒馆)"
     },
@@ -1161,7 +1145,7 @@
         "focus": "S18.[校验]魔法阵面板已打开"
     },
     "Collect_S18_S9_Panel_Lift": {
-        "desc": "[S18·第9步b']**把魔法阵面板翻到最左页**再开始找战斗3。★为什么要这一步(实测 2026-10-01 20:2x):面板打开时停在人物当前所在的那一页(当时是'战斗 Ⅴ 通往暗夜世界入口之路'),而原来只会点右箭头往右翻⇒ 永远翻不到排在它前面的'战斗 Ⅲ'。写法完全照抄上游 Collect_MapLift:借面板左箭头模板 Rec_AreaMap_ButtLift_Tmp,左键连点 7 下(页面总数就 5~6 页)。左箭头没认出来也不致命(on_error 直接进找页)。★2026-10-07 修复:next/on_error 由只挂 [FindBattle3] 改为 [FindBattle3, FindBattle3_Top, PageRight] —— **翻页闭环必须放在 next 列表里**。原来只挂 FindBattle3 一项,而找页的后续(Top 顶部标题兜底 → PageRight 右翻页 → 回 FindBattle3)全挂在 on_error 链上;**候选节点识别失败只会被跳过、不走它自己的 on_error** ⇒ 翻到最左页时名条是地图1/战斗Ⅰ,FindBattle3 不命中 ⇒ 整个 next 列表失败、永远轮不到翻页 ⇒ 战斗3 找不到(2026-10-07 12:55 实测:面板翻到最左页后就停住)。★2026-10-07 曾改成 [FindBattle3, FindBattle3_Top, PageRight]（想补翻页闭环），**已回退**:用户指出『传送技能打开地图时游戏自己就翻到最左页了,再往右翻一页没有意义』;且实测(13:40)加了 PageRight 后反而 `面板右翻一页` → `地图1流程失败-结束卡带`,今天的改动破坏了原本能跑通的逻辑。恢复为原始写法。★2026-10-07 终版(adb 截图确认):传送技能打开面板时**游戏自动落在最左页**(名条=安全 科库托斯暗黑神殿,底部页码条约 10 页),战斗3 在右边某页 ⇒ **必须循环右翻**:next=[FindBattle3, PageRight] —— 先认当前页名条,不是战斗Ⅲ就右翻一页;PageRight.next 同为 [FindBattle3, PageRight] 形成循环,每翻一页认一次,直到 FindBattle3 命中(PageRight max_hit 14 足够翻完所有页)。此前两版失败原因:①只挂 FindBattle3 一项(不命中即整个列表失败,翻页永远轮不到);②PageRight.next 只有 FindBattle3(只翻一页不中就退栈,实测 13:40 翻一页后直接失败)。",
+        "desc": "[S18·第9步b']**把魔法阵面板翻到最左页**再开始找战斗3。★为什么要这一步(实测 2026-10-01 20:2x):面板打开时停在人物当前所在的那一页(当时是'战斗 Ⅴ 通往暗夜世界入口之路'),而原来只会点右箭头往右翻⇒ 永远翻不到排在它前面的'战斗 Ⅲ'。写法完全照抄上游 Collect_MapLift:借面板左箭头模板 Rec_AreaMap_ButtLift_Tmp,左键连点 7 下(页面总数就 5~6 页)。点击后由 next 先找战斗3页,未命中则右翻继续找页。★2026-10-07 修复:next/on_error 由只挂 [FindBattle3] 改为 [FindBattle3, FindBattle3_Top, PageRight] —— **翻页闭环必须放在 next 列表里**。原来只挂 FindBattle3 一项,而找页的后续(Top 顶部标题兜底 → PageRight 右翻页 → 回 FindBattle3)全挂在 on_error 链上;**候选节点识别失败只会被跳过、不走它自己的 on_error** ⇒ 翻到最左页时名条是地图1/战斗Ⅰ,FindBattle3 不命中 ⇒ 整个 next 列表失败、永远轮不到翻页 ⇒ 战斗3 找不到(2026-10-07 12:55 实测:面板翻到最左页后就停住)。★2026-10-07 曾改成 [FindBattle3, FindBattle3_Top, PageRight]（想补翻页闭环），**已回退**:用户指出『传送技能打开地图时游戏自己就翻到最左页了,再往右翻一页没有意义』;且实测(13:40)加了 PageRight 后反而 `面板右翻一页` → `地图1流程失败-结束卡带`,今天的改动破坏了原本能跑通的逻辑。恢复为原始写法。★2026-10-07 终版(adb 截图确认):传送技能打开面板时**游戏自动落在最左页**(名条=安全 科库托斯暗黑神殿,底部页码条约 10 页),战斗3 在右边某页 ⇒ **必须循环右翻**:next=[FindBattle3, PageRight] —— 先认当前页名条,不是战斗Ⅲ就右翻一页;PageRight.next 同为 [FindBattle3, PageRight] 形成循环,每翻一页认一次,直到 FindBattle3 命中(PageRight max_hit 14 足够翻完所有页)。此前两版失败原因:①只挂 FindBattle3 一项(不命中即整个列表失败,翻页永远轮不到);②PageRight.next 只有 FindBattle3(只翻一页不中就退栈,实测 13:40 翻一页后直接失败)。",
         "max_hit": 3,
         "recognition": "Or",
         "any_of": [
@@ -1175,14 +1159,10 @@
             "Collect_S18_S9_FindBattle3",
             "Collect_S18_S9_PageRight"
         ],
-        "on_error": [
-            "Collect_S18_S9_FindBattle3",
-            "Collect_S18_S9_PageRight"
-        ],
         "focus": "S18.魔法阵面板翻到最左页"
     },
     "Collect_S18_S9_PageRight": {
-        "desc": "[S18·第9步c']点右箭头翻一页(点击位 977,342 与上游维护点C04 的翻页节点一致),然后回 S9_FindBattle2 再认。识别面=上游的面板判据 Collect_OperationsMain_ToAreaMap('是否区域地图界面'):面板一旦被传送收掉,本节点自然不再命中,流程就落到 S9_Walk —— 这样翻页与'已传送'两条路不会互相抢。★2026-10-07:next/on_error 改为 [FindBattle3, PageRight] 形成**循环翻页**——翻一页认一次名条(底部页码条约 10 页,战斗Ⅲ 在右边),没到战斗Ⅲ就继续翻;此前 next 只有 FindBattle3,翻一页不中即退栈失败(实测 13:40)。",
+        "desc": "[S18·第9步c']点右箭头翻一页(点击位 977,342 与上游维护点C04 的翻页节点一致),然后回 S9_FindBattle2 再认。识别面=上游的面板判据 Collect_OperationsMain_ToAreaMap('是否区域地图界面'):面板一旦被传送收掉,本节点自然不再命中,流程就落到 S9_Walk —— 这样翻页与'已传送'两条路不会互相抢。★2026-10-07:next 使用 [FindBattle3, PageRight] 形成**循环翻页**——翻一页认一次名条(底部页码条约 10 页,战斗Ⅲ 在右边),没到战斗Ⅲ就继续翻;此前 next 只有 FindBattle3,翻一页不中即退栈失败(实测 13:40)。",
         "max_hit": 14,
         "recognition": "Or",
         "any_of": [
@@ -1197,10 +1177,6 @@
         ],
         "post_delay": 1200,
         "next": [
-            "Collect_S18_S9_FindBattle3",
-            "Collect_S18_S9_PageRight"
-        ],
-        "on_error": [
             "Collect_S18_S9_FindBattle3",
             "Collect_S18_S9_PageRight"
         ],
@@ -1347,12 +1323,6 @@
             "[JumpBack]Global_QuickCart_MenuReset",
             "[JumpBack]Global_ToSandBox"
         ],
-        "on_error": [
-            "[JumpBack]Collect_S18_Tags_Reset",
-            "Collect_QuickCart_FastUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
-        ],
         "focus": "S18.采集完成-退出卡带"
     },
     "Collect_S18_S_Abort": {
@@ -1362,12 +1332,6 @@
         "action": "DoNothing",
         "post_delay": 0,
         "next": [
-            "[JumpBack]Collect_S18_Tags_Reset",
-            "Collect_QuickCart_FastUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
-        ],
-        "on_error": [
             "[JumpBack]Collect_S18_Tags_Reset",
             "Collect_QuickCart_FastUI",
             "[JumpBack]Global_QuickCart_MenuReset",
@@ -2354,7 +2318,7 @@
         "focus": "S18.点战斗3页传送阵图标(带生成确认)"
     },
     "Collect_S18_Tags_Reset": {
-        "desc": "[S18]清零本轮标签 S18_Map1_Trip。★max_hit:1 必写(2026-10-07):它是 DirectHit 恒命中,挂在两个出口的 next/on_error 首位,没有上限时会被反复执行(实测 13:41 每 0.5s 一次刷了几十条『S18.清零本轮标签』)。★为什么需要(2026-10-07 实测):counter.py 的 TAG_STORE 是进程内存(注释写明:保存在 RAM 中、MAA 重启才清零),标签不随任务重跑重置 -> 上一轮采完地图1 置位(Collect_S18_S7_Tag)后,只要 MFAA/Agent 没重启,下一轮再进卡带18 时 CheckTag(S18_Map1_Trip,max=1) 恒为 false -> 钩子不接管 -> 落到通用链 放传送技能+徒步前往传送阵(12:10 实测);而卡带18 的正确去法是 S2_Butt 借 Arbitrage_NviGuide_Butt(小地图旁快捷移动)去酒馆。挂在 S18 的两个出口(正常收尾 S10_Finish / 断臂 S_Abort)首位,保证下一轮重新开始。",
+        "desc": "[S18]清零本轮标签 S18_Map1_Trip。★max_hit:1 必写(2026-10-07):它是 DirectHit 恒命中,挂在两个出口的 next 首位,没有上限时会被反复执行(实测 13:41 每 0.5s 一次刷了几十条『S18.清零本轮标签』)。★为什么需要(2026-10-07 实测):counter.py 的 TAG_STORE 是进程内存(注释写明:保存在 RAM 中、MAA 重启才清零),标签不随任务重跑重置 -> 上一轮采完地图1 置位(Collect_S18_S7_Tag)后,只要 MFAA/Agent 没重启,下一轮再进卡带18 时 CheckTag(S18_Map1_Trip,max=1) 恒为 false -> 钩子不接管 -> 落到通用链 放传送技能+徒步前往传送阵(12:10 实测);而卡带18 的正确去法是 S2_Butt 借 Arbitrage_NviGuide_Butt(小地图旁快捷移动)去酒馆。挂在 S18 的两个出口(正常收尾 S10_Finish / 断臂 S_Abort)首位,保证下一轮重新开始。",
         "max_hit": 1,
         "recognition": "DirectHit",
         "action": "Custom",

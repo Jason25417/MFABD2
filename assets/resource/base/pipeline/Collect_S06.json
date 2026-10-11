@@ -113,13 +113,10 @@
             "Collect_S06_1F_To2F",
             "Collect_S06_Resume_F1_Back"
         ],
-        "on_error": [
-            "Collect_S06_1F_To2F"
-        ],
         "focus": "S06.续跑-关掉面板后去第2层"
     },
     "Collect_S06_1F_Panel_Back": {
-        "desc": "[异教塔]第1层接管后第一步:面板还开着(名条=安全 施塔因之塔第1层),点左上返回回到箱庭。识别用通用返回按钮(Global_BackPageHub_Once),面板已经关了也走同一条路(on_error)。★这里**不做楼层复核**(用户 2026-10-01 要求去掉):钩子是在「面板刚打开」那一刻命中的,名条=人物真实所在层,证据已经够了;复核只会多开一次导航地图、多花十几秒。两条路都直接进第1层采集。",
+        "desc": "[异教塔]第1层接管后第一步:面板还开着(名条=安全 施塔因之塔第1层),点左上返回回到箱庭。识别用通用返回按钮(Global_BackPageHub_Once),关面板后由 next 进入第1层采集,面板仍在时重试关闭。★这里**不做楼层复核**(用户 2026-10-01 要求去掉):钩子是在「面板刚打开」那一刻命中的,名条=人物真实所在层,证据已经够了;复核只会多开一次导航地图、多花十几秒。正常后续直接进第1层采集。",
         "max_hit": 3,
         "recognition": "Or",
         "any_of": [
@@ -132,9 +129,6 @@
             "Collect_S06_1F_Skill",
             "Collect_S06_1F_Panel_Back",
             "Collect_S06_Abort"
-        ],
-        "on_error": [
-            "Collect_S06_1F_Skill"
         ],
         "focus": "S06.关面板回到第1层箱庭"
     },
@@ -151,9 +145,6 @@
         "post_delay": 2000,
         "next": [
             "Collect_S06_To1F_Click",
-            "Collect_S06_Abort"
-        ],
-        "on_error": [
             "Collect_S06_Abort"
         ],
         "focus": "S06.[WRN]面板翻到第1层页"
@@ -187,9 +178,6 @@
         "next": [
             "Collect_S06_Extra_Gather",
             "Collect_S06_Extra_Suppress",
-            "[Anchor]S06_Done_Ck"
-        ],
-        "on_error": [
             "[Anchor]S06_Done_Ck"
         ],
         "focus": "S06.补施召集/压制(自查亮着的格子)"
@@ -566,9 +554,6 @@
             "Collect_S06_Panel_Left7",
             "Collect_S06_Abort"
         ],
-        "on_error": [
-            "Collect_S06_Abort"
-        ],
         "focus": "S06.第5层→第6层-点传送技能开面板"
     },
     "Collect_S06_Panel_Left7": {
@@ -584,9 +569,6 @@
         "post_delay": 2000,
         "next": [
             "Collect_S06_Panel_WantF6",
-            "Collect_S06_Abort"
-        ],
-        "on_error": [
             "Collect_S06_Abort"
         ],
         "focus": "S06.面板翻到第1层页(第5层→第6层)"
@@ -637,10 +619,6 @@
             "Collect_S06_Panel_Open",
             "Collect_S06_Abort"
         ],
-        "on_error": [
-            "Collect_S06_Panel_Open_ByHand",
-            "Collect_S06_Abort"
-        ],
         "focus": "S06.点传送技能开移动魔法阵面板"
     },
     "Collect_S06_Panel_Open_ByHand": {
@@ -657,9 +635,6 @@
             "Collect_S06_Panel_Ck_F6",
             "Collect_S06_Panel_WantF6",
             "Collect_S06_Panel_Open",
-            "Collect_S06_Abort"
-        ],
-        "on_error": [
             "Collect_S06_Abort"
         ],
         "focus": "S06.[WRN]传送技能被拒-用'手'标开面板"
@@ -995,12 +970,6 @@
             "[Anchor]S06_Leg_Ck",
             "Collect_S06_Abort"
         ],
-        "on_error": [
-            "[Anchor]S06_Arrive_Ck",
-            "[Anchor]S06_Fail_Ck",
-            "[Anchor]S06_Leg_Ck",
-            "Collect_S06_Abort"
-        ],
         "focus": "S06.打开导航地图"
     },
     "Collect_S06_Ck_Retry": {
@@ -1019,10 +988,6 @@
         ],
         "post_delay": 1500,
         "next": [
-            "Collect_S06_Floor_Read",
-            "Collect_S06_Abort"
-        ],
-        "on_error": [
             "Collect_S06_Floor_Read",
             "Collect_S06_Abort"
         ],

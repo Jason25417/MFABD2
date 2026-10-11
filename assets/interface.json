@@ -1087,15 +1087,17 @@
             "type": "switch",
             "cases": [
                 {
-                    "name": "No"
+                    "name": "No",
+                    "pipeline_override": {
+                        "Collect_BlackList_User": {
+                            "action": "DoNothing",
+                            "focus": "<span style=\"color:Green\">CM.P.未设定[卡带黑名单]</span>"
+                        }
+                    }
                 },
                 {
                     "name": "Yes",
-                    "pipeline_override": {
-                        "Collect_BlackList_User": {
-                            "enabled": true
-                        }
-                    },
+                    "pipeline_override": {},
                     "option": [
                         "故事卡带屏蔽",
                         "角色卡带屏蔽",
@@ -1109,15 +1111,17 @@
             "type": "switch",
             "cases": [
                 {
-                    "name": "No"
+                    "name": "No",
+                    "pipeline_override": {
+                        "Collect_ForceList_Apply": {
+                            "action": "DoNothing",
+                            "focus": "<span style=\"color:Green\">CM.P.未设定[卡带强制采集名单]</span>"
+                        }
+                    }
                 },
                 {
                     "name": "Yes",
-                    "pipeline_override": {
-                        "Collect_ForceList_Apply": {
-                            "enabled": true
-                        }
-                    },
+                    "pipeline_override": {},
                     "option": [
                         "剧情游戏卡强采",
                         "角色游戏卡强采",

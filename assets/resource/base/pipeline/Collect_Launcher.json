@@ -87,26 +87,17 @@
         "focus": "CM.宠物派遣(调试中...错误请回报)"
     },
     "Collect_Sandplay": {
-        "desc": "拉起成功,进入箱庭",
+        "desc": "从箱庭进入采集配置链 | 识别箱庭后，先处理设置、技能耗尽检查和本轮扫描标记，再依次经过屏蔽与强采配置节点。",
         "recognition": "Or",
         "any_of": [
             "Rec_SandBox_Pin_Tpl",
             "Rec_SandBox_Run_Tpl"
-        ],
-        "action": "Click",
-        "target": [
-            1203,
-            664,
-            3,
-            5
         ],
         "next": [
             "[JumpBack]Setup_Entry5",
             "Collect_Skill3_2_Depleted",
             "[JumpBack]Collect_QC_Scan_Reset",
             "Collect_BlackList_User",
-            "Collect_ForceList_Apply",
-            "Collect_QuickCart_Menu",
             "[JumpBack]Global_QuickCart_MenuReset"
         ]
     },
@@ -137,7 +128,7 @@
         "focus": "全类已有完成标签,停止任务"
     },
     "Collect_BlackList_User": {
-        "enabled": false,
+        "desc": "应用用户卡带屏蔽配置 | 按 attach 中三类编号禁用对应具名卡带；空名单不修改节点。节点保持启用，interface 关闭功能时将 action 改为 DoNothing，后续仍进入强采配置节点。",
         "action": "Custom",
         "custom_action": "BatchNumericPatch",
         "custom_action_param": {
@@ -173,15 +164,12 @@
             ]
         },
         "next": [
-            "Collect_ForceList_Apply",
-            "Collect_QuickCart_Menu",
-            "[JumpBack]Global_QuickCart_MenuReset"
+            "Collect_ForceList_Apply"
         ],
         "focus": "<span style=\"color:Crimson\">CM.P.检查用户卡带黑名单</span>"
     },
     "Collect_ForceList_Apply": {
-        "desc": "[本地·强制采集]强采清单应用器（action=Custom/ForceListApply，2026-10-02 本地新增）。读本节点 attach（StoryPack/CharacterPack/EventPack，界面选项注入，语法同屏蔽：1,3~5）：①**填了的类**：把该类具名卡带全部禁用、只启用名单里的、并关掉该类的分类跳过闸（Collect_QC_Skip_*）+ 关 Collect_QC_All_Done；②**没填的类**：一个节点都不碰，完全保持上游原逻辑（该类本地已全完成 -> 照旧整类跳过）；③三类都没填 -> 本次不改任何节点，行为与原版一致。清场范围从节点表枚举，不写死 1~20/1~8/1~5。名单内的卡带连游戏内双勾也无视（徽章放行在 recognition/pack_badge.py）。默认 enabled=false，由界面选项「强制采集卡带」打开。",
-        "enabled": false,
+        "desc": "应用指定卡带的强制采集配置 | 从 attach 读取三类编号；有有效名单的类别只启用指定具名卡带，并覆盖此前屏蔽结果，空名单或无有效编号的类别保持当前配置。关闭相关分类跳过与总结束节点，将角色、活动的 Pending 入口改为 DirectHit；PackBadgeNotDone 对名单内卡带跳过双勾判断。节点保持启用，interface 关闭功能时将 action 改为 DoNothing，后续仍进入卡带菜单或复位流程。",
         "action": "Custom",
         "custom_action": "ForceListApply",
         "custom_action_param": {

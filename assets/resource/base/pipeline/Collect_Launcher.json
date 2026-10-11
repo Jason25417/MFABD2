@@ -109,9 +109,18 @@
         "custom_recognition": "CheckCoolDown",
         "custom_recognition_param": {
             "targets": [
-                {"card_name": "Pack_Story_SimpleDone", "cycle_type": "g_weekly"},
-                {"card_name": "Pack_Character_SimpleDone", "cycle_type": "g_weekly"},
-                {"card_name": "Pack_Event_SimpleDone", "cycle_type": "g_weekly"}
+                {
+                    "card_name": "Pack_Story_SimpleDone",
+                    "cycle_type": "g_weekly"
+                },
+                {
+                    "card_name": "Pack_Character_SimpleDone",
+                    "cycle_type": "g_weekly"
+                },
+                {
+                    "card_name": "Pack_Event_SimpleDone",
+                    "cycle_type": "g_weekly"
+                }
             ],
             "match": "all_done"
         },
@@ -164,7 +173,9 @@
     "Collect_QuickCart_Menu": {
         "desc": "快速卡带已调出,等待后续",
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset_Ocr"],
+        "any_of": [
+            "Global_QuickCart_MenuReset_Ocr"
+        ],
         "next": [
             "[JumpBack]Collect_FeatureSwitch_StoryPack",
             "[JumpBack]Collect_FeatureSwitch_CharacterPack",
@@ -619,7 +630,9 @@
     },
     "Collect_PackProbe_IsPresent": {
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset_Ocr"],
+        "any_of": [
+            "Global_QuickCart_MenuReset_Ocr"
+        ],
         "timeout": 2000,
         "next": [
             "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
@@ -1282,7 +1295,9 @@
     "Collect_Loc_OutToSwip_Hub_Enter_QuickCart_Menu": {
         "desc": "快速卡带已调出,等待后续",
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset_Ocr"],
+        "any_of": [
+            "Global_QuickCart_MenuReset_Ocr"
+        ],
         "next": [
             "Collect_Loc_OutToSwip_Hub_Egress"
         ],
@@ -2856,7 +2871,9 @@
             0,
             0
         ],
-        "anchor": {"ExplorationBoard_Arrived": ""},
+        "anchor": {
+            "ExplorationBoard_Arrived": ""
+        },
         "post_delay": 5000,
         "next": [
             "[JumpBack]Global_WaitingForLoading",

@@ -45,7 +45,9 @@
             "Gacha_Slip",
             "Gacha_FindEquRedDot"
         ],
-        "on_error": ["Gacha_FindEquRedDot_PBC"],
+        "on_error": [
+            "Gacha_FindEquRedDot_PBC"
+        ],
         "focus": "GA.进入抽抽乐页面-TypeA"
     },
     "Gacha_GachaPage2": {
@@ -134,7 +136,9 @@
         "desc": "点击,存在免费抽的卡池,每日首次进入卡池pv动画开始 | GachaADV_Start 临时插入救急",
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             317,
             120,
@@ -506,7 +510,9 @@
     "Gacha_FinGacha": {
         "desc": "返回首页",
         "recognition": "And",
-        "all_of": ["GachaADV_PageEnter_1#"],
+        "all_of": [
+            "GachaADV_PageEnter_1#"
+        ],
         "target": [
             120,
             35
@@ -521,7 +527,9 @@
     "Gacha_FindEquRedDot": {
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             112,
             148,
@@ -547,7 +555,9 @@
     "Gacha_FindEquRedDot_PBC": {
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             112,
             148,

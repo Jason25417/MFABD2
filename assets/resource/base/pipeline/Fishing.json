@@ -427,7 +427,9 @@
             87,
             67
         ],
-        "template": ["Fish/fishbuff.png"],
+        "template": [
+            "Fish/fishbuff.png"
+        ],
         "green_mask": true
     },
     "Rec_Fishing_UI_Ocr": {

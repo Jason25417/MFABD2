@@ -1525,7 +1525,9 @@
             65,
             45
         ],
-        "expected": ["装备"],
+        "expected": [
+            "装备"
+        ],
         "anchor": "Setup_EquipUp",
         "next": [
             "Setup_EquipUp",
@@ -2080,7 +2082,9 @@
     "Setup_SetSkill_ReLift_Maxhit": {
         "max_hit": 3,
         "recognition": "Or",
-        "any_of": ["Setup_SetSkill_ReLift"],
+        "any_of": [
+            "Setup_SetSkill_ReLift"
+        ],
         "action": "Swipe",
         "begin": [
             115,
@@ -2190,7 +2194,9 @@
     "Setup_SetSkill_3-1_Swip": {
         "max_hit": 2,
         "recognition": "Or",
-        "any_of": ["Setup_SetSkill_ReLift"],
+        "any_of": [
+            "Setup_SetSkill_ReLift"
+        ],
         "action": "Swipe",
         "begin": [
             1134,
@@ -2238,7 +2244,9 @@
     },
     "Setup_SetSkill_3-2_Pre": {
         "recognition": "Or",
-        "any_of": ["Setup_SetSkill_LiftYew_ReLiftEnd"],
+        "any_of": [
+            "Setup_SetSkill_LiftYew_ReLiftEnd"
+        ],
         "next": [
             "Setup_SetSkill_3-2",
             "[JumpBack]Setup_SetSkill_SwipMini",
@@ -2271,7 +2279,9 @@
     "Setup_SetSkill_2to3_Swip": {
         "max_hit": 2,
         "recognition": "Or",
-        "any_of": ["Setup_SetSkill_ReLift"],
+        "any_of": [
+            "Setup_SetSkill_ReLift"
+        ],
         "action": "Swipe",
         "begin": [
             1134,
@@ -2318,7 +2328,9 @@
     },
     "Setup_SetSkill_3-3_Pre": {
         "recognition": "Or",
-        "any_of": ["Setup_SetSkill_LiftYew_ReLiftEnd"],
+        "any_of": [
+            "Setup_SetSkill_LiftYew_ReLiftEnd"
+        ],
         "next": [
             "Setup_SetSkill_3-3",
             "[JumpBack]Setup_SetSkill_SwipMini",
@@ -2350,7 +2362,9 @@
     "Setup_SetSkill_3to4_Swip": {
         "max_hit": 2,
         "recognition": "Or",
-        "any_of": ["Setup_SetSkill_ReLift"],
+        "any_of": [
+            "Setup_SetSkill_ReLift"
+        ],
         "action": "Swipe",
         "begin": [
             1134,
@@ -2398,7 +2412,9 @@
     },
     "Setup_SetSkill_3-4_Pre": {
         "recognition": "Or",
-        "any_of": ["Setup_SetSkill_LiftYew_ReLiftEnd"],
+        "any_of": [
+            "Setup_SetSkill_LiftYew_ReLiftEnd"
+        ],
         "next": [
             "Setup_SetSkill_3-4",
             "[JumpBack]Setup_SetSkill_SwipMini",
@@ -2430,7 +2446,9 @@
     "Setup_SetSkill_4to5_Swip": {
         "max_hit": 2,
         "recognition": "Or",
-        "any_of": ["Setup_SetSkill_ReLift"],
+        "any_of": [
+            "Setup_SetSkill_ReLift"
+        ],
         "action": "Swipe",
         "begin": [
             1134,
@@ -2478,7 +2496,9 @@
     },
     "Setup_SetSkill_3-5_Pre": {
         "recognition": "Or",
-        "any_of": ["Setup_SetSkill_LiftYew_ReLiftEnd"],
+        "any_of": [
+            "Setup_SetSkill_LiftYew_ReLiftEnd"
+        ],
         "next": [
             "Setup_SetSkill_3-5",
             "[JumpBack]Setup_SetSkill_SwipMini",
@@ -2552,7 +2572,9 @@
         "desc": "当页找不到,向后滑动,限定次数",
         "max_hit": 2,
         "recognition": "Or",
-        "any_of": ["Setup_SetSkill_ReLift"],
+        "any_of": [
+            "Setup_SetSkill_ReLift"
+        ],
         "action": "Swipe",
         "begin": [
             1134,

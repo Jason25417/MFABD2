@@ -35,7 +35,9 @@
     "RewardsDaily_InIndex": {
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             522,
             610,
@@ -93,14 +95,18 @@
     "RewardsDaily_GetDailyRewardBack": {
         "desc": "点击领取全部返回",
         "recognition": "And",
-        "all_of": ["Rec_Reward_Ocr"],
+        "all_of": [
+            "Rec_Reward_Ocr"
+        ],
         "action": "Click",
         "post_delay": 3000
     },
     "RewardsDaily_TabWeeklyReward": {
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             300,
             86,

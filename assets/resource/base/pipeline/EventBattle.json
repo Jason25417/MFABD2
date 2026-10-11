@@ -640,7 +640,9 @@
             101,
             57
         ],
-        "expected": ["能力测试"],
+        "expected": [
+            "能力测试"
+        ],
         "pre_delay": 0,
         "post_delay": 0,
         "next": [

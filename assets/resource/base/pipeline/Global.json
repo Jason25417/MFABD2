@@ -95,7 +95,9 @@
     "Global_QuickCart_SwipTo_2P": {
         "desc": "QC滑动到第二页",
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset_Ocr"],
+        "any_of": [
+            "Global_QuickCart_MenuReset_Ocr"
+        ],
         "action": "Swipe",
         "begin": [
             905,
@@ -115,7 +117,9 @@
     },
     "Global_QuickCart_SwipTo_2P_Enter": {
         "recognition": "Or",
-        "any_of": ["Collect_QuickCart_SelectType_EventPack"]
+        "any_of": [
+            "Collect_QuickCart_SelectType_EventPack"
+        ]
     },
     "Global_ToHomePage": {
         "desc": "[通用复位]复位到主界面模块,开始,中继调用",
@@ -200,7 +204,9 @@
         ],
         "action": "Click",
         "post_delay": 3000,
-        "next": ["Global_BackToPve_1#"],
+        "next": [
+            "Global_BackToPve_1#"
+        ],
         "focus": "G=1.点Home退出"
     },
     "Global_ToHomePage_Else": {
@@ -212,7 +218,9 @@
             782,
             453
         ],
-        "expected": ["关闭商店"],
+        "expected": [
+            "关闭商店"
+        ],
         "action": "Click",
         "post_delay": 1500
     },
@@ -228,7 +236,9 @@
     "Global_ToSandBox": {
         "desc": "[通用复位]复位到箱庭模块,开始,中继调用",
         "recognition": "Or",
-        "any_of": ["Global_ToSandBox_Enter"],
+        "any_of": [
+            "Global_ToSandBox_Enter"
+        ],
         "inverse": true,
         "timeout": 10000,
         "next": [
@@ -408,7 +418,9 @@
     "Global_BackToPve_PVEBookSwipe": {
         "desc": "识别活动游戏卡-上划",
         "recognition": "And",
-        "all_of": ["Global_BackToPve_CardMenu_Tp1"],
+        "all_of": [
+            "Global_BackToPve_CardMenu_Tp1"
+        ],
         "action": "Swipe",
         "begin": [
             30,
@@ -425,7 +437,9 @@
     "Global_BackToPve_PVEBookSwipe_Lift": {
         "desc": "识别活动游戏卡-左划",
         "recognition": "And",
-        "all_of": ["Global_BackToPve_CardMenu_Tp2"],
+        "all_of": [
+            "Global_BackToPve_CardMenu_Tp2"
+        ],
         "action": "Swipe",
         "begin": [
             150,
@@ -442,7 +456,9 @@
     "Global_BackToPve_TouchPVE1#Pack": {
         "desc": "【传统卡带识别链-预设出口.pve1#】",
         "recognition": "Or",
-        "any_of": ["Global_BackToPve_CardMenu_Tp3"],
+        "any_of": [
+            "Global_BackToPve_CardMenu_Tp3"
+        ],
         "action": "Click",
         "target_offset": [
             -45,
@@ -450,7 +466,9 @@
             0,
             0
         ],
-        "anchor": {"BackToPack_Regress": ""},
+        "anchor": {
+            "BackToPack_Regress": ""
+        },
         "post_delay": 5000,
         "next": [
             "Global_BackToPve_FinBackMapPage",
@@ -478,7 +496,9 @@
             0,
             0
         ],
-        "anchor": {"BackToPack_Regress": ""},
+        "anchor": {
+            "BackToPack_Regress": ""
+        },
         "post_delay": 5000,
         "next": [
             "Global_BackToPve_FinBackMapPage",
@@ -500,7 +520,9 @@
         "desc": "【快速卡带识别链-预设入口.全屏按钮起点→QC1】50次多半是卡死了,死死透别截图了",
         "max_hit": 50,
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset"],
+        "any_of": [
+            "Global_QuickCart_MenuReset"
+        ],
         "anchor": {
             "QCPack_Regress": "Global_BackToQC_TouchQC1Pack"
         },
@@ -513,7 +535,9 @@
     "Global_BackToQC1_Menu": {
         "desc": "【快速卡带识别链-预设入口.菜单已起→QC1】(不规范/少用)守卫:剧情页签可见.不点击,交给走位链",
         "recognition": "Or",
-        "any_of": ["Collect_QuickCart_SelectType_StoryPack"],
+        "any_of": [
+            "Collect_QuickCart_SelectType_StoryPack"
+        ],
         "anchor": {
             "QCPack_Regress": "Global_BackToQC_TouchQC1Pack"
         },
@@ -528,7 +552,9 @@
     "Global_BackToQC_Story_Anc": {
         "desc": "【快速卡带识别链-剧情页签入口_必须先声明Anc出口'QCPack' & Anc出口记得复位锚点'QCPack'】不许Patch。('QCPack_Regress'为预设复位链专用优先锚,业务方勿声明)",
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset"],
+        "any_of": [
+            "Global_QuickCart_MenuReset"
+        ],
         "action": "Click",
         "post_delay": 2500,
         "next": [
@@ -543,7 +569,9 @@
     "Global_BackToQC_Character_Anc": {
         "desc": "【快速卡带识别链-角色页签入口_必须先声明Anc出口'QCPack' & Anc出口记得复位锚点'QCPack'】不许Patch。('QCPack_Regress'为预设复位链专用优先锚,业务方勿声明)",
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset"],
+        "any_of": [
+            "Global_QuickCart_MenuReset"
+        ],
         "action": "Click",
         "post_delay": 1500,
         "next": [
@@ -558,7 +586,9 @@
     "Global_BackToQC_Event_Anc": {
         "desc": "【快速卡带识别链-活动页签入口_必须先声明Anc出口'QCPack' & Anc出口记得复位锚点'QCPack'】不许Patch。('QCPack_Regress'为预设复位链专用优先锚,业务方勿声明)",
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset"],
+        "any_of": [
+            "Global_QuickCart_MenuReset"
+        ],
         "action": "Click",
         "post_delay": 1500,
         "next": [
@@ -574,7 +604,9 @@
     "Global_BackToQC_Manager_Anc": {
         "desc": "【快速卡带识别链-店长页签入口_必须先声明Anc出口'QCPack' & Anc出口记得复位锚点'QCPack'】不许Patch。('QCPack_Regress'为预设复位链专用优先锚,业务方勿声明)",
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset"],
+        "any_of": [
+            "Global_QuickCart_MenuReset"
+        ],
         "action": "Click",
         "post_delay": 1500,
         "next": [
@@ -589,7 +621,9 @@
     "Global_BackToQC_Battleplay_Anc": {
         "desc": "【快速卡带识别链-玩法页签入口_必须先声明Anc出口'QCPack' & Anc出口记得复位锚点'QCPack'】不许Patch。('QCPack_Regress'为预设复位链专用优先锚,业务方勿声明)",
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset"],
+        "any_of": [
+            "Global_QuickCart_MenuReset"
+        ],
         "action": "Click",
         "post_delay": 1500,
         "next": [
@@ -605,7 +639,9 @@
     "Global_BackToQC_Lifeplay_Anc": {
         "desc": "【快速卡带识别链-玩法页签入口_必须先声明Anc出口'QCPack' & Anc出口记得复位锚点'QCPack'】不许Patch。('QCPack_Regress'为预设复位链专用优先锚,业务方勿声明)",
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset"],
+        "any_of": [
+            "Global_QuickCart_MenuReset"
+        ],
         "action": "Click",
         "post_delay": 1500,
         "next": [
@@ -621,7 +657,9 @@
     "Global_BackToQC_SelectStory": {
         "desc": "【快速卡带识别链-走位.不要直接连这里!】借Collect识别点剧情页签",
         "recognition": "Or",
-        "any_of": ["Collect_QuickCart_SelectType_StoryPack"],
+        "any_of": [
+            "Collect_QuickCart_SelectType_StoryPack"
+        ],
         "action": "Click",
         "post_delay": 500,
         "next": [
@@ -633,7 +671,9 @@
     "Global_BackToQC_SelectCharacter": {
         "desc": "【快速卡带识别链-走位.不要直接连这里!】借Collect识别点角色页签",
         "recognition": "Or",
-        "any_of": ["Collect_QuickCart_SelectType_CharacterPack"],
+        "any_of": [
+            "Collect_QuickCart_SelectType_CharacterPack"
+        ],
         "action": "Click",
         "post_delay": 500,
         "next": [
@@ -645,7 +685,9 @@
     "Global_BackToQC_SelectEvent": {
         "desc": "【快速卡带识别链-走位.不要直接连这里!】借Collect识别点活动页签",
         "recognition": "Or",
-        "any_of": ["Collect_QuickCart_SelectType_EventPack"],
+        "any_of": [
+            "Collect_QuickCart_SelectType_EventPack"
+        ],
         "action": "Click",
         "post_delay": 500,
         "next": [
@@ -657,7 +699,9 @@
     "Global_BackToQC_SelectManager": {
         "desc": "【快速卡带识别链-走位.不要直接连这里!】借Collect识别点店长页签",
         "recognition": "Or",
-        "any_of": ["Collect_QuickCart_SelectType_ManagerPack"],
+        "any_of": [
+            "Collect_QuickCart_SelectType_ManagerPack"
+        ],
         "action": "Click",
         "post_delay": 500,
         "next": [
@@ -669,7 +713,9 @@
     "Global_BackToQC_SelectBattleplay": {
         "desc": "【快速卡带识别链-走位.不要直接连这里!】借Collect识别点玩法页签",
         "recognition": "Or",
-        "any_of": ["Collect_QuickCart_SelectType_BattleplayPack"],
+        "any_of": [
+            "Collect_QuickCart_SelectType_BattleplayPack"
+        ],
         "action": "Click",
         "post_delay": 500,
         "next": [
@@ -681,7 +727,9 @@
     "Global_BackToQC_SelectLifeplay": {
         "desc": "【快速卡带识别链-走位.不要直接连这里!】借Collect识别点玩法页签",
         "recognition": "Or",
-        "any_of": ["Collect_QuickCart_SelectType_LifeplayPack"],
+        "any_of": [
+            "Collect_QuickCart_SelectType_LifeplayPack"
+        ],
         "action": "Click",
         "post_delay": 500,
         "next": [
@@ -894,7 +942,9 @@
             0,
             0
         ],
-        "anchor": {"QCPack_Regress": ""},
+        "anchor": {
+            "QCPack_Regress": ""
+        },
         "post_delay": 4000,
         "next": [
             "Global_BackToQC_Fin",

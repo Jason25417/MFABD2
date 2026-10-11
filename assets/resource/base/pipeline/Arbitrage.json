@@ -2918,11 +2918,24 @@
         }
     },
     "Agt_PriceList_Swip": {
-        "desc": "py独占，勿挂进管路：价目表翻页及微调后等待300ms再比较商品区；最多尝试3次，无变化交回py复核判底。空on_error确保截图等异常向调用方返回失败。",
+        "desc": "py独占，勿挂进管路：仅比较价目表下滑前后的商品区，最多尝试3次；正常结束后执行位置微调，再交回py读表判底。空on_error确保截图等异常向调用方返回失败。",
         "action": "Custom",
         "custom_action": "SmartAction",
         "custom_action_param": {
-            "proxy_node": "Arbitrage_Swip_PriceList",
+            "proxy_node": "Agt_Proxy_Blank",
+            "proxy_override": {
+                "action": "Swipe",
+                "begin": [
+                    653,
+                    511
+                ],
+                "end": [
+                    653,
+                    150
+                ],
+                "end_hold": 500,
+                "duration": 700
+            },
             "detect_roi": [
                 478,
                 209,
@@ -2937,24 +2950,10 @@
             "loop_exhausted": "next"
         },
         "timeout": 1,
-        "on_error": []
-    },
-    "Arbitrage_Swip_PriceList": {
-        "desc": "【非孤立节点】由Agent调用,价目表下滑Runtask入口",
-        "action": "Swipe",
-        "begin": [
-            653,
-            511
-        ],
-        "end": [
-            653,
-            150
-        ],
-        "end_hold": 500,
-        "duration": 700,
         "next": [
             "Arbitrage_Swip_Calibration_Hub"
-        ]
+        ],
+        "on_error": []
     },
     "Arbitrage_Swip_Calibration_Hub": {
         "desc": "滑动后微调,使价目表完整显示,设定多种情况不同力度调整,反复运作后能准确控制位置",

@@ -117,8 +117,9 @@
             "default_check": true,
             "description": "<地图采集[完整]>的单卡带模式，满足日常任务所需即停止。",
             "option": [
-                "强制采集卡带",
+                "采集卡带指定",
                 "采集卡带屏蔽",
+                "采集卡带调试直采",
                 "第三图采集额外等待"
             ]
         },
@@ -274,11 +275,11 @@
                 "Adb",
                 "PlayCover"
             ],
-            "description": "进入卡带，对含传送阵的地图依次执行探查、吸取、召集。<br><span style=\"background-color:rgba(255,160,0,0.2)\"><b>前提：</b>传送阵须已激活，且周围箱庭迷雾已探明，使区域地图能完整显示传送阵图标。</span><br><b>周常CD：</b>自动跳过本周已刷卡带，进度记录于 <code>agent_save_data.json</code>，可手动迁移。刷取顺序：卡带框从左到右，依故事→角色→活动大类推进。",
+            "description": "进入卡带，对含传送阵的地图依次执行探查、吸取、召集。<br><span style=\"background-color:rgba(255,160,0,0.2)\"><b>前提：</b>传送阵须已激活，且周围箱庭迷雾已探明，使区域地图能完整显示传送阵图标。</span><br><b>周常CD：</b>自动跳过本周已刷卡带，进度记录于 <code>agent_save_data.json</code>，可手动迁移。刷取顺序：卡带框从左到右，依剧情→角色→活动大类推进。",
             "option": [
-                "简单类跳过",
-                "强制采集卡带",
+                "采集卡带指定",
                 "采集卡带屏蔽",
+                "采集卡带调试直采",
                 "第三图采集额外等待"
             ]
         },
@@ -1083,15 +1084,17 @@
             ]
         },
         "采集卡带屏蔽": {
-            "description": "启用后，带有屏蔽标记的卡带将被跳过，不参与识别也不写入周期标记。",
+            "label": "排除卡带",
             "type": "switch",
+            "default_case": "No",
+            "description": "名单内的卡带不采集，其余照常。<br>同一张卡带同时在「自选采集卡带范围」里时，以排除为准。",
             "cases": [
                 {
                     "name": "No",
                     "pipeline_override": {
                         "Collect_BlackList_User": {
                             "action": "DoNothing",
-                            "focus": "<span style=\"color:Green\">CM.P.未设定[卡带黑名单]</span>"
+                            "focus": "<span style=\"color:Green\">CM.P.未设定[排除卡带]</span>"
                         }
                     }
                 },
@@ -1099,23 +1102,25 @@
                     "name": "Yes",
                     "pipeline_override": {},
                     "option": [
-                        "故事卡带屏蔽",
-                        "角色卡带屏蔽",
-                        "活动卡带屏蔽"
+                        "剧情游戏卡屏蔽",
+                        "角色游戏卡屏蔽",
+                        "活动游戏卡屏蔽"
                     ]
                 }
             ]
         },
-        "强制采集卡带": {
-            "description": "启用后**只采集**下面名单里点名的卡带；名单里的卡带**连游戏内双勾也无视**，直接进卡带（用途：测试卡带地图切换/寻路）。★某一类留空 => 该类**完全保持原逻辑**（不禁用、不关闸，本地记录显示已全完成就照旧整类跳过）。填的是卡带列表里的**序号**，不是游戏章节号。",
+        "采集卡带指定": {
+            "label": "自选采集卡带范围",
             "type": "switch",
+            "default_case": "No",
+            "description": "只采集范围内的卡带，范围外的（包括没填写的类别）都不采集。<br>范围内本周已完成的卡带照常跳过；同一张卡带同时在「排除卡带」里时，不采集。三类都不填写时不限制范围。",
             "cases": [
                 {
                     "name": "No",
                     "pipeline_override": {
-                        "Collect_ForceList_Apply": {
+                        "Collect_WhiteList_User": {
                             "action": "DoNothing",
-                            "focus": "<span style=\"color:Green\">CM.P.未设定[卡带强制采集名单]</span>"
+                            "focus": "<span style=\"color:Green\">CM.P.未设定[自选采集卡带范围]</span>"
                         }
                     }
                 },
@@ -1123,91 +1128,54 @@
                     "name": "Yes",
                     "pipeline_override": {},
                     "option": [
-                        "剧情游戏卡强采",
-                        "角色游戏卡强采",
-                        "活动游戏卡强采"
+                        "剧情游戏卡指定",
+                        "角色游戏卡指定",
+                        "活动游戏卡指定"
                     ]
                 }
             ]
         },
-        "剧情游戏卡强采": {
-            "type": "input",
-            "label": "",
-            "inputs": [
+        "采集卡带调试直采": {
+            "label": "【调试】仅采集指定卡带（含已完成）",
+            "type": "switch",
+            "default_case": "No",
+            "description": "调试用：只进入下面填写的卡带，本周已完成或暂不支持采集的也会进入。<br>此时「自选采集卡带范围」与「排除卡带」不生效；没填写的卡带一律不进入。",
+            "cases": [
                 {
-                    "name": "要强采的剧情游戏卡",
-                    "label": "剧情游戏卡强采",
-                    "pipeline_type": "string",
-                    "default": "",
-                    "verify": "^[0-9\\s,，;\\-~～]*$",
-                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
-                    "description": "填入要**强制采集**的卡带编号：Collect_Pack_Story_N 的 N（剧情游戏卡列表从左到右的序号，如 3 或 3,5~7）。留空=该类保持原逻辑（不做强采、不看名单）。"
-                }
-            ],
-            "pipeline_override": {
-                "Collect_ForceList_Apply": {
-                    "attach": {
-                        "StoryPack": "{要强采的剧情游戏卡}"
+                    "name": "No",
+                    "pipeline_override": {
+                        "Collect_DebugList_User": {
+                            "enabled": false
+                        }
                     }
-                }
-            }
-        },
-        "角色游戏卡强采": {
-            "type": "input",
-            "label": "",
-            "inputs": [
+                },
                 {
-                    "name": "要强采的角色游戏卡",
-                    "label": "角色游戏卡强采",
-                    "pipeline_type": "string",
-                    "default": "",
-                    "verify": "^[0-9\\s,，;\\-~～]*$",
-                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
-                    "description": "填入要**强制采集**的卡带编号：Collect_Pack_Character_N 的 N（角色游戏卡列表序号，如 3）。留空=该类保持原逻辑（不做强采、不看名单）。"
+                    "name": "Yes",
+                    "pipeline_override": {
+                        "Collect_DebugList_User": {
+                            "enabled": true
+                        }
+                    },
+                    "option": [
+                        "剧情游戏卡调试",
+                        "角色游戏卡调试",
+                        "活动游戏卡调试"
+                    ]
                 }
-            ],
-            "pipeline_override": {
-                "Collect_ForceList_Apply": {
-                    "attach": {
-                        "CharacterPack": "{要强采的角色游戏卡}"
-                    }
-                }
-            }
+            ]
         },
-        "活动游戏卡强采": {
-            "type": "input",
-            "label": "",
-            "inputs": [
-                {
-                    "name": "要强采的活动游戏卡",
-                    "label": "活动游戏卡强采",
-                    "pipeline_type": "string",
-                    "default": "",
-                    "verify": "^[0-9\\s,，;\\-~～]*$",
-                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
-                    "description": "填入要**强制采集**的卡带编号：Collect_Pack_Event_N 的 N（活动游戏卡列表序号，如 1,3）。留空=该类保持原逻辑（不做强采、不看名单）。"
-                }
-            ],
-            "pipeline_override": {
-                "Collect_ForceList_Apply": {
-                    "attach": {
-                        "EventPack": "{要强采的活动游戏卡}"
-                    }
-                }
-            }
-        },
-        "故事卡带屏蔽": {
+        "剧情游戏卡屏蔽": {
             "type": "input",
             "label": "",
             "inputs": [
                 {
                     "name": "要屏蔽的剧情游戏卡",
-                    "label": "故事卡带屏蔽",
+                    "label": "排除的剧情游戏卡",
                     "pipeline_type": "string",
                     "default": "",
                     "verify": "^[0-9\\s,，;\\-~～]*$",
                     "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
-                    "description": "填入要跳过的章节编号，多个用逗号分隔，支持范围写法（如 1,3~5）。"
+                    "description": "填不采集的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。<br>编号对照：1 血骑士 · 2 苍蓝魔女 · 3 迷雾神射手 · 4 眼镜与猫 · 5 沙漠之花 · 6 异教塔 · 7 愤怒天使 · 8 血之狂想曲 · 9 铁假面 · 10 霍尔蒙克斯 · 11 虚假游戏 · 12 黑羽毛 · 13 雪之歌 · 14 神圣审判 · 15 复仇的誓言 · 16 三国同盟 · 17 试炼之路 · 18 救赎 · 19 被遗忘的战争"
                 }
             ],
             "pipeline_override": {
@@ -1218,18 +1186,18 @@
                 }
             }
         },
-        "角色卡带屏蔽": {
+        "角色游戏卡屏蔽": {
             "type": "input",
             "label": "",
             "inputs": [
                 {
                     "name": "要屏蔽的角色游戏卡",
-                    "label": "角色卡带屏蔽",
+                    "label": "排除的角色游戏卡",
                     "pipeline_type": "string",
                     "default": "",
                     "verify": "^[0-9\\s,，;\\-~～]*$",
                     "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
-                    "description": "填入要跳过的章节编号，多个用逗号分隔，支持范围写法（如 1,3~5）。"
+                    "description": "填不采集的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。<br>编号对照：1 杰登之门 · 2 火晶片 · 3 美丽无望 · 4 大逃脱 · 5 鲁的迷宫 · 6 御剑传 · 7 合约之战"
                 }
             ],
             "pipeline_override": {
@@ -1240,24 +1208,156 @@
                 }
             }
         },
-        "活动卡带屏蔽": {
+        "活动游戏卡屏蔽": {
             "type": "input",
             "label": "",
             "inputs": [
                 {
                     "name": "要屏蔽的活动游戏卡",
-                    "label": "活动卡带屏蔽",
+                    "label": "排除的活动游戏卡",
                     "pipeline_type": "string",
                     "default": "",
                     "verify": "^[0-9\\s,，;\\-~～]*$",
                     "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
-                    "description": "填入要跳过的章节编号，多个用逗号分隔，支持范围写法（如 1,3~5）。"
+                    "description": "填不采集的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。<br>编号对照：1 夏日骑士 · 2 恶梦之冬 · 3 海滨天使 · 4 记忆边缘 · 5 戏水女王"
                 }
             ],
             "pipeline_override": {
                 "Collect_BlackList_User": {
                     "attach": {
                         "EventPack": "{要屏蔽的活动游戏卡}"
+                    }
+                }
+            }
+        },
+        "剧情游戏卡指定": {
+            "type": "input",
+            "label": "",
+            "inputs": [
+                {
+                    "name": "要指定的剧情游戏卡",
+                    "label": "范围内的剧情游戏卡",
+                    "pipeline_type": "string",
+                    "default": "",
+                    "verify": "^[0-9\\s,，;\\-~～]*$",
+                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
+                    "description": "填要采集的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。不填的类别不采集；三类都不填则不限制范围。<br>编号对照：1 血骑士 · 2 苍蓝魔女 · 3 迷雾神射手 · 4 眼镜与猫 · 5 沙漠之花 · 6 异教塔 · 7 愤怒天使 · 8 血之狂想曲 · 9 铁假面 · 10 霍尔蒙克斯 · 11 虚假游戏 · 12 黑羽毛 · 13 雪之歌 · 14 神圣审判 · 15 复仇的誓言 · 16 三国同盟 · 17 试炼之路 · 18 救赎 · 19 被遗忘的战争"
+                }
+            ],
+            "pipeline_override": {
+                "Collect_WhiteList_User": {
+                    "attach": {
+                        "StoryPack": "{要指定的剧情游戏卡}"
+                    }
+                }
+            }
+        },
+        "角色游戏卡指定": {
+            "type": "input",
+            "label": "",
+            "inputs": [
+                {
+                    "name": "要指定的角色游戏卡",
+                    "label": "范围内的角色游戏卡",
+                    "pipeline_type": "string",
+                    "default": "",
+                    "verify": "^[0-9\\s,，;\\-~～]*$",
+                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
+                    "description": "填要采集的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。不填的类别不采集；三类都不填则不限制范围。<br>编号对照：1 杰登之门 · 2 火晶片 · 3 美丽无望 · 4 大逃脱 · 5 鲁的迷宫 · 6 御剑传 · 7 合约之战"
+                }
+            ],
+            "pipeline_override": {
+                "Collect_WhiteList_User": {
+                    "attach": {
+                        "CharacterPack": "{要指定的角色游戏卡}"
+                    }
+                }
+            }
+        },
+        "活动游戏卡指定": {
+            "type": "input",
+            "label": "",
+            "inputs": [
+                {
+                    "name": "要指定的活动游戏卡",
+                    "label": "范围内的活动游戏卡",
+                    "pipeline_type": "string",
+                    "default": "",
+                    "verify": "^[0-9\\s,，;\\-~～]*$",
+                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
+                    "description": "填要采集的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。不填的类别不采集；三类都不填则不限制范围。<br>编号对照：1 夏日骑士 · 2 恶梦之冬 · 3 海滨天使 · 4 记忆边缘 · 5 戏水女王"
+                }
+            ],
+            "pipeline_override": {
+                "Collect_WhiteList_User": {
+                    "attach": {
+                        "EventPack": "{要指定的活动游戏卡}"
+                    }
+                }
+            }
+        },
+        "剧情游戏卡调试": {
+            "type": "input",
+            "label": "",
+            "inputs": [
+                {
+                    "name": "要调试的剧情游戏卡",
+                    "label": "调试采集的剧情游戏卡",
+                    "pipeline_type": "string",
+                    "default": "",
+                    "verify": "^[0-9\\s,，;\\-~～]*$",
+                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
+                    "description": "填调试时要进入的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。不填的类别不进入。<br>编号对照：1 血骑士 · 2 苍蓝魔女 · 3 迷雾神射手 · 4 眼镜与猫 · 5 沙漠之花 · 6 异教塔 · 7 愤怒天使 · 8 血之狂想曲 · 9 铁假面 · 10 霍尔蒙克斯 · 11 虚假游戏 · 12 黑羽毛 · 13 雪之歌 · 14 神圣审判 · 15 复仇的誓言 · 16 三国同盟 · 17 试炼之路 · 18 救赎 · 19 被遗忘的战争 · 20 堕入深渊（暂不支持采集）"
+                }
+            ],
+            "pipeline_override": {
+                "Collect_DebugList_User": {
+                    "attach": {
+                        "StoryPack": "{要调试的剧情游戏卡}"
+                    }
+                }
+            }
+        },
+        "角色游戏卡调试": {
+            "type": "input",
+            "label": "",
+            "inputs": [
+                {
+                    "name": "要调试的角色游戏卡",
+                    "label": "调试采集的角色游戏卡",
+                    "pipeline_type": "string",
+                    "default": "",
+                    "verify": "^[0-9\\s,，;\\-~～]*$",
+                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
+                    "description": "填调试时要进入的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。不填的类别不进入。<br>编号对照：1 杰登之门 · 2 火晶片 · 3 美丽无望 · 4 大逃脱 · 5 鲁的迷宫 · 6 御剑传 · 7 合约之战 · 8 妖魔讨伐团（暂不支持采集）"
+                }
+            ],
+            "pipeline_override": {
+                "Collect_DebugList_User": {
+                    "attach": {
+                        "CharacterPack": "{要调试的角色游戏卡}"
+                    }
+                }
+            }
+        },
+        "活动游戏卡调试": {
+            "type": "input",
+            "label": "",
+            "inputs": [
+                {
+                    "name": "要调试的活动游戏卡",
+                    "label": "调试采集的活动游戏卡",
+                    "pipeline_type": "string",
+                    "default": "",
+                    "verify": "^[0-9\\s,，;\\-~～]*$",
+                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
+                    "description": "填调试时要进入的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。不填的类别不进入。<br>编号对照：1 夏日骑士 · 2 恶梦之冬 · 3 海滨天使 · 4 记忆边缘 · 5 戏水女王"
+                }
+            ],
+            "pipeline_override": {
+                "Collect_DebugList_User": {
+                    "attach": {
+                        "EventPack": "{要调试的活动游戏卡}"
                     }
                 }
             }

@@ -214,21 +214,24 @@ def analyze_badges(hsv, star_box, skull_box, check_min_px=CHK_MIN_PX, single_coi
 
 PACK_NODE_RE = re.compile(r"^Collect_Pack_(?:Story|Character|Event)_\d+$")
 
-# —— 强采清单（2026-10-02 本地新增，配合界面选项「强制采集卡带」）——
-# 名单来自 action/string_processor.py 的 ForceListApply 写进节点 attach 的那份配置：
-# 该动作按类"清场 + 只启用名单"，这里负责**徽章放行**——名单内的卡带不再问"要不要采"。
-# 分类留空时该项不会出现在结果里 -> 该分类照旧走徽章判定（原逻辑）。
-FORCE_APPLY_NODE = "Collect_ForceList_Apply"
-_FORCE_KEY_BY_SECTION = {"Story": "StoryPack", "Character": "CharacterPack", "Event": "EventPack"}
+# —— 卡带调试直采名单（配合界面选项「采集卡带调试直采」）——
+# 名单来自 Collect_DebugList_User 的 attach（action/string_processor.py 的 DebugListPatch 按它启停卡带），
+# 这里负责**徽章放行**——名单内的卡带不再问"要不要采"；目标选择器 PackTypeSelect 也用它把名单内的卡算作待采。
+# 调试节点未启用时一律视为空名单，attach 有残留也不放行。
+DEBUG_LIST_NODE = "Collect_DebugList_User"
+_LIST_KEY_BY_SECTION = {"Story": "StoryPack", "Character": "CharacterPack", "Event": "EventPack"}
 _CARD_NAME_RE = re.compile(r"^(Story|Character|Event)_(\d+)")
 
 
-def force_list_numbers(context, node_name=FORCE_APPLY_NODE):
-    """读强采应用节点的 attach -> {"StoryPack": {3,5}, ...}（没填的类不出现）。
+def debug_list_numbers(context, node_name=DEBUG_LIST_NODE):
+    """读调试节点的 attach -> {"StoryPack": {3,5}, ...}（没填的类不出现）。
 
-    读不到/没配置 -> {}，此时强采放行整体不生效，行为与改动前完全一致。
+    调试节点未启用、读不到或没配置 -> {}，此时放行整体不生效。
     """
     try:
+        data = context.get_node_data(node_name)
+        if not isinstance(data, dict) or data.get("enabled") is False:
+            return {}
         obj = context.get_node_object(node_name)
         attach = dict(getattr(obj, "attach", None) or {})
     except Exception:
@@ -241,17 +244,17 @@ def force_list_numbers(context, node_name=FORCE_APPLY_NODE):
     return out
 
 
-def card_in_force_list(card, force_map):
-    """card_name（如 Character_3_美丽无望）是否落在强采名单里。"""
-    if not force_map or not card:
+def card_in_debug_list(card, debug_map):
+    """card_name（如 Character_3_美丽无望）是否落在调试名单里。"""
+    if not debug_map or not card:
         return False
     m = _CARD_NAME_RE.match(str(card))
     if not m:
         return False
-    key = _FORCE_KEY_BY_SECTION.get(m.group(1))
+    key = _LIST_KEY_BY_SECTION.get(m.group(1))
     if not key:
         return False
-    return int(m.group(2)) in force_map.get(key, set())
+    return int(m.group(2)) in debug_map.get(key, set())
 
 
 def disabled_pack_nodes(context):
@@ -301,9 +304,9 @@ def is_blacklisted_slot(context, image):
 
 
 # —— 本地完成记录同步（2026-10-01 本地新增）——
-# 缓存闸 Collect_QC_Skip_* 判"整类全完成"要求每张卡都有完成记录,而记录原本只在
+# 目标选择器 Collect_PackType_Select 判"本周全部完成"要求每张卡都有完成记录,而记录原本只在
 # "退卡带"时由 MarkComplete 写入。这样一来"本来就双勾、从没被点进去采集"的卡就
-# 永远没有记录,闸永远不成立(实测 Story_14/Story_19)。所以在本识别里顺手对齐:
+# 永远没有记录,该类永远判不成完成(实测 Story_14/Story_19)。所以在本识别里顺手对齐:
 #   · 看到双勾(已采完)          -> 写/刷新记录
 #   · 看到未采完 / 不参与采集     -> 删掉记录(自愈:本地不该说它完成了)
 CARD_CYCLE = "g_weekly"
@@ -369,25 +372,24 @@ class PackBadgeNotDone(CustomRecognition):
             )
             return None
 
-        # —— 强采放行（2026-10-02 本地新增）——
-        # 用途：界面「强制采集卡带」把这张卡点名后，不再问"要不要采"，直接算未完成 -> 进卡带。
-        # 场景：测试卡带地图切换/寻路，或本地周记录与游戏内状态不一致时硬采。
+        # —— 调试直采放行 ——
+        # 界面「采集卡带调试直采」把这张卡点名后，不再问"要不要采"，直接算未完成 -> 进卡带。
+        # 用途：测试卡带地图切换/寻路。
         # 前提安全：调用方 Collect_Pack_* 是 And[图标模板, 本识别]，走到这里说明图标已确认是这张卡。
-        # 该类没填（不在 attach 里）-> card_in_force_list 返回 False -> 完全按原逻辑判定。
         try:
-            _force_map = force_list_numbers(context)
+            _debug_map = debug_list_numbers(context)
         except Exception as e:
-            _force_map = {}
-            utils.mfaalog.warning(f"[PackBadge] 强采名单读取失败，按原逻辑判定: {e}")
-        if card_in_force_list(card, _force_map):
+            _debug_map = {}
+            utils.mfaalog.warning(f"[PackBadge] 调试名单读取失败，按原逻辑判定: {e}")
+        if card_in_debug_list(card, _debug_map):
             fb = tuple(params.get("star_coin", STAR_COIN))
             utils.mfaalog.info(
-                f"[PackBadge] 🚀 {card} 在强采名单内 -> 无视徽章直接放行（强制采集，仅供测试/强采）"
+                f"[PackBadge] 🚀 {card} 在调试名单内 -> 无视徽章直接放行（调试直采）"
             )
             _sync_completion(card, False)
             return CustomRecognition.AnalyzeResult(
                 box=[rx + fb[0], ry + fb[1], fb[2], fb[3]],
-                detail={"force_collect": True},
+                detail={"debug_collect": True},
             )
 
         img = getattr(argv, "image", None)

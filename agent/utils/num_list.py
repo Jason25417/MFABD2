@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""数字清单解析（BatchNumericPatch / ForceListApply / 强采放行 共用）。
+"""数字清单解析（BatchNumericPatch / WhiteListPatch / DebugListPatch / 调试放行 共用）。
 
 语法：逗号/中文逗号/分号/空白/竖线分隔，支持区间连接符 ~ ～ -
      "1,3~5" -> [1,3,4,5]      "7;2" -> [2,7]       "1-3" -> [1,2,3]

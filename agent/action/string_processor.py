@@ -161,122 +161,129 @@ class BatchNumericPatch(CustomAction):
             return CustomAction.RunResult(success=True)
 
 # ==============================================================================
-# 强制采集（强采清单）应用器 —— 2026-10-02 本地新增
+# 卡带名单：自选采集范围（WhiteListPatch）与调试直采（DebugListPatch）
 # ==============================================================================
-# [用途] 界面选项「强制采集卡带」：只采名单里点名的卡带（语义B），并突破分类跳过闸。
-# [与 BatchNumericPatch 的差别]
-#   1. **按类判空**：某一类没填 -> 该类一个节点都不碰（既不禁用、也不动它的分类跳过闸），
-#      完全保持上游原逻辑（本地记录显示该类已全完成 -> 照旧整类跳过）。
-#      只有填了的那几类才做"清场 + 只启用名单 + 关掉该类的分类跳过闸"。
-#   2. 清场范围从**节点表**枚举（Collect_Pack_<类>_<数字>），不写死 1~20/1~8/1~5，
-#      上游增删卡带不用改这里。
-#   3. 名单里若填了上游默认禁用的不可采卡带（Story_20 / Character_8），会被真的启用 —— 与
-#      旧实现口径一致（界面说明里已写明）。
-# [配套] 名单内的卡带连游戏内双勾也无视，放行逻辑在 recognition/pack_badge.py
-#        （PackBadgeNotDone 里读同一个节点的 attach 做"强采放行"）。
-# [闸名] 剧情/角色各有 Collect_QC_Skip_*；活动没有同类闸（只有 Event_Pending 交回闸）。
-#        只要有任一类在强采，就必须关掉 Collect_QC_All_Done，否则"本地全都完成"会提前结束任务。
-# ==============================================================================
-FORCE_APPLY_NODE = "Collect_ForceList_Apply"
-FORCE_CATS = (
-    ("StoryPack", "Collect_Pack_Story_", "Collect_QC_Skip_Story"),
-    ("CharacterPack", "Collect_Pack_Character_", "Collect_QC_Skip_Character"),
-    ("EventPack", "Collect_Pack_Event_", None),
+# 两者都从各自节点的 attach 读三类编号（StoryPack / CharacterPack / EventPack，界面输入框注入，
+# 语法同屏蔽：1,3~5），只改具名卡带节点 Collect_Pack_<类>_<N> 的 enabled；节点范围从节点表枚举。
+#   范围：全局生效，只做减法——范围外的具名卡带全部禁用，没填的类别整类关闭，无名卡兜底也关闭，不启用任何节点。
+#         与排除（屏蔽）重叠时自然以排除为准，默认不支持采集的卡带（Story_20 / Character_8）也不会被打开。
+#         三类都没有有效编号时视为没开，不修改。
+#   调试：名单内的卡带启用（含默认不支持的），其余具名卡带与无名卡兜底全部禁用，没填的类整类不进。
+#         名单内的卡带无视双勾，放行在 recognition/pack_badge.py（读同一个 attach）。
+# 本周还有没有要采的，由下游 Collect_PackType_Select（action/pack_type_select.py）统一判断。
+WHITE_LIST_NODE = "Collect_WhiteList_User"
+DEBUG_LIST_NODE = "Collect_DebugList_User"
+UNNAMED_PACK_NODE = "Collect_Pack_Unnamed"
+PACK_TYPES = (
+    ("StoryPack", "Collect_Pack_Story_"),
+    ("CharacterPack", "Collect_Pack_Character_"),
+    ("EventPack", "Collect_Pack_Event_"),
 )
-# 2026-10-09：各强采类对应的「类入口 Pending 节点」（剧情类没有，靠关 Collect_QC_Skip_Story
-# 让调度器落到 [JumpBack]Collect_FeatureSwitch_StoryPack）。
-FORCE_PENDING_BY_CAT = {
-    "CharacterPack": "Collect_QC_Char_Pending",
-    "EventPack": "Collect_QC_Event_Pending",
-}
 
 
-@AgentServer.custom_action("ForceListApply")
-class ForceListApply(CustomAction):
+def _parse_param(raw):
+    return raw if isinstance(raw, dict) else json.loads(str(raw) or "{}")
+
+
+def _read_attach(context, node_name):
+    try:
+        return dict(getattr(context.get_node_object(node_name), "attach", None) or {})
+    except Exception as e:
+        mfaalog.warning(f"[卡带名单] 读取节点 {node_name} 的 attach 失败: {e}")
+        return {}
+
+
+def _pack_nodes(context, prefix):
+    """节点表里的 <prefix><数字> -> {数字: 节点名}。"""
+    try:
+        names = [str(n) for n in context.tasker.resource.node_list]
+    except Exception as e:
+        mfaalog.error(f"[卡带名单] 读取节点表失败: {e}")
+        return {}
+    return {int(n[len(prefix):]): n for n in names
+            if n.startswith(prefix) and n[len(prefix):].isdigit()}
+
+
+def _is_enabled(context, node_name):
+    try:
+        data = context.get_node_data(node_name)
+    except Exception:
+        return True
+    return not (isinstance(data, dict) and data.get("enabled") is False)
+
+
+@AgentServer.custom_action("WhiteListPatch")
+class WhiteListPatch(CustomAction):
     def run(self, context: Context, argv: CustomAction.RunArg) -> CustomAction.RunResult:
         try:
-            mfaalog.info("[ForceList] 引擎启动...")
-            raw = argv.custom_action_param
-            params = raw if isinstance(raw, dict) else json.loads(str(raw) or "{}")
+            params = _parse_param(argv.custom_action_param)
         except Exception as e:
-            mfaalog.error(f"[ForceList] 参数解析失败: {e}")
+            mfaalog.error(f"[采集范围] 参数解析失败，本次不修改: {e}")
+            return CustomAction.RunResult(success=True)
+        attach = _read_attach(context, params.get("node_name", WHITE_LIST_NODE))
+
+        keep = {}
+        nodes_by_type = {}
+        for key, prefix in PACK_TYPES:
+            nums = parse_number_list(attach.get(key, ""))
+            nodes = nodes_by_type[key] = _pack_nodes(context, prefix)
+            keep[key] = [nodes[n] for n in nums if n in nodes]
+            missing = [n for n in nums if n not in nodes]
+            if missing:
+                mfaalog.warning(f"[采集范围] {key} 的编号 {missing} 没有对应卡带，已忽略")
+        if not any(keep.values()):
+            mfaalog.warning("[采集范围] 已开启但没有有效编号，按未开启处理，不限制范围")
             return CustomAction.RunResult(success=True)
 
-        node_name = params.get("node_name", FORCE_APPLY_NODE)
-        attach = {}
-        try:
-            obj = context.get_node_object(node_name)
-            attach = dict(getattr(obj, "attach", None) or {})
-        except Exception as e:
-            mfaalog.warning(f"[ForceList] 读取节点 {node_name} 的 attach 失败: {e}")
-        if not attach:
-            mfaalog.warning(f"[ForceList] 节点 {node_name} 没有 attach（界面没填？）-> 本次不改任何节点")
+        patches = {}
+        for key, nodes in nodes_by_type.items():
+            for nm in nodes.values():
+                if nm not in keep[key]:
+                    patches[nm] = {"enabled": False}
+            closed = [nm for nm in keep[key] if not _is_enabled(context, nm)]
+            if closed:
+                mfaalog.info(f"[采集范围] {key} 中 {closed} 已被排除或暂不支持采集，保持关闭")
+            mfaalog.info(f"[采集范围] {key} 只保留 {keep[key] or '（无，整类不采）'}")
+        # 没有具名节点的新卡也在范围外
+        patches[UNNAMED_PACK_NODE] = {"enabled": False}
 
         try:
-            names = {str(n) for n in context.tasker.resource.node_list}
-        except Exception:
-            names = set()
+            context.override_pipeline(patches)
+        except Exception as e:
+            mfaalog.error(f"[采集范围] override_pipeline 失败: {e}")
+        return CustomAction.RunResult(success=True)
+
+
+@AgentServer.custom_action("DebugListPatch")
+class DebugListPatch(CustomAction):
+    def run(self, context: Context, argv: CustomAction.RunArg) -> CustomAction.RunResult:
+        try:
+            params = _parse_param(argv.custom_action_param)
+        except Exception as e:
+            mfaalog.error(f"[卡带调试] 参数解析失败，本次不修改: {e}")
+            return CustomAction.RunResult(success=True)
+        attach = _read_attach(context, params.get("node_name", DEBUG_LIST_NODE))
 
         patches = {}
-        active = []
-        for key, pre, gate in FORCE_CATS:
-            nums = parse_number_list(attach.get(key, ""))
-            if not nums:
-                mfaalog.info(f"[ForceList] {key} 未填写 -> 该类保持原逻辑（不禁用、不关闸）")
-                continue
-            # 先收集名单里真正存在的节点；一个都不存在就不能清场/禁用，否则会把
-            # 整类全禁用却一张都不启用（Sourcery #4：填了数字但对不上节点）。
-            on = []
-            for n in nums:
-                nm = f"{pre}{n}"
-                if nm in names:
-                    on.append(nm)
-                else:
-                    mfaalog.warning(f"[ForceList] {key} 填的 {n} 没有对应节点({nm})，忽略")
-            if not on:
-                mfaalog.warning(f"[ForceList] {key} 名单里的编号都对不上节点 -> 该类保持原逻辑")
-                continue
-            active.append(key)
-            # 清场：同类具名节点全部禁用（按前缀+纯数字筛，从节点表枚举，不写死范围）
-            for nm in names:
-                if nm.startswith(pre) and nm[len(pre):].isdigit():
-                    patches[nm] = {"enabled": False}
-            # 只启用名单里的
-            for nm in on:
-                patches[nm] = {"enabled": True}
-            if gate:
-                patches[gate] = {"enabled": False}
-            # 2026-10-09：强采还必须打通「类入口」的第二条路。
-            # 分类跳过闸只管调度器那一条路；当剧情闸(Collect_QC_Skip_Story)命中时，
-            # 路由会被带进闸链，角色/活动类的入口只剩 Collect_QC_*_Pending，
-            # 而它的判据是存档 CheckCoolDown(match=any)——本周已打过标就判"没活"，
-            # 与强采清单完全无关 ⇒ 出现"强采角色卡3却进不去角色分支"(实测 11:22)。
-            # 故对填了强采的类，把对应 Pending 节点改成 DirectHit 恒命中，强制进入该类分支。
-            # 安全：Pending 是被闸 next 以**普通跳转**引用的，只求值一次，不会像
-            # JumpBack 目标那样被反复求值（那正是 11:54 死循环的成因）。
-            pending = FORCE_PENDING_BY_CAT.get(key)
-            if pending and pending in names:
-                patches[pending] = {"recognition": "DirectHit"}
-                mfaalog.info(f"[ForceList] {key} 强采 -> 类入口 {pending} 改 DirectHit（绕开存档判活）")
-            mfaalog.info(
-                f"[ForceList] {key} 强采: 只启用 {on}；同类其余全部禁用；"
-                f"分类跳过闸 {gate or '(该类无此闸)'} 关闭"
-                f"；类入口 {pending or '(该类无 Pending 节点，靠关闸进调度器路径)'}"
-            )
+        picked = []
+        for key, prefix in PACK_TYPES:
+            nums = set(parse_number_list(attach.get(key, "")))
+            nodes = _pack_nodes(context, prefix)
+            missing = sorted(nums - set(nodes))
+            if missing:
+                mfaalog.warning(f"[卡带调试] {key} 的编号 {missing} 没有对应卡带，已忽略")
+            for n, nm in nodes.items():
+                patches[nm] = {"enabled": n in nums}
+                if n in nums:
+                    picked.append(nm)
+        patches[UNNAMED_PACK_NODE] = {"enabled": False}
 
-        if active:
-            patches["Collect_QC_All_Done"] = {"enabled": False}
-            mfaalog.info(
-                f"[ForceList] {len(active)} 类在强采 -> 关闭 Collect_QC_All_Done"
-                f"（否则'全部完成'会提前结束任务）"
-            )
-
-        if patches:
-            try:
-                context.override_pipeline(patches)
-                mfaalog.info(f"[ForceList] 执行完毕，注入 {len(patches)} 个节点补丁")
-            except Exception as e:
-                mfaalog.error(f"[ForceList] override_pipeline 失败: {e}")
+        if not picked:
+            mfaalog.warning("[卡带调试] 调试直采已开启但名单为空，本次不会进入任何卡带")
         else:
-            mfaalog.info("[ForceList] 三类都没填 -> 本次不改任何节点（行为与原版完全一致）")
+            mfaalog.info(f"[卡带调试] 只进入 {picked}，其余卡带与无名卡兜底全部关闭")
+        try:
+            context.override_pipeline(patches)
+        except Exception as e:
+            mfaalog.error(f"[卡带调试] override_pipeline 失败: {e}")
         return CustomAction.RunResult(success=True)

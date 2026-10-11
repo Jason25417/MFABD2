@@ -87,7 +87,7 @@
         "focus": "CM.宠物派遣(调试中...错误请回报)"
     },
     "Collect_Sandplay": {
-        "desc": "从箱庭进入采集配置链 | 识别箱庭后，先处理设置、技能耗尽检查和本轮扫描标记，再依次经过屏蔽与强采配置节点。",
+        "desc": "从箱庭进入采集配置链 | 识别箱庭后，先处理设置、技能耗尽检查和本轮扫描标记，再维护卡带名单：调试直采开启时只走 Collect_DebugList_User，否则依次经过「排除卡带」（Collect_BlackList_User）与「自选采集卡带范围」（Collect_WhiteList_User）；两条路最后都交给目标选择器。",
         "recognition": "Or",
         "any_of": [
             "Rec_SandBox_Pin_Tpl",
@@ -97,6 +97,7 @@
             "[JumpBack]Setup_Entry5",
             "Collect_Skill3_2_Depleted",
             "[JumpBack]Collect_QC_Scan_Reset",
+            "Collect_DebugList_User",
             "Collect_BlackList_User",
             "[JumpBack]Global_QuickCart_MenuReset"
         ]
@@ -128,7 +129,7 @@
         "focus": "全类已有完成标签,停止任务"
     },
     "Collect_BlackList_User": {
-        "desc": "应用用户卡带屏蔽配置 | 按 attach 中三类编号禁用对应具名卡带；空名单不修改节点。节点保持启用，interface 关闭功能时将 action 改为 DoNothing，后续仍进入强采配置节点。",
+        "desc": "应用「排除卡带」 | 按 attach 中三类编号禁用对应具名卡带；空名单不修改节点。节点保持启用，interface 关闭功能时将 action 改为 DoNothing，后续仍进入自选采集范围节点 Collect_WhiteList_User。",
         "action": "Custom",
         "custom_action": "BatchNumericPatch",
         "custom_action_param": {
@@ -164,263 +165,81 @@
             ]
         },
         "next": [
-            "Collect_ForceList_Apply"
+            "Collect_WhiteList_User"
         ],
-        "focus": "<span style=\"color:Crimson\">CM.P.检查用户卡带黑名单</span>"
+        "focus": "<span style=\"color:Crimson\">CM.P.应用排除卡带</span>"
     },
-    "Collect_ForceList_Apply": {
-        "desc": "应用指定卡带的强制采集配置 | 从 attach 读取三类编号；有有效名单的类别只启用指定具名卡带，并覆盖此前屏蔽结果，空名单或无有效编号的类别保持当前配置。关闭相关分类跳过与总结束节点，将角色、活动的 Pending 入口改为 DirectHit；PackBadgeNotDone 对名单内卡带跳过双勾判断。节点保持启用，interface 关闭功能时将 action 改为 DoNothing，后续仍进入卡带菜单或复位流程。",
+    "Collect_WhiteList_User": {
+        "desc": "应用「自选采集卡带范围」 | 从 attach 读取三类编号，全局生效：范围外的具名卡带全部禁用，没填的类别整类关闭，无名卡兜底 Collect_Pack_Unnamed 也关闭；三类都没有有效编号时视为没开、不修改。只禁用、不启用，所以与排除卡带重叠时以排除为准，默认不支持采集的卡带也不会被打开。节点保持启用，interface 关闭功能时将 action 改为 DoNothing，后续仍进入目标选择器。",
         "action": "Custom",
-        "custom_action": "ForceListApply",
+        "custom_action": "WhiteListPatch",
         "custom_action_param": {
-            "node_name": "Collect_ForceList_Apply"
+            "node_name": "Collect_WhiteList_User"
         },
+        "next": [
+            "Collect_PackType_Select"
+        ],
+        "focus": "CM.P.应用自选采集卡带范围"
+    },
+    "Collect_DebugList_User": {
+        "desc": "应用卡带调试直采名单 | 调试用，默认关闭，由 interface 开关启用；启用后 Sandplay 走本节点，不经过「排除卡带」与「自选采集卡带范围」。从 attach 读取三类编号：名单内的具名卡带全部启用（含默认不支持采集的），其余具名卡带与无名卡兜底 Collect_Pack_Unnamed 全部禁用，没填的类别整类不进。名单内的卡带由 PackBadgeNotDone 无视双勾放行，目标选择器也把它们算作待采。",
+        "enabled": false,
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "DebugListPatch",
+        "custom_action_param": {
+            "node_name": "Collect_DebugList_User"
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_PackType_Select"
+        ],
+        "focus": "<span style=\"color:Crimson\">CM.P.【调试】仅采集指定卡带</span>"
+    },
+    "Collect_PackType_Select": {
+        "desc": "目标选择器 | 对比运行态启用的具名卡带与本周完成记录，决定本轮进哪几类卡带：某类没有启用的卡带，或启用的卡带本周全部完成，就关掉该类入口 Collect_FeatureSwitch_*；调试名单内的卡带一律算待采。只关不开，出错时一类都不关。类别与入口的对照写在 custom_action_param.types。",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "PackTypeSelect",
+        "custom_action_param": {
+            "types": [
+                {
+                    "label": "剧情",
+                    "pack_prefix": "Collect_Pack_Story_",
+                    "switch": "Collect_FeatureSwitch_StoryPack"
+                },
+                {
+                    "label": "角色",
+                    "pack_prefix": "Collect_Pack_Character_",
+                    "switch": "Collect_FeatureSwitch_CharacterPack"
+                },
+                {
+                    "label": "活动",
+                    "pack_prefix": "Collect_Pack_Event_",
+                    "switch": "Collect_FeatureSwitch_EvenPack"
+                }
+            ]
+        },
+        "post_delay": 0,
         "next": [
             "Collect_QuickCart_Menu",
             "[JumpBack]Global_QuickCart_MenuReset"
         ],
-        "focus": "CM.P.强采:按类应用(空类不动)"
-    },
-    "Collect_QC_Skip_Story": {
-        "desc": "[本地·分类级跳过①]剧情游戏卡(全部 19 张)**本周全部已完成** ⇒ 整个剧情分支不再打开,直接去挑下一个还有活的分类。判据=批量闸 CheckCoolDown{targets:全部剧情卡, match:'all_done'}(源码 cartridge_lib.py:555 `hit = DONE数==检查数`,命中即全完成)。数据来自本地每周存档 agent_save_data.json(卡带@g_weekly)。★安全性:只有'整类全部完成'才跳过;任何一张没完成 ⇒ 本闸不命中 ⇒ 落到调度器下一个候选[剧情分支],页内照旧逐个卡带查双勾。★targets 只含 enabled=true 的卡带(被禁用的卡永远不采,放进去会让闸永远不成立)。★2026-10-09 本地:保持普通跳转(曾尝试改 [JumpBack] 并在 next 挂 [JumpBack]Collect_QC_Scan_Mark_Story,实测 11:54 死循环打标 QC_Story_Scanned 0→12+ —— ①UpdateTag 的 value 是**累加**不是置位;②Mark 的判据 Or[Collect_QuickCart_Menu] 在列表开着时**恒命中**,而 jump_back 返回后会重跑整个 next 列表 ⇒ 反复命中。★教训:恒命中节点(DirectHit / Or[列表开着])绝不能当 JumpBack 目标放进会被重跑的 next 列表)。★本闸命中后**不会**再回调度器,所以后面的 Collect_FeatureSwitch_StoryPack 也不会被求值,不存在「整类已完成后重扫」的风险,无需打标。",
-        "max_hit": 1,
-        "recognition": "Custom",
-        "custom_recognition": "CheckCoolDown",
-        "custom_recognition_param": {
-            "targets": [
-                {
-                    "card_name": "Story_01_血骑士",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_02_苍蓝魔女",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_03_迷雾神射手",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_04_眼镜与猫",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_05_沙漠之花",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_06_异教塔",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_07_愤怒天使",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_08_血之狂想曲",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_09_铁假面",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_10_霍尔蒙克斯",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_11_虚假游戏",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_12_黑羽毛",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_13_雪之歌",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_14_神圣审判",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_15_复仇的誓言",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_16_三国同盟",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_17_试炼之路",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_18_救赎",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Story_19_被遗忘的战争",
-                    "cycle_type": "g_weekly"
-                }
-            ],
-            "match": "all_done"
-        },
-        "action": "DoNothing",
-        "post_delay": 0,
-        "next": [
-            "Collect_QC_Char_Pending",
-            "Collect_QC_Event_Pending",
-            "Collect_QC_All_Done"
-        ],
-        "focus": "QC.[跳过]剧情卡已全完成"
-    },
-    "Collect_QC_Skip_Character": {
-        "desc": "[本地·分类级跳过②]角色游戏卡(全部 7 张)**本周全部已完成** ⇒ 跳过角色分支,直接去看活动卡/收工。判据同上(批量闸 all_done)。未命中 ⇒ 落到调度器下一个候选[角色分支]。★2026-10-09 本地:同 Story,保持普通跳转(改 JumpBack + 挂 Mark 的写法已实测死循环,见 Story 的 desc)。★强采配合:ForceListApply 会把本闸 enabled=false(强采角色时)⇒ 本闸不命中 ⇒ 调度器落到 [JumpBack]Collect_FeatureSwitch_CharacterPack ⇒ 角色分支照进;若本闸未被关(剧情类已把路由带进闸链),则由 ForceListApply 给 Collect_QC_Char_Pending 打 DirectHit 补丁兜底(见 string_processor.py)。",
-        "max_hit": 1,
-        "recognition": "Custom",
-        "custom_recognition": "CheckCoolDown",
-        "custom_recognition_param": {
-            "targets": [
-                {
-                    "card_name": "Character_1_杰登之门",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Character_2_火晶片",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Character_3_美丽无望",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Character_4_大逃脱",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Character_5_鲁的迷宫",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Character_6_御剑传",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Character_7_合约之战",
-                    "cycle_type": "g_weekly"
-                }
-            ],
-            "match": "all_done"
-        },
-        "action": "DoNothing",
-        "post_delay": 0,
-        "next": [
-            "Collect_QC_Event_Pending",
-            "Collect_QC_All_Done"
-        ],
-        "focus": "QC.[跳过]角色卡已全完成"
-    },
-    "Collect_QC_Char_Pending": {
-        "desc": "[本地]角色卡还有没完成的 ⇒ 交回原角色分支 Collect_FeatureSwitch_CharacterPack(它会点'角色游戏卡'页签并把列表复位到第一页),后续扫描完全走原逻辑。判据=match:'any'(至少一张可跑)。★2026-10-09 本地:next 补两个出口([JumpBack]Collect_FeatureSwitch_CharacterPack 之后再加 Collect_QC_Event_Pending / Collect_QC_All_Done)——原来只有'回本类分支'一项,角色类扫完后被 CheckTag(QC_Char_Scanned,max=1) 挡住 ⇒ 原地空转到 20s 超时 ⇒ on_error 落 Global_Null ⇒ 任务假成功收尾,活动类整类漏采(实测 09:58)。★依据:jump_back 弹回本节点后 MaaFW 会**重跑整个 next 列表**(maafw 日志实证),所以追加的出口一定会被求值到。★另注:本节点判据只看存档,与'强制采集'清单无关,故强采角色时需要 ForceListApply 给本节点打 DirectHit 补丁(见 string_processor.py),否则会出现'强采角色卡 3 却进不去角色分支'(实测 11:22)。",
-        "max_hit": 1,
-        "recognition": "Custom",
-        "custom_recognition": "CheckCoolDown",
-        "custom_recognition_param": {
-            "targets": [
-                {
-                    "card_name": "Character_1_杰登之门",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Character_2_火晶片",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Character_3_美丽无望",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Character_4_大逃脱",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Character_5_鲁的迷宫",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Character_6_御剑传",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Character_7_合约之战",
-                    "cycle_type": "g_weekly"
-                }
-            ],
-            "match": "any"
-        },
-        "action": "DoNothing",
-        "post_delay": 0,
-        "next": [
-            "[JumpBack]Collect_FeatureSwitch_CharacterPack",
-            "Collect_QC_Event_Pending",
-            "Collect_QC_All_Done"
-        ],
-        "focus": "QC.角色卡还有活-交回角色分支"
-    },
-    "Collect_QC_Event_Pending": {
-        "desc": "[本地]活动卡还有没完成的 ⇒ 交回原活动分支 Collect_FeatureSwitch_EvenPack。判据=match:'any'。★2026-10-09 本地:next 补出口 Collect_QC_All_Done(活动类扫完后被 CheckTag 挡住 ⇒ 原地空转 20s,同 Collect_QC_Char_Pending 的老毛病)。★强采活动时 ForceListApply 会给本节点打 DirectHit 补丁。",
-        "max_hit": 1,
-        "recognition": "Custom",
-        "custom_recognition": "CheckCoolDown",
-        "custom_recognition_param": {
-            "targets": [
-                {
-                    "card_name": "Event_1_夏日骑士",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Event_2_恶梦之冬",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Event_3_海滨天使",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Event_4_记忆边缘",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Event_5_戏水女王",
-                    "cycle_type": "g_weekly"
-                }
-            ],
-            "match": "any"
-        },
-        "action": "DoNothing",
-        "post_delay": 0,
-        "next": [
-            "[JumpBack]Collect_FeatureSwitch_EvenPack",
-            "Collect_QC_All_Done"
-        ],
-        "focus": "QC.活动卡还有活-交回活动分支"
+        "focus": "CM.L.目标选择器"
     },
     "Collect_QuickCart_Menu": {
-        "desc": "快速卡带已调出,等待后续★2026-10-01 本地:next 前插了三颗'分类级跳过'闸(Collect_QC_Skip_Story / Collect_QC_Skip_Character / …),用本地每周存档判'整类是否全完成';命中就整类跳过,不命中完全按原样走。★2026-10-02 本地:next 首位再加 Collect_QC_RewardSwitch_Off_Click——每次打开卡带列表先确保'查看战场奖励'开关已勾上(勾上卡带才显示采集状态双硬币),关闭态才点、开启态自动跳过。★2026-10-09 本地:**两个跳过闸保持普通跳转**(曾改成 [JumpBack] 试图把路由收回本节点,实测 11:54 死循环打标,已回滚,详见 Collect_QC_Skip_Story 的 desc)。闸命中后离开本节点走它自己的 Pending 链,故漏采问题改由「给 Pending 节点补出口」解决(见 Collect_QC_Char_Pending / Collect_QC_Event_Pending)。★本节点不设 timeout:候选里有 ColorMatch/OCR,超时写小会漏判。★三类都无活时的收工节点 Collect_QC_All_Done 仍挂在两个闸的 next 末尾(强采时 ForceListApply 会关掉它以防提前收工)。",
+        "desc": "卡带调度器 | 快速卡带列表已调出时，依次进入剧情、角色、活动各类分支；各类要不要进，已由目标选择器 Collect_PackType_Select 关闭对应入口决定，本节点只管执行。首位 Collect_QC_RewardSwitch_Off_Click 确保「查看战场奖励」开关已勾上（勾上后卡带才显示采集状态）。全部落空时由末位 Collect_QC_All_Done 收尾。",
         "recognition": "Or",
         "any_of": [
             "Global_QuickCart_MenuReset_Ocr"
         ],
         "next": [
             "[JumpBack]Collect_QC_RewardSwitch_Off_Click",
-            "Collect_QC_Skip_Story",
             "[JumpBack]Collect_FeatureSwitch_StoryPack",
-            "Collect_QC_Skip_Character",
             "[JumpBack]Collect_FeatureSwitch_CharacterPack",
             "[JumpBack]Collect_FeatureSwitch_EvenPack",
-            "[JumpBack]Collect_FeatureSwitch_ManagerPack"
+            "[JumpBack]Collect_FeatureSwitch_ManagerPack",
+            "Collect_QC_All_Done"
         ],
         "focus": "CM.L.调度器"
     },
@@ -456,7 +275,7 @@
         "focus": "QC.查看战场奖励开关(关闭则勾上)"
     },
     "Collect_FeatureSwitch_StoryPack": {
-        "desc": "[分类分支入口]剧情游戏卡。★2026-10-07 本地两处改动(修「停止重跑后剧情/角色被跳过、直接去活动」):①max_hit 1→3——上游的 1 表示「本轮只进一次」,但那唯一一次若被浪费(实测:停止任务时脚本正在进卡带、重跑后残留载入态,分支空等 15s 就退栈),本轮该类就再也进不去,调度器只能落到还没用过的活动分支(日志证据 10:46:21/10:46:43 `max_hit reached [Collect_FeatureSwitch_StoryPack] [current_hit=1]`);3 保留死循环防护,又允许「进了但没扫完」时重进。②新增 CheckTag(QC_Story_Scanned,max=1) 识别——本轮**已完整扫过一轮**(由 Collect_QC_Scan_Mark_Story 在定位链触底时置位)则本节点不再命中,直接落到下一个分类候选,避免放宽 max_hit 后重复扫 2~3 遍。★两个条件互补:闸 Collect_QC_Skip_Story 管「整类本周全完成」(存档),本节点管「本轮扫过没有」(内存 tag,每轮由 Collect_QC_Scan_Reset 清空)。",
+        "desc": "[分类分支入口]剧情游戏卡。★2026-10-07 本地两处改动(修「停止重跑后剧情/角色被跳过、直接去活动」):①max_hit 1→3——上游的 1 表示「本轮只进一次」,但那唯一一次若被浪费(实测:停止任务时脚本正在进卡带、重跑后残留载入态,分支空等 15s 就退栈),本轮该类就再也进不去,调度器只能落到还没用过的活动分支(日志证据 10:46:21/10:46:43 `max_hit reached [Collect_FeatureSwitch_StoryPack] [current_hit=1]`);3 保留死循环防护,又允许「进了但没扫完」时重进。②新增 CheckTag(QC_Story_Scanned,max=1) 识别——本轮**已完整扫过一轮**(由 Collect_QC_Scan_Mark_Story 在定位链触底时置位)则本节点不再命中,直接落到下一个分类候选,避免放宽 max_hit 后重复扫 2~3 遍。★两个条件互补:目标选择器 Collect_PackType_Select 管「本周还有没有要采的」(存档,没有就关掉本节点),本节点管「本轮扫过没有」(内存 tag,每轮由 Collect_QC_Scan_Reset 清空)。",
         "enabled": true,
         "max_hit": 3,
         "recognition": "Custom",
@@ -3377,11 +3196,10 @@
         "focus": "发现新卡带,快速点击'插入'"
     },
     "Collect_QC_All_Done": {
-        "desc": "[本地]剧情/角色/活动三类都已完成 ⇒ 本周期没有要采的卡带,结束 task。★写法照抄上游 Collect_AllLibGone:不带 next 的节点 = 结束当前 task(它的 desc 原文就是'结束task')。它与 Collect_AllLibGone 的区别:那条用的是'扫到过底'的 SimpleDone 标签(不可信,已停用),这条用的是每张卡的完成记录(由退卡带时的 MarkComplete 写入),粒度到卡带、且只判据'整类全完成'。★2026-10-09 本地:挂载点保持原样(两个闸 + 两个 Pending 的 next 末尾);曾尝试迁到调度器末位,因配套改动(闸改 JumpBack)会死循环已一并回滚。语义不变:只有同类候选都不命中才轮到它;强采时 ForceListApply 关掉它的补丁依然有效。",
-        "max_hit": 1,
+        "desc": "整个采集流程的出口 | 挂在调度器 Collect_QuickCart_Menu 的 next 末位：各类入口都已被目标选择器关闭、本轮已扫完或用尽重进次数时轮到它；无 next 即退栈，栈空则结束 task。不设 max_hit：调度器可能在卡带链内部被重入，每命中一次只退一层栈，不会循环；设成 1 反而会让外层调度器最后无候选可走、空等超时。",
         "recognition": "DirectHit",
         "action": "DoNothing",
         "post_delay": 0,
-        "focus": "QC.三类卡带全部完成-结束任务"
+        "focus": "CM.L.没有要进的卡带类-结束任务"
     }
 }

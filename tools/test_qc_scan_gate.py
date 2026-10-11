@@ -14,12 +14,15 @@ _EvenPack 上游写死 max_hit:1 —— 一个 task 内每个分类**只能进�
   2. 状态机：用 agent/recognition/counter.py 的**真实** CheckTag/UpdateTag/ResetTag
      跑准入判定，回归四个场景。
   3. max_hit 封顶：第 4 次不再进入(防死循环)。
+  4. 2026-10-11 名单维护链 + 目标选择器：调度器只执行；排除 → 自选采集范围(全局) / 调试直采 汇到
+     Collect_PackType_Select，它按「运行态启用的具名卡带 − 本周已完成」关掉没活的类别入口。
 
 跑法(仓库根):  python -m unittest tools.test_qc_scan_gate
 """
 
 import importlib.util
 import json
+import re
 import sys
 import types
 import unittest
@@ -40,6 +43,7 @@ BRANCHES = [
 ]
 
 ENTRIES = ["Collect_StartGame_HomePage", "Collect_StartGame_HomePage_OnlyOnce"]
+PACK_NAME_RE = re.compile(r"^Collect_Pack_(Story|Character|Event)_\d+$")
 
 
 def load_counter():
@@ -160,20 +164,7 @@ class StaticWiringTests(unittest.TestCase):
         self.assertIn("[JumpBack]Collect_QC_Scan_Reset",
                       self.d["Collect_Sandplay"].get("next", []))
 
-    # ---------------------------------------------------- 2026-10-09 分类路由统一
-    def test_skip_gates_stay_plain_jumps(self):
-        """★回归 11:54 死循环:两个分类闸必须保持**普通跳转**，绝不能改 [JumpBack]。
-
-        改 JumpBack 后，为了让"整类已完成"不再被重扫而挂的 [JumpBack]Collect_QC_Scan_Mark_*
-        会被反复求值(Mark 判据 Or[Collect_QuickCart_Menu] 恒命中 + jump_back 返回后
-        MaaFW 重跑整个 next 列表) ⇒ QC_Story_Scanned 一路 +1 到 12+，任务卡死。
-        """
-        nxt = self.d["Collect_QuickCart_Menu"]["next"]
-        for gate in ("Collect_QC_Skip_Story", "Collect_QC_Skip_Character"):
-            with self.subTest(gate=gate):
-                self.assertIn(gate, nxt)
-                self.assertNotIn(f"[JumpBack]{gate}", nxt)
-
+    # ---------------------------------------------------- 恒命中节点护栏
     def test_no_always_hit_node_as_jumpback_target(self):
         """恒命中节点(DirectHit / Or[Collect_QuickCart_Menu])不能当 [JumpBack] 目标。
 
@@ -194,41 +185,290 @@ class StaticWiringTests(unittest.TestCase):
                         self.assertNotIn("Collect_QuickCart_Menu", target.get("any_of", []),
                                          f"{item} 在列表开着时恒命中，当 JumpBack 目标会死循环")
 
-    def test_dispatcher_has_every_branch(self):
-        """三类分支都要在调度器里，顺序:跳过闸在对应分支之前。"""
-        nxt = [x.replace("[JumpBack]", "") for x in self.d["Collect_QuickCart_Menu"]["next"]]
-        for gate, branch in (("Collect_QC_Skip_Story", "Collect_FeatureSwitch_StoryPack"),
-                             ("Collect_QC_Skip_Character", "Collect_FeatureSwitch_CharacterPack")):
-            with self.subTest(gate=gate):
-                self.assertLess(nxt.index(gate), nxt.index(branch))
-        for _name, _tag, _out, _mark in BRANCHES:
-            self.assertIn(_name, nxt)
+    # ------------------------------------------- 2026-10-11 名单维护链 + 目标选择器
+    def test_dispatcher_only_dispatches(self):
+        """调度器只管执行:清一色 [JumpBack] 进各类入口，末位普通跳转到出口。
 
-    def test_pending_chain_has_escape_routes(self):
-        """★根因修复:Pending 节点必须有「本类扫完 → 下一类 / 收工」的出口。
-
-        原来只有 [JumpBack]FeatureSwitch_<类>Pack 一项，本类扫完被 CheckTag 挡住后
-        无处可去 ⇒ 空转 20s ⇒ on_error 落 Global_Null ⇒ 任务假成功收尾(09:58 漏采活动类)。
+        要不要进某类由目标选择器提前关掉入口决定，调度器里不再挂判据闸(旧 Skip/Pending 双调度已拆除)。
         """
-        self.assertEqual(
-            self.d["Collect_QC_Char_Pending"]["next"],
-            ["[JumpBack]Collect_FeatureSwitch_CharacterPack",
-             "Collect_QC_Event_Pending", "Collect_QC_All_Done"])
-        self.assertEqual(
-            self.d["Collect_QC_Event_Pending"]["next"],
-            ["[JumpBack]Collect_FeatureSwitch_EvenPack", "Collect_QC_All_Done"])
+        self.assertEqual(self.d["Collect_QuickCart_Menu"]["next"], [
+            "[JumpBack]Collect_QC_RewardSwitch_Off_Click",
+            "[JumpBack]Collect_FeatureSwitch_StoryPack",
+            "[JumpBack]Collect_FeatureSwitch_CharacterPack",
+            "[JumpBack]Collect_FeatureSwitch_EvenPack",
+            "[JumpBack]Collect_FeatureSwitch_ManagerPack",
+            "Collect_QC_All_Done",
+        ])
 
-    def test_force_list_patches_pending_entries(self):
-        """强采必须打通类入口:角色/活动各有 Pending 节点，判据只看存档、与强采清单无关。
+    def test_exit_node_shape(self):
+        """出口无 next、不设 max_hit:调度器在卡带链内被重入时，每一层都要能靠它退栈。"""
+        node = self.d["Collect_QC_All_Done"]
+        self.assertEqual(node.get("recognition"), "DirectHit")
+        self.assertNotIn("next", node)
+        self.assertNotIn("max_hit", node)
 
-        不补这一环就会出现"设了强采角色卡3却进不去角色分支"(实测 11:22)。
-        剧情类没有 Pending 节点，靠 ForceListApply 关 Collect_QC_Skip_Story 走调度器路径。
-        """
-        src = (ROOT / "agent/action/string_processor.py").read_text(encoding="utf-8")
-        self.assertIn('"CharacterPack": "Collect_QC_Char_Pending"', src)
-        self.assertIn('"EventPack": "Collect_QC_Event_Pending"', src)
-        for name in ("Collect_QC_Char_Pending", "Collect_QC_Event_Pending"):
-            self.assertIn(name, self.d, f"{name} 必须存在(强采补丁的目标节点)")
+    def test_list_chain_wiring(self):
+        """Sandplay → 调试(默认关) 或 屏蔽 → 指定，两条路都汇到目标选择器，再进调度器。"""
+        nxt = self.d["Collect_Sandplay"]["next"]
+        self.assertLess(nxt.index("Collect_DebugList_User"), nxt.index("Collect_BlackList_User"))
+        self.assertIs(self.d["Collect_DebugList_User"].get("enabled"), False)
+        self.assertEqual(self.d["Collect_BlackList_User"]["next"], ["Collect_WhiteList_User"])
+        for node in ("Collect_WhiteList_User", "Collect_DebugList_User"):
+            with self.subTest(node=node):
+                self.assertEqual(self.d[node]["next"], ["Collect_PackType_Select"])
+        self.assertEqual(self.d["Collect_PackType_Select"]["next"],
+                         ["Collect_QuickCart_Menu", "[JumpBack]Global_QuickCart_MenuReset"])
+
+    def test_selector_types_match_nodes(self):
+        """目标选择器的对照表:每类入口都在调度器里，前缀能枚举到具名卡带节点。"""
+        types_ = self.d["Collect_PackType_Select"]["custom_action_param"]["types"]
+        menu = self.d["Collect_QuickCart_Menu"]["next"]
+        for t in types_:
+            with self.subTest(type=t["label"]):
+                self.assertIn(f"[JumpBack]{t['switch']}", menu)
+                prefix = t["pack_prefix"]
+                self.assertTrue(any(k.startswith(prefix) and k[len(prefix):].isdigit() for k in self.d))
+        self.assertEqual({t["switch"] for t in types_}, {n for n, _t, _o, _m in BRANCHES})
+
+    def test_old_gate_chain_removed(self):
+        for name in ("Collect_QC_Skip_Story", "Collect_QC_Skip_Character",
+                     "Collect_QC_Char_Pending", "Collect_QC_Event_Pending",
+                     "Collect_ForceList_Apply"):
+            with self.subTest(node=name):
+                self.assertNotIn(name, self.d)
+
+
+# ------------------------------------------------------------------ 目标选择器
+def load_selector(done_cards, sync_ok=True):
+    """用 stub 加载 agent/action/pack_type_select.py。
+
+    done_cards: 本周已完成的卡名集合，喂给假的 CooldownManager。
+    调试名单从假 context 的 debug_map 读，判定口径与 pack_badge.card_in_debug_list 一致。
+    """
+    stubs = {}
+    for name in ("maa", "maa.agent", "maa.agent.agent_server", "maa.context", "maa.custom_action",
+                 "utils", "utils.account_sync", "recognition", "recognition.pack_badge",
+                 "action", "action.cartridge_lib"):
+        stubs[name] = types.ModuleType(name)
+    stubs["action"].__path__ = []
+    stubs["maa.agent.agent_server"].AgentServer = types.SimpleNamespace(
+        custom_action=lambda _n: (lambda cls: cls))
+    stubs["maa.context"].Context = object
+
+    class _FakeAction:
+        RunArg = types.SimpleNamespace
+        RunResult = types.SimpleNamespace
+
+    stubs["maa.custom_action"].CustomAction = _FakeAction
+    stubs["utils"].mfaalog = types.SimpleNamespace(
+        info=lambda *a, **k: None, debug=lambda *a, **k: None,
+        warning=lambda *a, **k: None, error=lambda *a, **k: None,
+    )
+    stubs["utils.account_sync"].sync_from_context = lambda _c, where="": sync_ok
+
+    def debug_list_numbers(context):
+        return getattr(context, "debug_map", {})
+
+    def card_in_debug_list(card, debug_map):
+        section, num = card.split("_")[:2]
+        key = {"Story": "StoryPack", "Character": "CharacterPack", "Event": "EventPack"}[section]
+        return int(num) in debug_map.get(key, set())
+
+    stubs["recognition.pack_badge"].debug_list_numbers = debug_list_numbers
+    stubs["recognition.pack_badge"].card_in_debug_list = card_in_debug_list
+
+    def check_availability(params):
+        return all(t["card_name"] in done_cards for t in params["targets"])
+
+    stubs["action.cartridge_lib"].manager = types.SimpleNamespace(check_availability=check_availability)
+
+    with patch.dict(sys.modules, stubs):
+        spec = importlib.util.spec_from_file_location(
+            "action.pack_type_select", ROOT / "agent/action/pack_type_select.py")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["action.pack_type_select"] = module
+        spec.loader.exec_module(module)
+    return module
+
+
+class FakeContext:
+    """get_node_data 返回与 MaaFw 5.12.2 实测一致的 V2 归一化结构(探针见 priv _Work/2026-10-11-pr543-overview)。"""
+
+    def __init__(self, launcher, disabled=(), debug_map=None, broken=(), attach=None):
+        self.launcher = launcher
+        self.disabled = set(disabled)
+        self.broken = set(broken)
+        self.debug_map = debug_map or {}
+        self.attach = attach or {}
+        self.patches = {}
+        self.tasker = types.SimpleNamespace(resource=types.SimpleNamespace(node_list=list(launcher)))
+
+    def get_node_object(self, name):
+        return types.SimpleNamespace(attach=self.attach.get(name, {}))
+
+    def get_node_data(self, name):
+        node = self.launcher[name]
+        enabled = node.get("enabled", True) and name not in self.disabled
+        enabled = self.patches.get(name, {}).get("enabled", enabled)
+        if name in self.broken:
+            return {"enabled": enabled, "recognition": {"type": "And", "param": {}}}
+        subs = []
+        for sub in node.get("all_of", []):
+            if isinstance(sub, dict):
+                param = {k: v for k, v in sub.items() if k != "recognition"}
+                subs.append({"type": sub.get("recognition"), "param": param})
+        return {"enabled": enabled, "recognition": {"type": "And", "param": {"all_of": subs}}}
+
+    def override_pipeline(self, patches):
+        self.patches.update(patches)
+
+
+def card_names(launcher, prefix):
+    out = {}
+    for name, node in launcher.items():
+        if name.startswith(prefix) and name[len(prefix):].isdigit():
+            for sub in node.get("all_of", []):
+                if isinstance(sub, dict) and sub.get("custom_recognition") == "PackBadgeNotDone":
+                    out[int(name[len(prefix):])] = sub["custom_recognition_param"]["card_name"]
+    return out
+
+
+class SelectorTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.d = load_launcher()
+        cls.node = cls.d["Collect_PackType_Select"]
+        cls.story = card_names(cls.d, "Collect_Pack_Story_")
+        cls.char = card_names(cls.d, "Collect_Pack_Character_")
+        cls.event = card_names(cls.d, "Collect_Pack_Event_")
+
+    def _run(self, done, sync_ok=True, **ctx):
+        module = load_selector(set(done), sync_ok=sync_ok)
+        context = FakeContext(self.d, **ctx)
+        argv = types.SimpleNamespace(custom_action_param=json.dumps(self.node["custom_action_param"]))
+        result = module.PackTypeSelect().run(context, argv)
+        return result, context.patches
+
+    def test_default_story_and_event_pending(self):
+        """角色全部已完成 -> 只关角色；剧情、活动有未完成 -> 保留。"""
+        _r, patches = self._run(done=[c for n, c in self.char.items() if n <= 7])
+        self.assertEqual(patches, {"Collect_FeatureSwitch_CharacterPack": {"enabled": False}})
+
+    def test_blacklisted_undone_card_does_not_keep_type_open(self):
+        """★用户的例子:角色 1~6 已完成，7 未完成但被屏蔽 -> 角色整类不进。"""
+        done = [c for n, c in self.char.items() if n <= 6]
+        _r, patches = self._run(done=done, disabled={"Collect_Pack_Character_7"})
+        self.assertIn("Collect_FeatureSwitch_CharacterPack", patches)
+        _r, patches = self._run(done=done)
+        self.assertNotIn("Collect_FeatureSwitch_CharacterPack", patches)
+
+    def test_type_with_no_enabled_card_is_closed(self):
+        """活动 1~5 全被名单关掉 -> 活动整类不进。"""
+        _r, patches = self._run(done=[], disabled={f"Collect_Pack_Event_{n}" for n in self.event})
+        self.assertEqual(patches, {"Collect_FeatureSwitch_EvenPack": {"enabled": False}})
+
+    def test_debug_card_keeps_type_open_even_if_done(self):
+        """调试名单内的卡即使本周已完成也算待采。"""
+        all_done = list(self.story.values()) + list(self.char.values()) + list(self.event.values())
+        _r, patches = self._run(done=all_done, debug_map={"StoryPack": {3}})
+        self.assertNotIn("Collect_FeatureSwitch_StoryPack", patches)
+        self.assertIn("Collect_FeatureSwitch_CharacterPack", patches)
+
+    def test_unreadable_card_name_keeps_type_open(self):
+        """读不到卡名就不关该类(宁可多扫，不可漏采)。"""
+        all_done = list(self.story.values()) + list(self.char.values()) + list(self.event.values())
+        _r, patches = self._run(done=all_done, broken={"Collect_Pack_Event_2"})
+        self.assertNotIn("Collect_FeatureSwitch_EvenPack", patches)
+        self.assertIn("Collect_FeatureSwitch_StoryPack", patches)
+
+    def test_sync_failure_stops_without_patching(self):
+        result, patches = self._run(done=[], sync_ok=False)
+        self.assertFalse(result.success)
+        self.assertEqual(patches, {})
+
+
+# ------------------------------------------------------------------ 范围 / 调试名单
+def load_list_patch():
+    """用 stub 加载 agent/action/string_processor.py(真实 utils/num_list.py)。"""
+    stubs = {}
+    for name in ("maa", "maa.agent", "maa.agent.agent_server", "maa.context", "maa.custom_action", "utils"):
+        stubs[name] = types.ModuleType(name)
+    stubs["maa.agent.agent_server"].AgentServer = types.SimpleNamespace(
+        custom_action=lambda _n: (lambda cls: cls))
+    stubs["maa.context"].Context = object
+
+    class _FakeAction:
+        RunArg = types.SimpleNamespace
+        RunResult = types.SimpleNamespace
+
+    stubs["maa.custom_action"].CustomAction = _FakeAction
+    stubs["utils"].mfaalog = types.SimpleNamespace(
+        info=lambda *a, **k: None, debug=lambda *a, **k: None,
+        warning=lambda *a, **k: None, error=lambda *a, **k: None,
+    )
+    with patch.dict(sys.modules, stubs):
+        spec = importlib.util.spec_from_file_location("utils.num_list", ROOT / "agent/utils/num_list.py")
+        num_list = importlib.util.module_from_spec(spec)
+        sys.modules["utils.num_list"] = num_list
+        spec.loader.exec_module(num_list)
+        spec = importlib.util.spec_from_file_location(
+            "string_processor_under_test", ROOT / "agent/action/string_processor.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    return module
+
+
+class ListPatchTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.d = load_launcher()
+        cls.sp = load_list_patch()
+        cls.packs = sorted(k for k in cls.d if PACK_NAME_RE.match(k))
+
+    def _run(self, action, node, attach, **ctx):
+        context = FakeContext(self.d, attach={node: attach}, **ctx)
+        argv = types.SimpleNamespace(custom_action_param=json.dumps({"node_name": node}))
+        getattr(self.sp, action)().run(context, argv)
+        return context
+
+    def test_range_is_global(self):
+        """自选采集范围全局生效:只填剧情 3 -> 剧情其余、角色、活动全部关闭。"""
+        ctx = self._run("WhiteListPatch", "Collect_WhiteList_User", {"StoryPack": "3"})
+        on = [k for k in self.packs if ctx.get_node_data(k)["enabled"]]
+        self.assertEqual(on, ["Collect_Pack_Story_3"])
+        self.assertEqual(ctx.patches["Collect_Pack_Unnamed"], {"enabled": False}, "没有具名节点的新卡也在范围外")
+
+    def test_empty_or_invalid_range_means_off(self):
+        """开着却没有有效编号 -> 视为没开，一个节点都不动(否则会一张都不采)。"""
+        for attach in ({}, {"StoryPack": "", "CharacterPack": " "}, {"EventPack": "99"}):
+            with self.subTest(attach=attach):
+                ctx = self._run("WhiteListPatch", "Collect_WhiteList_User", attach)
+                self.assertEqual(ctx.patches, {})
+
+    def test_range_never_enables(self):
+        """范围只做减法:填了默认不支持的剧情 20、或已被排除的卡，也不会被打开。"""
+        ctx = self._run("WhiteListPatch", "Collect_WhiteList_User", {"StoryPack": "5,20"},
+                        disabled={"Collect_Pack_Story_5"})
+        self.assertNotIn(True, [v.get("enabled") for v in ctx.patches.values()])
+        self.assertFalse(ctx.get_node_data("Collect_Pack_Story_20")["enabled"])
+        self.assertFalse(ctx.get_node_data("Collect_Pack_Story_5")["enabled"])
+
+    def test_debug_opens_listed_closes_rest(self):
+        """调试:名单内启用(含默认不支持的剧情 20)，其余具名卡带与无名卡兜底全部关闭。"""
+        ctx = self._run("DebugListPatch", "Collect_DebugList_User", {"StoryPack": "20"})
+        on = [k for k in self.packs if ctx.get_node_data(k)["enabled"]]
+        self.assertEqual(on, ["Collect_Pack_Story_20"])
+        self.assertEqual(ctx.patches["Collect_Pack_Unnamed"], {"enabled": False})
+
+    def test_range_then_selector(self):
+        """串联:范围只填剧情 3(未完成) -> 目标选择器保留剧情，角色与活动因无启用卡带整类关闭。"""
+        ctx = self._run("WhiteListPatch", "Collect_WhiteList_User", {"StoryPack": "3"})
+        node = self.d["Collect_PackType_Select"]
+        argv = types.SimpleNamespace(custom_action_param=json.dumps(node["custom_action_param"]))
+        load_selector(set()).PackTypeSelect().run(ctx, argv)
+        self.assertNotIn("Collect_FeatureSwitch_StoryPack", ctx.patches)
+        self.assertEqual(ctx.patches["Collect_FeatureSwitch_CharacterPack"], {"enabled": False})
+        self.assertEqual(ctx.patches["Collect_FeatureSwitch_EvenPack"], {"enabled": False})
 
 
 # ------------------------------------------------------------------ 状态机

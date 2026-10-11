@@ -17,6 +17,7 @@
         "pre_delay": 0,
         "post_delay": 0,
         "next": [
+            "Env_AgentLost_Stop",
             "GachaADV_HomePage_Enter",
             "[JumpBack]Global_ToHomePage"
         ]
@@ -37,7 +38,9 @@
     "GachaADV_GachaRed_HaveNot": {
         "desc": "首页无可关注抽抽乐(无红点):本日无可抽,打标后结束,避免每天重复进入抽卡流程。识别失败(误判无红点)最坏只是当天不再进抽卡,次日恢复。",
         "recognition": "And",
-        "all_of": ["GachaADV_GachaRed_Have"],
+        "all_of": [
+            "GachaADV_GachaRed_Have"
+        ],
         "inverse": true,
         "action": "Custom",
         "custom_action": "MarkComplete",
@@ -51,7 +54,9 @@
         "desc": "识别左下抽抽乐-红点存在-点击抽卡",
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             89,
             609,
@@ -73,7 +78,9 @@
     "GachaADV_GachaPage": {
         "desc": "识别抽卡页,后补充文段为特殊卡池",
         "recognition": "And",
-        "all_of": ["GachaADV_PageEnter_1#"],
+        "all_of": [
+            "GachaADV_PageEnter_1#"
+        ],
         "focus": "GA.进入抽抽乐页面"
     },
     "GachaADV_GachaPage2": {
@@ -114,7 +121,9 @@
     "GachaADV_AREA1#": {
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             110,
             151,
@@ -135,7 +144,9 @@
     },
     "GachaADV_AREA1#_NoRed": {
         "recognition": "And",
-        "all_of": ["GachaADV_AREA1#"],
+        "all_of": [
+            "GachaADV_AREA1#"
+        ],
         "inverse": true,
         "post_delay": 1000,
         "next": [
@@ -190,7 +201,9 @@
     "GachaADV_PageEnter_2#": {
         "desc": "确认已在抽卡页",
         "recognition": "And",
-        "all_of": ["GachaADV_PageEnter_1#"],
+        "all_of": [
+            "GachaADV_PageEnter_1#"
+        ],
         "next": [
             "GachaADV_AREA2#",
             "GachaADV_AREA2#_NoRed"
@@ -200,7 +213,9 @@
     "GachaADV_AREA2#": {
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             114,
             241,
@@ -221,7 +236,9 @@
     },
     "GachaADV_AREA2#_NoRed": {
         "recognition": "And",
-        "all_of": ["GachaADV_AREA2#"],
+        "all_of": [
+            "GachaADV_AREA2#"
+        ],
         "inverse": true,
         "post_delay": 1000,
         "next": [
@@ -274,7 +291,9 @@
     "GachaADV_Location1": {
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             315,
             130,
@@ -326,7 +345,9 @@
         "desc": "抽取按钮区域-确认有红点",
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             835,
             521,
@@ -340,7 +361,9 @@
     },
     "GachaADV_Location1_Post": {
         "recognition": "And",
-        "all_of": ["GachaADV_PageEnter_1#"],
+        "all_of": [
+            "GachaADV_PageEnter_1#"
+        ],
         "timeout": 3000,
         "next": [
             "[JumpBack]GachaADV_TouchFreeGacha",
@@ -396,7 +419,9 @@
     "GachaADV_Location2": {
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             315,
             175,
@@ -446,7 +471,9 @@
     },
     "GachaADV_Location2_Ck": {
         "recognition": "And",
-        "all_of": ["GachaADV_Location1_Ck"],
+        "all_of": [
+            "GachaADV_Location1_Ck"
+        ],
         "next": [
             "GachaADV_Location2_90LotPost",
             "GachaADV_Location2_Post"
@@ -454,7 +481,9 @@
     },
     "GachaADV_Location2_Post": {
         "recognition": "And",
-        "all_of": ["GachaADV_PageEnter_1#"],
+        "all_of": [
+            "GachaADV_PageEnter_1#"
+        ],
         "timeout": 3000,
         "next": [
             "[JumpBack]GachaADV_TouchFreeGacha",
@@ -469,7 +498,9 @@
     "GachaADV_Location2_90LotPost": {
         "enabled": false,
         "recognition": "And",
-        "all_of": ["GachaADV_Location1_90LotPost"],
+        "all_of": [
+            "GachaADV_Location1_90LotPost"
+        ],
         "next": [
             "[JumpBack]GachaADV_PaidDiamond_90LotFind_Tp1",
             "[JumpBack]GachaADV_TouchFreeGacha",
@@ -499,7 +530,9 @@
     "GachaADV_Location3": {
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             315,
             256,
@@ -547,7 +580,9 @@
     },
     "GachaADV_Location3_Ck": {
         "recognition": "And",
-        "all_of": ["GachaADV_Location1_Ck"],
+        "all_of": [
+            "GachaADV_Location1_Ck"
+        ],
         "next": [
             "GachaADV_Location3_90LotPost",
             "GachaADV_Location3_Post"
@@ -555,7 +590,9 @@
     },
     "GachaADV_Location3_Post": {
         "recognition": "And",
-        "all_of": ["GachaADV_PageEnter_1#"],
+        "all_of": [
+            "GachaADV_PageEnter_1#"
+        ],
         "timeout": 3000,
         "next": [
             "[JumpBack]GachaADV_TouchFreeGacha",
@@ -570,7 +607,9 @@
     "GachaADV_Location3_90LotPost": {
         "enabled": false,
         "recognition": "And",
-        "all_of": ["GachaADV_Location1_90LotPost"],
+        "all_of": [
+            "GachaADV_Location1_90LotPost"
+        ],
         "next": [
             "[JumpBack]GachaADV_PaidDiamond_90LotFind_Tp1",
             "[JumpBack]GachaADV_TouchFreeGacha",
@@ -597,7 +636,9 @@
     "GachaADV_Location4": {
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             315,
             337,
@@ -644,7 +685,9 @@
     },
     "GachaADV_Location4_Ck": {
         "recognition": "And",
-        "all_of": ["GachaADV_Location1_Ck"],
+        "all_of": [
+            "GachaADV_Location1_Ck"
+        ],
         "next": [
             "GachaADV_Location4_90LotPost",
             "GachaADV_Location4_Post"
@@ -653,7 +696,9 @@
     "GachaADV_Location4_90LotPost": {
         "enabled": false,
         "recognition": "And",
-        "all_of": ["GachaADV_Location1_90LotPost"],
+        "all_of": [
+            "GachaADV_Location1_90LotPost"
+        ],
         "next": [
             "[JumpBack]GachaADV_PaidDiamond_90LotFind_Tp1",
             "[JumpBack]GachaADV_TouchFreeGacha",
@@ -663,7 +708,9 @@
     },
     "GachaADV_Location4_Post": {
         "recognition": "And",
-        "all_of": ["GachaADV_PageEnter_1#"],
+        "all_of": [
+            "GachaADV_PageEnter_1#"
+        ],
         "timeout": 3000,
         "next": [
             "[JumpBack]GachaADV_TouchFreeGacha",
@@ -691,7 +738,9 @@
     "GachaADV_Location5": {
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             315,
             419,
@@ -733,7 +782,9 @@
     },
     "GachaADV_Location5_Ck": {
         "recognition": "And",
-        "all_of": ["GachaADV_Location1_Ck"],
+        "all_of": [
+            "GachaADV_Location1_Ck"
+        ],
         "next": [
             "GachaADV_Location5_90LotPost",
             "GachaADV_Location5_Post"
@@ -742,7 +793,9 @@
     "GachaADV_Location5_90LotPost": {
         "enabled": false,
         "recognition": "And",
-        "all_of": ["GachaADV_Location1_90LotPost"],
+        "all_of": [
+            "GachaADV_Location1_90LotPost"
+        ],
         "next": [
             "[JumpBack]GachaADV_PaidDiamond_90LotFind_Tp1",
             "[JumpBack]GachaADV_TouchFreeGacha",
@@ -752,7 +805,9 @@
     },
     "GachaADV_Location5_Post": {
         "recognition": "And",
-        "all_of": ["GachaADV_PageEnter_1#"],
+        "all_of": [
+            "GachaADV_PageEnter_1#"
+        ],
         "next": [
             "[JumpBack]GachaADV_TouchFreeGacha",
             "GachaADV_LocationEnd_Pre"
@@ -977,7 +1032,9 @@
         "desc": "将要触发抽抽乐200保底识别器02,",
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             721,
             210,
@@ -1046,7 +1103,9 @@
     "GachaADV_Slip_Action": {
         "desc": "下滑寻找免费抽卡",
         "recognition": "And",
-        "all_of": ["GachaADV_Slip"],
+        "all_of": [
+            "GachaADV_Slip"
+        ],
         "action": "Swipe",
         "begin": [
             210,
@@ -1113,7 +1172,9 @@
     "GachaADV_PvAnimeIsOver": {
         "desc": "卡池动画结束后,卡片呈现按钮,识别",
         "recognition": "And",
-        "all_of": ["GachaADV_SkipPV"],
+        "all_of": [
+            "GachaADV_SkipPV"
+        ],
         "focus": "GA.卡池动画结束(调试用)"
     },
     "GachaADV_PaidDiamond_90LotFind_Tp1": {
@@ -1238,7 +1299,9 @@
             69,
             49
         ],
-        "template": ["UI_talk.png"],
+        "template": [
+            "UI_talk.png"
+        ],
         "action": "Click",
         "post_delay": 500
     },
@@ -1328,7 +1391,9 @@
     },
     "GachaADV_5XBug_LightningBall": {
         "recognition": "And",
-        "all_of": ["GachaADV_TouchFreeGachaSkip"],
+        "all_of": [
+            "GachaADV_TouchFreeGachaSkip"
+        ],
         "action": "Click",
         "post_delay": 1000,
         "next": [
@@ -1362,12 +1427,16 @@
     "GachaADV_GachaResultBack_CK": {
         "desc": "确认已在抽卡页",
         "recognition": "And",
-        "all_of": ["GachaADV_PageEnter_1#"]
+        "all_of": [
+            "GachaADV_PageEnter_1#"
+        ]
     },
     "GachaADV_FinGacha": {
         "desc": "返回首页",
         "recognition": "And",
-        "all_of": ["GachaADV_PageEnter_1#"],
+        "all_of": [
+            "GachaADV_PageEnter_1#"
+        ],
         "action": "Click",
         "target": [
             120,
@@ -1421,8 +1490,12 @@
     },
     "Gacha_Quick_All_SubMsg": {
         "recognition": "Or",
-        "any_of": ["GachaADV_TouchFreeGachaConfirmMenu"],
-        "next": ["Gacha_Quick_All_SubMsg_Ck"]
+        "any_of": [
+            "GachaADV_TouchFreeGachaConfirmMenu"
+        ],
+        "next": [
+            "Gacha_Quick_All_SubMsg_Ck"
+        ]
     },
     "Gacha_Quick_All_SubMsg_Ck": {
         "recognition": "OCR",
@@ -1445,7 +1518,9 @@
     "Gacha_Quick_Skip": {
         "desc": "等于连抽,去点跳过按钮",
         "recognition": "And",
-        "all_of": ["AutoBattle_Egress_TurnBack_SkipTalk"],
+        "all_of": [
+            "AutoBattle_Egress_TurnBack_SkipTalk"
+        ],
         "action": "Click",
         "post_delay": 1500
     },
@@ -1484,7 +1559,9 @@
             159,
             68
         ],
-        "template": ["Gacha_Briefing.png"]
+        "template": [
+            "Gacha_Briefing.png"
+        ]
     },
     "Rec_<Gacha_Quick_Briefing>_Ocr": {
         "desc": "[识别]抽卡结果页,位置02-正则",
@@ -1501,7 +1578,9 @@
     "Gacha_Quick_End": {
         "desc": "一键抽卡结束后瞻",
         "recognition": "And",
-        "all_of": ["GachaADV_PageEnter_1#"],
+        "all_of": [
+            "GachaADV_PageEnter_1#"
+        ],
         "next": [
             "Global_ToHomePage"
         ],

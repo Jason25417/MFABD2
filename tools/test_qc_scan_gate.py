@@ -9,7 +9,8 @@ _EvenPack 上游写死 max_hit:1 —— 一个 task 内每个分类**只能进�
   1. 静态接线：三个分支 max_hit==3 + CheckTag(QC_*_Scanned)；触底出口
      (Collect_LocatePack_SimpleSkip_*) 挂上 Mark 节点；Mark 节点必须带
      「快速卡带列表开着」前置判据(否则 2026-10-07 那个「列表没开→空滑→误判触底」
-     的 bug 会升级成整类跳过)；Reset 节点挂在两个任务入口 next 首位。
+     的 bug 会升级成整类跳过)；两个任务入口先检查通信，Reset 节点挂在采集流程首位
+     (每周模式先经 Collect_OnlyOnce_Switch 检查本周期)。
   2. 状态机：用 agent/recognition/counter.py 的**真实** CheckTag/UpdateTag/ResetTag
      跑准入判定，回归四个场景。
   3. max_hit 封顶：第 4 次不再进入(防死循环)。
@@ -146,7 +147,14 @@ class StaticWiringTests(unittest.TestCase):
         for entry in ENTRIES:
             with self.subTest(entry=entry):
                 nxt = self.d[entry].get("next", [])
-                self.assertEqual(nxt[0], "[JumpBack]Collect_QC_Scan_Reset")
+                self.assertEqual(nxt[0], "Env_AgentLost_Stop")
+                if entry == "Collect_StartGame_HomePage_OnlyOnce":
+                    self.assertEqual(nxt[1:], ["Collect_OnlyOnce_Switch"])
+                    nxt = self.d["Collect_OnlyOnce_Switch"].get("next", [])
+                else:
+                    nxt = nxt[1:]
+                self.assertEqual(nxt[:2], ["[JumpBack]Collect_QC_Scan_Reset",
+                                           "[JumpBack]Collect_RunTags_Reset"])
 
     def test_reset_also_on_sandplay(self):
         self.assertIn("[JumpBack]Collect_QC_Scan_Reset",

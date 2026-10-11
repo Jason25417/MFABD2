@@ -7,6 +7,7 @@ from .timer import *
 from .logic_not import *
 from .ocr_score import *
 from .pack_badge import *
+from .agent_ping import *
 
 # 如果以后加了别的 action 文件，比如 battle_action.py，就在这里加一行：
 # from .battle_action import *

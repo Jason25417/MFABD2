@@ -2,6 +2,7 @@
     "Collect_StartGame_HomePage": {
         "desc": "采集任务入口(完整)。★2026-10-07 本地:next 首位加 [JumpBack]Collect_QC_Scan_Reset——每轮开始清空「本轮分类扫描标记」。★必须挂在入口而不是只挂 Collect_Sandplay:实测重跑时若人不在箱庭,Sandplay(识别=箱庭图钉/奔跑)根本不命中,清零就会漏掉,上一轮残留的标记会让剧情/角色整类被跳过。",
         "next": [
+            "Env_AgentLost_Stop",
             "[JumpBack]Collect_QC_Scan_Reset",
             "[JumpBack]Collect_RunTags_Reset",
             "[JumpBack]Collect_PerPetTask",
@@ -11,6 +12,17 @@
         ]
     },
     "Collect_StartGame_HomePage_OnlyOnce": {
+        "desc": "地图采集（每周一次）入口：先确认 Agent 通信正常，再做本周期检查。周期检查是自定义识别，放在入口上会让通道断开时静默结束，所以挪到 Collect_OnlyOnce_Switch。timeout 与原入口一致：本周期已完成时 5 秒后静默结束。",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 5000,
+        "next": [
+            "Env_AgentLost_Stop",
+            "Collect_OnlyOnce_Switch"
+        ]
+    },
+    "Collect_OnlyOnce_Switch": {
+        "desc": "地图采集（每周一次）的本周期检查：未完成才命中，并改写采集链的收尾与技能节点后开始采集。 采集任务入口(单章/每周一次)。★2026-10-07 本地:next 首位加 [JumpBack]Collect_QC_Scan_Reset,同 Collect_StartGame_HomePage(两个入口都要清,否则残留标记会整类跳过)。",
         "recognition": "Custom",
         "custom_recognition": "CheckCoolDown",
         "custom_recognition_param": {
@@ -40,7 +52,6 @@
             }
         },
         "timeout": 5000,
-        "desc": "采集任务入口(单章/每周一次)。★2026-10-07 本地:next 首位加 [JumpBack]Collect_QC_Scan_Reset,同 Collect_StartGame_HomePage(两个入口都要清,否则残留标记会整类跳过)。",
         "next": [
             "[JumpBack]Collect_QC_Scan_Reset",
             "[JumpBack]Collect_RunTags_Reset",
@@ -1773,10 +1784,10 @@
             "card_name": "Pack_Story_SimpleDone",
             "cycle_type": "g_weekly"
         },
-        "focus": "Py.经典剧情卡简单全完成标记",
         "next": [
             "Collect_QC_Scan_Mark_Story"
-        ]
+        ],
+        "focus": "Py.经典剧情卡简单全完成标记"
     },
     "Collect_LocatePack_SimpleSkip_Character": {
         "desc": "[触底出口]角色类,同 Story。★2026-10-07 本地:加 next → Collect_QC_Scan_Mark_Character。",
@@ -1786,10 +1797,10 @@
             "card_name": "Pack_Character_SimpleDone",
             "cycle_type": "g_weekly"
         },
-        "focus": "Py.角色剧情卡简单全完成标记",
         "next": [
             "Collect_QC_Scan_Mark_Character"
-        ]
+        ],
+        "focus": "Py.角色剧情卡简单全完成标记"
     },
     "Collect_LocatePack_SimpleSkip_Event": {
         "desc": "[触底出口]活动类,同 Story。★2026-10-07 本地:加 next → Collect_QC_Scan_Mark_Event。",
@@ -1799,10 +1810,10 @@
             "card_name": "Pack_Event_SimpleDone",
             "cycle_type": "g_weekly"
         },
-        "focus": "Py.活动卡简单全完成标记",
         "next": [
             "Collect_QC_Scan_Mark_Event"
-        ]
+        ],
+        "focus": "Py.活动卡简单全完成标记"
     },
     "Collect_QC_Scan_Mark_Story": {
         "desc": "[本地·本轮扫描标记①]置位 QC_Story_Scanned=1,表示本轮剧情类已完整扫过一轮,供 Collect_FeatureSwitch_StoryPack 的 CheckTag 判「不再进入本类」。★前置判据 Or[Collect_QuickCart_Menu](快速卡带列表确实开着)是故意加的:触底信号来自 SmartSwipe 的 on_error,而 2026-10-07 实测过「复位链退栈到定位链、人在箱庭而列表没开」时 SmartSwipe 会在箱庭画面上误判触底 → 那一次若打上标记就会变成整类跳过(漏采)。列表没开 ⇒ 不打标记 ⇒ 本类下一轮仍可进入(宁可重扫,不可漏采)。",
@@ -1888,12 +1899,12 @@
             "tag": "PackLocation_ToggleSwitch",
             "value": 1
         },
-        "post_delay": 0,
         "anchor": {
             "S18_Map1_Trip": "",
             "C3_Battle1_Done": "",
             "C3_Battle2_Trip": ""
         },
+        "post_delay": 0,
         "timeout": 1,
         "next": [
             "Collect_Pack_Story_1",
@@ -1936,9 +1947,9 @@
         "desc": "【无名卡带兜底】排在 33 个具名候选项之后：当前槽位这张卡带没有任何具名节点（新卡带/改版卡带/模板缺失），但徽章显示未双勾时，直接按槽位点击进卡带采集。命中前先反查黑名单——把被禁用的具名节点临时启用后在本槽位跑一次识别，谁的画面模板命中就判为屏蔽卡带并跳过。max_hit 是本轮重进上限。",
         "max_hit": 6,
         "recognition": "Custom",
-        "roi": "[Anchor]PackFrame_Loc",
         "custom_recognition": "PackUnnamedNotDone",
         "custom_recognition_param": {},
+        "roi": "[Anchor]PackFrame_Loc",
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -1971,11 +1982,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_01_血骑士"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2011,11 +2022,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_02_苍蓝魔女"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2051,11 +2062,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_03_迷雾神射手"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2091,11 +2102,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_04_眼镜与猫"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2131,11 +2142,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_05_沙漠之花"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2171,11 +2182,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_06_异教塔"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2211,11 +2222,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_07_愤怒天使"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2251,11 +2262,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_08_血之狂想曲"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2291,11 +2302,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_09_铁假面"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2331,11 +2342,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_10_霍尔蒙克斯"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2371,11 +2382,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_11_虚假游戏"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2411,11 +2422,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_12_黑羽毛"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2451,11 +2462,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_13_雪之歌"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2491,11 +2502,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_14_神圣审判"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2531,11 +2542,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_15_复仇的誓言"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2571,11 +2582,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_16_三国同盟"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2611,11 +2622,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_17_试炼之路"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2652,11 +2663,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_18_救赎"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2695,11 +2706,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_19_被遗忘的战争"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2724,8 +2735,8 @@
     },
     "Collect_Pack_Story_20": {
         "desc": "【不参与采集·上游默认禁用】Story_20_堕入深渊。禁用=该卡带不进候选列表,任何完成判定(含 PackBadgeNotDone 图标判定)都不会碰到它。要启用前先确认该卡带是否支持采集。",
-        "max_hit": 3,
         "enabled": false,
+        "max_hit": 3,
         "recognition": "And",
         "all_of": [
             {
@@ -2737,11 +2748,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Story_20_堕入深渊"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2777,11 +2788,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Character_1_杰登之门"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2817,11 +2828,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Character_2_火晶片"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2857,11 +2868,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Character_3_美丽无望"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2901,11 +2912,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Character_4_大逃脱"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2942,11 +2953,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Character_5_鲁的迷宫"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -2982,11 +2993,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Character_6_御剑传"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -3022,11 +3033,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Character_7_合约之战"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -3051,8 +3062,8 @@
     },
     "Collect_Pack_Character_8": {
         "desc": "【不参与采集·上游默认禁用】Character_8_妖魔讨伐团。同 Story_20:禁用=不进候选列表。",
-        "max_hit": 3,
         "enabled": false,
+        "max_hit": 3,
         "recognition": "And",
         "all_of": [
             {
@@ -3064,11 +3075,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Character_8_妖魔讨伐团"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -3092,8 +3103,8 @@
         ]
     },
     "Collect_Pack_Event_1": {
-        "max_hit": 3,
         "desc": "特殊地图特殊处理.此地图没有传送阵",
+        "max_hit": 3,
         "recognition": "And",
         "all_of": [
             {
@@ -3105,11 +3116,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Event_1_夏日骑士"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -3145,13 +3156,18 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Event_2_恶梦之冬",
                     "single_coin": true,
-                    "star_coin": [44, 81, 26, 26]
-                }
+                    "star_coin": [
+                        44,
+                        81,
+                        26,
+                        26
+                    ]
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -3187,11 +3203,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Event_3_海滨天使"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -3227,11 +3243,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Event_4_记忆边缘"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,
@@ -3267,11 +3283,11 @@
             },
             {
                 "recognition": "Custom",
-                "roi": "[Anchor]PackFrame_Loc",
                 "custom_recognition": "PackBadgeNotDone",
                 "custom_recognition_param": {
                     "card_name": "Event_5_戏水女王"
-                }
+                },
+                "roi": "[Anchor]PackFrame_Loc"
             }
         ],
         "box_index": 0,

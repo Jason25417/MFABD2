@@ -52,6 +52,7 @@
         ]
     },
     "Collect_TeleportRecall_Skill": {
+        "desc": " ★2026-10-02 本地:next 首位插 [JumpBack]Global_WaitingForLoading —— 命中(识别到传送技能)后先判'是否在载入':载入中先等载入(等完 JumpBack 回本节点重判),载入完成(箱庭稳定)才判亮/灰;这样亮/灰两颗 ColorMatch（roi 1086,428,10,2）不会在载入/黑屏帧上误判(黑屏 S=0、V<200 双双不中,此前 13:45:24~32 因此白走\"快捷移动→告示板→导航地图→点地面传送阵\"约 1.5 分钟)。只有画面正常但仍不亮不灰才走步行兜底 ⇒ 保留原兜底、消除误判。",
         "recognition": "Or",
         "any_of": [
             {
@@ -100,8 +101,7 @@
         "on_error": [
             "Collect_TeleporCircle_OnFoot_Start"
         ],
-        "focus": "CRT.传送阵技能已放置",
-        "desc": " ★2026-10-02 本地:next 首位插 [JumpBack]Global_WaitingForLoading —— 命中(识别到传送技能)后先判'是否在载入':载入中先等载入(等完 JumpBack 回本节点重判),载入完成(箱庭稳定)才判亮/灰;这样亮/灰两颗 ColorMatch（roi 1086,428,10,2）不会在载入/黑屏帧上误判(黑屏 S=0、V<200 双双不中,此前 13:45:24~32 因此白走\"快捷移动→告示板→导航地图→点地面传送阵\"约 1.5 分钟)。只有画面正常但仍不亮不灰才走步行兜底 ⇒ 保留原兜底、消除误判。"
+        "focus": "CRT.传送阵技能已放置"
     },
     "Rec_<Collect_TeleportRecall_Skill>_Tpl": {
         "desc": "[识别]'传送'技能存在",
@@ -1342,7 +1342,9 @@
             ]
         },
         "post_delay": 0,
-        "next": ["Collect_IM_OnFoot_NviMap_M14_A1_Move"]
+        "next": [
+            "Collect_IM_OnFoot_NviMap_M14_A1_Move"
+        ]
     },
     "Collect_IM_OnFoot_NviMap_M14_A1_Move": {
         "max_hit": 5,
@@ -1398,30 +1400,42 @@
             "[JumpBack]Collect_IM_M14_OpenMenuOnce",
             "Collect_IM_M14_MenuReady"
         ],
-        "on_error": ["[JumpBack]Global_ToSandBox"]
+        "on_error": [
+            "[JumpBack]Global_ToSandBox"
+        ]
     },
     "Collect_IM_M14_ReturnOnce": {
         "desc": "M14专用返程调用入口，本次限一次；不限制公共返程链内部的重试。",
         "max_hit": 1,
         "recognition": "Or",
-        "any_of": ["Global_ToSandBox_Enter"],
+        "any_of": [
+            "Global_ToSandBox_Enter"
+        ],
         "pre_delay": 0,
         "post_delay": 0,
-        "next": ["Collect_TeleporCircle_OnFoot_Entry"]
+        "next": [
+            "Collect_TeleporCircle_OnFoot_Entry"
+        ]
     },
     "Collect_IM_M14_OpenMenuOnce": {
         "desc": "M14专用拉卡带调用入口，本次限一次；已在列表时入口按钮消失，直接跳过。",
         "max_hit": 1,
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset"],
+        "any_of": [
+            "Global_QuickCart_MenuReset"
+        ],
         "pre_delay": 0,
         "post_delay": 0,
-        "next": ["Global_QuickCart_MenuReset"]
+        "next": [
+            "Global_QuickCart_MenuReset"
+        ]
     },
     "Collect_IM_M14_MenuReady": {
         "desc": "确认快速卡带列表已打开，清理本次返程锚点和调用计数，再执行M14完成标记与临时覆盖还原。",
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset_Ocr"],
+        "any_of": [
+            "Global_QuickCart_MenuReset_Ocr"
+        ],
         "pre_delay": 0,
         "action": "Custom",
         "custom_action": "ClearNodeHitCount",
@@ -1438,7 +1452,9 @@
             "ExplorationBoard_Arrived": ""
         },
         "post_delay": 0,
-        "next": ["Collect_IM_Closure"],
+        "next": [
+            "Collect_IM_Closure"
+        ],
         "focus": "C14.快速卡带已恢复，完成本卡收尾"
     },
     "Collect_IM_OnFoot_NviMap_E05_A2": {
@@ -2212,7 +2228,9 @@
     },
     "Collect_WayPoint_Arrived_TryFix": {
         "max_hit": 1,
-        "next": ["[Anchor]ExplorationBoard_Arrived"]
+        "next": [
+            "[Anchor]ExplorationBoard_Arrived"
+        ]
     },
     "Collect_WayPoint_Arrived_Verify": {
         "desc": "已识别到踩传送阵?继续验证",
@@ -2260,7 +2278,9 @@
     },
     "Collect_WayPoint_Arrived_Succeed": {
         "recognition": "Or",
-        "any_of": ["Collect_OperationsMain_ToAreaMap"],
+        "any_of": [
+            "Collect_OperationsMain_ToAreaMap"
+        ],
         "action": "Custom",
         "custom_action": "ClearNodeHitCount",
         "custom_action_param": {
@@ -2269,8 +2289,12 @@
                 "Collect_WayPoint_Arrived_Fail_1"
             ]
         },
-        "anchor": {"ExplorationBoard_Arrived": ""},
-        "next": ["Global_ToSandBox"]
+        "anchor": {
+            "ExplorationBoard_Arrived": ""
+        },
+        "next": [
+            "Global_ToSandBox"
+        ]
     },
     "Collect_WayPoint_ExplorationBoard_Arrived": {
         "desc": "【已废弃·2026-10-02】原为'到达告示板后开地图点传送阵',但游戏有点地图传送阵不触发寻路的 bug(用户实测)。已改:Board/Inn 的 anchor ExplorationBoard_Arrived 直接指向 Collect_OnFoot_Skill3_4(放传送技能复位)。本节点与 _NavMap 保留代码、不再接线。",

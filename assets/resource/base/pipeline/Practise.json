@@ -36,7 +36,9 @@
     "Practise_Skill_Bargaining_Verify": {
         "desc": "确认到砍价技能,准备判定等级",
         "recognition": "Or",
-        "any_of": ["Arbitrage_Bargaining_SkillList"],
+        "any_of": [
+            "Arbitrage_Bargaining_SkillList"
+        ],
         "next": [
             "Practise_Skill_Bargaining_Until",
             "[JumpBack]Practise_Skill_Bargaining_Upgrade",
@@ -110,7 +112,9 @@
             "Practise_Skill_Bargaining_Upgrade_Ck",
             "Practise_Skill_Bargaining_Upgrade"
         ],
-        "on_error": ["Practise_Skill_Bargaining_Upgrade_Err"],
+        "on_error": [
+            "Practise_Skill_Bargaining_Upgrade_Err"
+        ],
         "focus": "技能可以升星"
     },
     "Practise_Skill_Bargaining_Upgrade_Ck": {

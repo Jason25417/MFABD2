@@ -46,7 +46,7 @@
     },
     "Collect_PerPetTask": {
         "desc": "宠物派遣",
-        "max_hit": 1,
+        "max_hit": 3,
         "recognition": "TemplateMatch",
         "roi": [
             234,

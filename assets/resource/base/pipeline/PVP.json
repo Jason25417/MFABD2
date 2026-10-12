@@ -211,6 +211,7 @@
     },
     "PVP_PerPetTask": {
         "desc": "宠物派遣。初始位置就在pvp图防错",
+        "max_hit": 3,
         "recognition": "Or",
         "any_of": ["StartGame_PerPetTask"],
         "action": "Click",

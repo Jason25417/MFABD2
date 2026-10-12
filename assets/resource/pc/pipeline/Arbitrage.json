@@ -865,24 +865,27 @@
             "loop_limit": 3,
             "on_changed": "next",
             "on_unchanged": "loop",
-            "proxy_node": "Arbitrage_Swip_PriceList",
+            "proxy_node": "Agt_Proxy_Blank",
+            "proxy_override": {
+                "action": "Swipe",
+                "begin": [
+                    653,
+                    500,
+                    1,
+                    1
+                ],
+                "duration": 700,
+                "end": [
+                    653,
+                    200,
+                    1,
+                    1
+                ],
+                "end_hold": 500
+            },
             "settle_delay": 300,
             "threshold": 3.0
         }
-    },
-    "Arbitrage_Swip_PriceList": {
-        "begin": [
-            653,
-            500,
-            1,
-            1
-        ],
-        "end": [
-            653,
-            200,
-            1,
-            1
-        ]
     },
     "Arbitrage_Swip_Calibration_Down": {
         "roi": [

@@ -275,7 +275,7 @@
                 "Adb",
                 "PlayCover"
             ],
-            "description": "进入卡带，对含传送阵的地图依次执行探查、吸取、召集。<br><span style=\"background-color:rgba(255,160,0,0.2)\"><b>前提：</b>传送阵须已激活，且周围箱庭迷雾已探明，使区域地图能完整显示传送阵图标。</span><br><b>周常CD：</b>自动跳过本周已刷卡带，进度记录于 <code>agent_save_data.json</code>，可手动迁移。刷取顺序：卡带框从左到右，依剧情→角色→活动大类推进。",
+            "description": "进入卡带，对含传送阵的地图依次执行探查、吸取、召集。<br><span style=\"background-color:rgba(255,160,0,0.2)\"><b>前提：</b>传送阵须已激活，且周围箱庭迷雾已探明，使区域地图能完整显示传送阵图标。</span><br><b>选卡：</b>按剧情→角色→活动推进，优先处理列表中彩色亮起的采集徽章；已完成记录用于判断整类是否还有任务。成功采集后记录进度并在本轮跳过该卡。",
             "option": [
                 "采集卡带指定",
                 "采集卡带屏蔽",
@@ -1146,6 +1146,9 @@
                     "pipeline_override": {
                         "Collect_DebugList_User": {
                             "enabled": false
+                        },
+                        "Collect_PackScan_DebugMode": {
+                            "enabled": false
                         }
                     }
                 },
@@ -1153,6 +1156,9 @@
                     "name": "Yes",
                     "pipeline_override": {
                         "Collect_DebugList_User": {
+                            "enabled": true
+                        },
+                        "Collect_PackScan_DebugMode": {
                             "enabled": true
                         }
                     },

@@ -1,6 +1,6 @@
-"""Offline checks for the per-run category scan gate (2026-10-07 本地改动).
+"""Offline checks for the per-run category scan gate and probe completion routing.
 
-背景(见 LOCAL_CHANGES.md)：Collect_FeatureSwitch_StoryPack / _CharacterPack /
+背景：Collect_FeatureSwitch_StoryPack / _CharacterPack /
 _EvenPack 上游写死 max_hit:1 —— 一个 task 内每个分类**只能进入一次**。那唯一一次
 若被空跑浪费(停止任务时脚本正在进卡带、重跑后残留载入态，分支空等 15s 就退栈)，
 本轮该类再也进不去，调度器只能落到还没用过的活动分支(实测 10:46:49 直接去活动)。
@@ -16,11 +16,13 @@ _EvenPack 上游写死 max_hit:1 —— 一个 task 内每个分类**只能进�
   3. max_hit 封顶：第 4 次不再进入(防死循环)。
   4. 2026-10-11 名单维护链 + 目标选择器：调度器只执行；排除 → 自选采集范围(全局) / 调试直采 汇到
      Collect_PackType_Select，它按「运行态启用的具名卡带 − 本周已完成」关掉没活的类别入口。
+  5. 探针入口先初始化本类收尾，具名卡身份读成功载荷；每周一次在成功打标并禁用后停止。
 
 跑法(仓库根):  python -m unittest tools.test_qc_scan_gate
 """
 
 import importlib.util
+import copy
 import json
 import re
 import sys
@@ -118,10 +120,30 @@ class StaticWiringTests(unittest.TestCase):
         self.assertEqual(len(tags), len(set(tags)))
 
     def test_touchdown_exits_point_at_mark_nodes(self):
-        """触底出口(SmartSwipOut 锚的目标)必须挂着置位节点，否则标记永不写入。"""
-        for _name, _tag, out, mark in BRANCHES:
+        """每类在选分类之前设好两种收尾去向，触底出口再接本轮扫描标记。"""
+        setups = [
+            ("Collect_StoryPack_SetSimpleSkip", "Collect_QuickCart_SelectType_StoryPack"),
+            ("Collect_CharacterPack_SetSimpleSkip", "Collect_QuickCart_SelectType_CharacterPack"),
+            ("Collect_EventPack_SetSimpleSkip", "Collect_QuickCart_SelectType_EventPack"),
+        ]
+        for (name, _tag, out, mark), (setup, select_type) in zip(BRANCHES, setups):
             with self.subTest(node=out):
+                self.assertEqual(self.d[name]["next"], ["[JumpBack]Global_QuickCart_MenuReset", setup])
+                self.assertEqual(self.d[setup]["anchor"]["SmartSwipOut"], out)
+                self.assertEqual(self.d[setup]["anchor"]["PackScan_End"], mark)
+                self.assertEqual(self.d[setup]["next"][0], select_type)
                 self.assertIn(mark, self.d[out].get("next", []))
+
+    def test_only_once_stops_after_success_and_disable(self):
+        """单卡模式仍先写完成记录、禁用当前卡，随后才写每周一次记录并停止。"""
+        navigation = json.loads((ROOT / "assets/resource/base/pipeline/Collect_Navigation.json").read_text(encoding="utf-8"))
+        patches = self.d["Collect_OnlyOnce_Switch"]["custom_action_param"]["patches"]
+        self.assertNotIn("Collect_PackEnd_Ck", patches)
+        self.assertEqual(navigation["Collect_PackEnd_Ck"]["next"], ["Collect_PackEnd_Disable"])
+        self.assertEqual(patches["Collect_PackEnd_Disable"]["next"], ["Collect_PackEnd_Ck_OnlyOnce"])
+        self.assertEqual(navigation["Collect_PackEnd_Ck_OnlyOnce"]["next"], ["Collect_PackEnd_Ck_OnlyOnce_StopTask"])
+        self.assertEqual(navigation["Collect_PackEnd_Ck_OnlyOnce_StopTask"]["action"], "StopTask")
+        self.assertNotIn("Collect_PackEnd_Failed", patches)
 
     def test_mark_nodes_require_quickcart_open(self):
         """★关键护栏:置位必须有「快速卡带列表开着」前置判据。
@@ -243,14 +265,15 @@ def load_selector(done_cards, sync_ok=True):
     """用 stub 加载 agent/action/pack_type_select.py。
 
     done_cards: 本周已完成的卡名集合，喂给假的 CooldownManager。
-    调试名单从假 context 的 debug_map 读，判定口径与 pack_badge.card_in_debug_list 一致。
+    调试名单读取使用真实 utils.collect_config；存档与账号同步替身均不接触本机数据。
     """
     stubs = {}
     for name in ("maa", "maa.agent", "maa.agent.agent_server", "maa.context", "maa.custom_action",
-                 "utils", "utils.account_sync", "recognition", "recognition.pack_badge",
+                 "utils", "utils.account_sync",
                  "action", "action.cartridge_lib"):
         stubs[name] = types.ModuleType(name)
     stubs["action"].__path__ = []
+    stubs["utils"].__path__ = [str(ROOT / "agent/utils")]
     stubs["maa.agent.agent_server"].AgentServer = types.SimpleNamespace(
         custom_action=lambda _n: (lambda cls: cls))
     stubs["maa.context"].Context = object
@@ -265,17 +288,6 @@ def load_selector(done_cards, sync_ok=True):
         warning=lambda *a, **k: None, error=lambda *a, **k: None,
     )
     stubs["utils.account_sync"].sync_from_context = lambda _c, where="": sync_ok
-
-    def debug_list_numbers(context):
-        return getattr(context, "debug_map", {})
-
-    def card_in_debug_list(card, debug_map):
-        section, num = card.split("_")[:2]
-        key = {"Story": "StoryPack", "Character": "CharacterPack", "Event": "EventPack"}[section]
-        return int(num) in debug_map.get(key, set())
-
-    stubs["recognition.pack_badge"].debug_list_numbers = debug_list_numbers
-    stubs["recognition.pack_badge"].card_in_debug_list = card_in_debug_list
 
     def check_availability(params):
         return all(t["card_name"] in done_cards for t in params["targets"])
@@ -298,8 +310,12 @@ class FakeContext:
         self.launcher = launcher
         self.disabled = set(disabled)
         self.broken = set(broken)
-        self.debug_map = debug_map or {}
-        self.attach = attach or {}
+        self.debug_enabled = debug_map is not None
+        self.attach = dict(attach or {})
+        if debug_map is not None:
+            self.attach.setdefault("Collect_DebugList_User", {
+                key: ",".join(str(n) for n in sorted(numbers)) for key, numbers in debug_map.items()
+            })
         self.patches = {}
         self.tasker = types.SimpleNamespace(resource=types.SimpleNamespace(node_list=list(launcher)))
 
@@ -308,7 +324,10 @@ class FakeContext:
 
     def get_node_data(self, name):
         node = self.launcher[name]
-        enabled = node.get("enabled", True) and name not in self.disabled
+        enabled = node.get("enabled", True)
+        if name == "Collect_DebugList_User" and self.debug_enabled:
+            enabled = True
+        enabled = enabled and name not in self.disabled
         enabled = self.patches.get(name, {}).get("enabled", enabled)
         if name in self.broken:
             return {"enabled": enabled, "recognition": {"type": "And", "param": {}}}
@@ -317,20 +336,107 @@ class FakeContext:
             if isinstance(sub, dict):
                 param = {k: v for k, v in sub.items() if k != "recognition"}
                 subs.append({"type": sub.get("recognition"), "param": param})
-        return {"enabled": enabled, "recognition": {"type": "And", "param": {"all_of": subs}}}
+        action = node.get("action")
+        if not isinstance(action, dict):
+            action = {
+                "type": action,
+                "param": {key: node[key] for key in ("custom_action", "custom_action_param") if key in node},
+            }
+        return {
+            "enabled": enabled,
+            "recognition": {"type": "And", "param": {"all_of": subs}},
+            "action": action,
+        }
 
     def override_pipeline(self, patches):
         self.patches.update(patches)
 
 
 def card_names(launcher, prefix):
+    selector = load_selector(set())
+    context = FakeContext(launcher)
     out = {}
-    for name, node in launcher.items():
+    for name in launcher:
         if name.startswith(prefix) and name[len(prefix):].isdigit():
-            for sub in node.get("all_of", []):
-                if isinstance(sub, dict) and sub.get("custom_recognition") == "PackBadgeNotDone":
-                    out[int(name[len(prefix):])] = sub["custom_recognition_param"]["card_name"]
+            out[int(name[len(prefix):])] = selector.card_name_of(context.get_node_data(name))
     return out
+
+
+class CollectConfigTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.selector = load_selector(set())
+
+    @staticmethod
+    def _metadata(params):
+        return {"action": {"type": "Custom", "param": {
+            "custom_action": "PatchPipeline", "custom_action_param": params,
+        }}}
+
+    @staticmethod
+    def _completion(card="Story_01_血骑士"):
+        return {"action": "Custom", "custom_action": "MarkComplete",
+                "custom_action_param": {"card_name": card, "cycle_type": "g_weekly"}}
+
+    def test_name_from_success_payload_in_both_patch_forms(self):
+        """成功载荷是单卡身份来源；兼容单目标、多目标和逐节点补丁。"""
+        payload = self._completion()
+        cases = [
+            {"target": "Collect_PackEnd_Ck", "patch": payload},
+            {"target": ["Collect_PackEnd_Ck", "Extra"], "patch": payload},
+            {"patches": {"Collect_PackEnd_Ck": payload, "Other": {"enabled": False}}},
+        ]
+        for params in cases:
+            with self.subTest(params=params):
+                data = self._metadata(params)
+                before = copy.deepcopy(data)
+                self.assertEqual(self.selector.card_name_of(data), "Story_01_血骑士")
+                self.assertEqual(data, before)
+
+    def test_missing_or_ambiguous_name_is_not_a_completed_card(self):
+        """不猜其他动作、其他出口或畸形载荷，留给选择器保留类别。"""
+        payload = self._completion()
+        cases = [
+            {}, {"target": "Other", "patch": payload}, {"patches": []},
+            {"target": "Collect_PackEnd_Ck", "patch": payload, "patches": {}},
+            {"target": "Collect_PackEnd_Ck", "patch": self._completion("")},
+            {"target": "Collect_PackEnd_Ck", "patch": self._completion(123)},
+            {"target": "Collect_PackEnd_Ck", "patch": {"custom_action_param": {"card_name": "wrong"}}},
+        ]
+        for params in cases:
+            with self.subTest(params=params):
+                self.assertIsNone(self.selector.card_name_of(self._metadata(params)))
+        for data in (None, [], {"recognition": {"param": {"all_of": []}}}):
+            self.assertIsNone(self.selector.card_name_of(data))
+
+    def test_current_named_cards_all_have_success_metadata(self):
+        launcher = load_launcher()
+        context = FakeContext(launcher)
+        names = [name for name in launcher if PACK_NAME_RE.match(name)]
+        self.assertTrue(names)
+        for name in names:
+            with self.subTest(node=name):
+                self.assertEqual(launcher[name]["recognition"], "TemplateMatch")
+                self.assertNotIn("all_of", launcher[name])
+                self.assertIsInstance(self.selector.card_name_of(context.get_node_data(name)), str)
+
+    def test_debug_list_read_isolated_and_disabled_residue_ignored(self):
+        """启用才读取名单；空类、残留 attach 和不同账号的上下文不会相互放行。"""
+        launcher = load_launcher()
+        configured = {"StoryPack": "1,3~5", "CharacterPack": "", "EventPack": "2，4"}
+        disabled = FakeContext(launcher, attach={"Collect_DebugList_User": configured})
+        self.assertEqual(self.selector.debug_list_numbers(disabled), {})
+        first = FakeContext(launcher, debug_map={}, attach={"Collect_DebugList_User": configured})
+        self.assertEqual(self.selector.debug_list_numbers(first), {"StoryPack": {1, 3, 4, 5}, "EventPack": {2, 4}})
+        second = FakeContext(launcher, debug_map={"CharacterPack": {3}})
+        numbers = self.selector.debug_list_numbers(second)
+        self.assertTrue(self.selector.card_in_debug_list("Character_3_美丽无望", numbers))
+        self.assertFalse(self.selector.card_in_debug_list("Story_03_雾之叹息", numbers))
+        self.assertFalse(self.selector.card_in_debug_list("Unknown_3", numbers))
+
+    def test_debug_list_read_failure_returns_empty(self):
+        context = types.SimpleNamespace(get_node_data=lambda _n: None)
+        self.assertEqual(self.selector.debug_list_numbers(context), {})
 
 
 class SelectorTests(unittest.TestCase):
@@ -373,6 +479,11 @@ class SelectorTests(unittest.TestCase):
         _r, patches = self._run(done=all_done, debug_map={"StoryPack": {3}})
         self.assertNotIn("Collect_FeatureSwitch_StoryPack", patches)
         self.assertIn("Collect_FeatureSwitch_CharacterPack", patches)
+
+    def test_disabled_debug_with_stale_list_does_not_keep_type_open(self):
+        all_done = list(self.story.values()) + list(self.char.values()) + list(self.event.values())
+        _r, patches = self._run(done=all_done, attach={"Collect_DebugList_User": {"StoryPack": "3"}})
+        self.assertIn("Collect_FeatureSwitch_StoryPack", patches)
 
     def test_unreadable_card_name_keeps_type_open(self):
         """读不到卡名就不关该类(宁可多扫，不可漏采)。"""

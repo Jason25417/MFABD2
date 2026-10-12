@@ -6,7 +6,7 @@ from maa.custom_action import CustomAction
 
 from utils import mfaalog
 from utils.account_sync import sync_from_context
-from recognition.pack_badge import card_in_debug_list, debug_list_numbers
+from utils.collect_config import card_in_debug_list, debug_list_numbers
 from .cartridge_lib import manager
 
 # ==============================================================================
@@ -19,19 +19,51 @@ from .cartridge_lib import manager
 # 只关不开；任何一步判不出来就不关该类（宁可多扫，不可漏采）。
 # 类别、卡带节点前缀与入口节点的对照写在节点的 custom_action_param.types 里。
 CYCLE_TYPE = "g_weekly"
+PACK_END_NODE = "Collect_PackEnd_Ck"
+
+
+def _custom_action_params(node_data, action_name):
+    """读取 V2 归一化节点或 V1 补丁里的指定 Custom 动作参数。"""
+    if not isinstance(node_data, dict):
+        return None
+    action = node_data.get("action")
+    if isinstance(action, dict):
+        if action.get("type") != "Custom":
+            return None
+        param = action.get("param")
+    else:
+        if action != "Custom":
+            return None
+        param = node_data
+    if not isinstance(param, dict) or param.get("custom_action") != action_name:
+        return None
+    value = param.get("custom_action_param")
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except (TypeError, ValueError):
+            return None
+    return value if isinstance(value, dict) else None
 
 
 def card_name_of(node_data):
-    """具名卡带节点的 get_node_data 结果 -> card_name（取 And 子识别里 PackBadgeNotDone 的参数）。"""
-    try:
-        subs = node_data["recognition"]["param"]["all_of"]
-    except (KeyError, TypeError):
+    """从具名卡给成功出口设置的 MarkComplete 载荷读取卡名，不读取识别或存档。"""
+    params = _custom_action_params(node_data, "PatchPipeline")
+    if params is None:
         return None
-    for sub in subs or []:
-        param = sub.get("param") if isinstance(sub, dict) else None
-        if isinstance(param, dict) and param.get("custom_recognition") == "PackBadgeNotDone":
-            return (param.get("custom_recognition_param") or {}).get("card_name")
-    return None
+    if "patches" in params:
+        if "target" in params or "patch" in params:
+            return None
+        patches = params["patches"]
+        payload = patches.get(PACK_END_NODE) if isinstance(patches, dict) else None
+    else:
+        targets = params.get("target")
+        if targets != PACK_END_NODE and not (isinstance(targets, list) and PACK_END_NODE in targets):
+            return None
+        payload = params.get("patch")
+    completion = _custom_action_params(payload, "MarkComplete")
+    card = completion.get("card_name") if completion else None
+    return card if isinstance(card, str) and card.strip() else None
 
 
 def decide(cards, in_debug, all_done):

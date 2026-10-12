@@ -169,7 +169,7 @@ class BatchNumericPatch(CustomAction):
 #         与排除（屏蔽）重叠时自然以排除为准，默认不支持采集的卡带（Story_20 / Character_8）也不会被打开。
 #         三类都没有有效编号时视为没开，不修改。
 #   调试：名单内的卡带启用（含默认不支持的），其余具名卡带与无名卡兜底全部禁用，没填的类整类不进。
-#         名单内的卡带无视双勾，放行在 recognition/pack_badge.py（读同一个 attach）。
+#         名单内的卡带由独立的调试选卡分支放行，不受彩色徽章条件限制。
 # 本周还有没有要采的，由下游 Collect_PackType_Select（action/pack_type_select.py）统一判断。
 WHITE_LIST_NODE = "Collect_WhiteList_User"
 DEBUG_LIST_NODE = "Collect_DebugList_User"

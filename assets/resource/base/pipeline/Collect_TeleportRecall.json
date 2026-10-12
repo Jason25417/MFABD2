@@ -518,19 +518,7 @@
         "expected": [
             "泳池派对场"
         ],
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_IM_Closure",
-            "patch": {
-                "action": "Custom",
-                "custom_action": "MarkComplete",
-                "custom_action_param": {
-                    "card_name": "Event_1_夏日骑士",
-                    "cycle_type": "g_weekly"
-                }
-            }
-        },
+        "action": "DoNothing",
         "timeout": 5000,
         "next": [
             "[JumpBack]Collect_IM_OnFoot_NviMap_Skill01",
@@ -557,19 +545,7 @@
         "expected": [
             "派对会场角落"
         ],
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_IM_Closure",
-            "patch": {
-                "action": "Custom",
-                "custom_action": "MarkComplete",
-                "custom_action_param": {
-                    "card_name": "Event_1_夏日骑士",
-                    "cycle_type": "g_weekly"
-                }
-            }
-        },
+        "action": "DoNothing",
         "timeout": 5000,
         "next": [
             "[JumpBack]Collect_IM_OnFoot_NviMap_Skill01",
@@ -828,7 +804,7 @@
         "focus": "最后一次(根据地图使用)技能调用,结束后出口锚定到模块收尾"
     },
     "Collect_IM_Closure": {
-        "desc": "复位到卡带菜单,结束-【占用active】用于打标记完成卡带",
+        "desc": "步行吸取正常完成出口；清技能出口锚并复位临时状态，随后恢复列表，统一执行本卡完成写档与禁用。",
         "recognition": "Or",
         "any_of": [
             "Global_QuickCart_MenuReset_Ocr",
@@ -844,7 +820,7 @@
         "focus": "[特殊地图]-步行吸取模块完成"
     },
     "Collect_IM_Reset": {
-        "desc": "复位环境",
+        "desc": "步行吸取成功后复位临时覆盖及本轮技能标签，再恢复快速卡带列表。",
         "action": "Custom",
         "custom_action": "RestorePipeline",
         "custom_action_param": {
@@ -857,6 +833,9 @@
                 "NviMap_Sub_Err"
             ]
         },
+        "next": [
+            "Collect_IM_ReturnToQuickCart"
+        ],
         "focus": "步行吸取环境复位"
     },
     "Collect_IM_GoinNviMap": {
@@ -912,19 +891,7 @@
         "expected": [
             "海岸沙滩"
         ],
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_IM_Closure",
-            "patch": {
-                "action": "Custom",
-                "custom_action": "MarkComplete",
-                "custom_action_param": {
-                    "card_name": "Event_3_海滨天使",
-                    "cycle_type": "g_weekly"
-                }
-            }
-        },
+        "action": "DoNothing",
         "timeout": 5000,
         "next": [
             "[JumpBack]Collect_IM_OnFoot_NviMap_Skill01",
@@ -951,19 +918,7 @@
         "expected": [
             "海岸椰林"
         ],
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_IM_Closure",
-            "patch": {
-                "action": "Custom",
-                "custom_action": "MarkComplete",
-                "custom_action_param": {
-                    "card_name": "Event_3_海滨天使",
-                    "cycle_type": "g_weekly"
-                }
-            }
-        },
+        "action": "DoNothing",
         "timeout": 5000,
         "next": [
             "[JumpBack]Collect_IM_OnFoot_NviMap_Skill01",
@@ -1085,19 +1040,7 @@
         "expected": [
             "底层居住区"
         ],
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_IM_Closure",
-            "patch": {
-                "action": "Custom",
-                "custom_action": "MarkComplete",
-                "custom_action_param": {
-                    "card_name": "Event_4_记忆边缘",
-                    "cycle_type": "g_weekly"
-                }
-            }
-        },
+        "action": "DoNothing",
         "timeout": 5000,
         "next": [
             "[JumpBack]Collect_IM_OnFoot_NviMap_Skill01",
@@ -1124,19 +1067,7 @@
         "expected": [
             "第4区"
         ],
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_IM_Closure",
-            "patch": {
-                "action": "Custom",
-                "custom_action": "MarkComplete",
-                "custom_action_param": {
-                    "card_name": "Event_4_记忆边缘",
-                    "cycle_type": "g_weekly"
-                }
-            }
-        },
+        "action": "DoNothing",
         "timeout": 5000,
         "next": [
             "[JumpBack]Collect_IM_OnFoot_NviMap_Skill01",
@@ -1227,19 +1158,7 @@
         "expected": [
             "水上乐园室内泳池"
         ],
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_IM_Closure",
-            "patch": {
-                "action": "Custom",
-                "custom_action": "MarkComplete",
-                "custom_action_param": {
-                    "card_name": "Event_5_戏水女王",
-                    "cycle_type": "g_weekly"
-                }
-            }
-        },
+        "action": "DoNothing",
         "timeout": 5000,
         "next": [
             "[JumpBack]Collect_IM_OnFoot_NviMap_Skill01",
@@ -1266,19 +1185,7 @@
         "expected": [
             "泼水音乐节活动"
         ],
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_IM_Closure",
-            "patch": {
-                "action": "Custom",
-                "custom_action": "MarkComplete",
-                "custom_action_param": {
-                    "card_name": "Event_5_戏水女王",
-                    "cycle_type": "g_weekly"
-                }
-            }
-        },
+        "action": "DoNothing",
         "timeout": 5000,
         "next": [
             "[JumpBack]Collect_IM_OnFoot_NviMap_Skill01",
@@ -1305,19 +1212,7 @@
         "expected": [
             "剑之神殿右侧回廊"
         ],
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_IM_Closure",
-            "patch": {
-                "action": "Custom",
-                "custom_action": "MarkComplete",
-                "custom_action_param": {
-                    "card_name": "Story_14_神圣审判",
-                    "cycle_type": "g_weekly"
-                }
-            }
-        },
+        "action": "DoNothing",
         "timeout": 5000,
         "next": [
             "Collect_IM_M14_Prepare"
@@ -1347,6 +1242,7 @@
         ]
     },
     "Collect_IM_OnFoot_NviMap_M14_A1_Move": {
+        "desc": "M14步行到采集点后调用技能；仅由技能正常出口锚进入M14收尾，不能在技能失败退栈后直接判完成。",
         "max_hit": 5,
         "recognition": "And",
         "all_of": [
@@ -1368,8 +1264,7 @@
             "[JumpBack]Collect_IM_OnFoot_Moveing",
             "Collect_IM_OnFoot_Skill_OnlyOnec",
             "[JumpBack]Collect_IM_Move_MGS",
-            "[JumpBack]Global_WaitingForLoading",
-            "Collect_IM_OnFoot_NviMap_M14_Egress"
+            "[JumpBack]Global_WaitingForLoading"
         ],
         "on_error": [
             "Collect_IM_OnFoot_NviMap_Sub_Err",
@@ -2377,5 +2272,16 @@
             "Collect_ForceTeleporCircle_No"
         ],
         "focus": "CTB.到达-放传送技能复位"
+    },
+    "Collect_IM_ReturnToQuickCart": {
+        "desc": "步行吸取正常完成后恢复快速卡带列表；只有列表确认成功才进入统一完成写档出口。",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "Collect_QuickCart_SuccessUI",
+            "[JumpBack]Global_QuickCart_MenuReset",
+            "[JumpBack]Global_ToSandBox"
+        ],
+        "focus": "CTB.步行吸取完成，恢复列表收尾"
     }
 }

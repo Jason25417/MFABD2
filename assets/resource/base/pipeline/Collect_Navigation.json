@@ -692,13 +692,13 @@
         "focus": "C3.战斗2已采完-本卡带完成"
     },
     "Collect_C3_S8_Finish": {
-        "desc": "[C3·收尾]战斗1 + 战斗2(=禁闭室) 都采完 ⇒ 本卡带采集完成。先关掉可能残留的面板/地图,再走既有收尾退卡带(Collect_QuickCart_FastUI → Collect_PackEnd_Ck 会由卡带节点 Collect_Pack_Character_3 的 PatchPipeline 打完成标记)。★2026-10-02 本地:加 max_hit:1 并把 next 收敛为 ['Collect_QuickCart_FastUI', '[JumpBack]Global_QuickCart_MenuReset', '[JumpBack]Global_ToSandBox']。原因:本节点是 DirectHit(永远命中),而 next 里的候选都'不成立就返回'(Global_BackPageHub_Once 是 [JumpBack]、FastUI 识别不中、MenuReset 跑完即回) ⇒ 候选轮完回到本节点重评 ⇒ 原地死循环(实测日志 11:26:36~11:26:55 反复'打开/关闭卡带列表')。max_hit 保证只跑一次。",
+        "desc": "[C3·收尾]战斗1 + 战斗2(=禁闭室) 都采完 ⇒ 本卡带采集完成。先关掉可能残留的面板/地图,再走既有收尾退卡带(Collect_QuickCart_SuccessUI → Collect_PackEnd_Ck 会由卡带节点 Collect_Pack_Character_3 的 PatchPipeline 打完成标记)。★2026-10-02 本地:加 max_hit:1 并把 next 收敛为 ['Collect_QuickCart_SuccessUI', '[JumpBack]Global_QuickCart_MenuReset', '[JumpBack]Global_ToSandBox']。原因:本节点是 DirectHit(永远命中),而 next 里的候选都'不成立就返回'(Global_BackPageHub_Once 是 [JumpBack]、FastUI 识别不中、MenuReset 跑完即回) ⇒ 候选轮完回到本节点重评 ⇒ 原地死循环(实测日志 11:26:36~11:26:55 反复'打开/关闭卡带列表')。max_hit 保证只跑一次。",
         "max_hit": 1,
         "recognition": "DirectHit",
         "action": "DoNothing",
         "post_delay": 500,
         "next": [
-            "Collect_QuickCart_FastUI",
+            "Collect_QuickCart_SuccessUI",
             "[JumpBack]Global_QuickCart_MenuReset",
             "[JumpBack]Global_ToSandBox"
         ],
@@ -1312,14 +1312,14 @@
         "focus": "S18.战斗3采集收尾(先补施)"
     },
     "Collect_S18_S10_Finish": {
-        "desc": "[S18·收尾]地图1 + 战斗1(科库托斯圣域) + 战斗3(第一记忆空间) 都采完 ⇒ **本卡带采集完成**,按既有收尾退卡带(Collect_QuickCart_FastUI → 由卡带节点 Collect_Pack_Story_18 的 PatchPipeline 在 Collect_PackEnd_Ck 打完成标记),回到快速卡带菜单等下一张。★若你希望采完仍回到卡带内流程(而非直接退卡带),把下一行换成 Collect_OperationsMain_Sandplay 即可。★2026-10-01 本地:next 首位补两次通用返回 [JumpBack]Global_BackPageHub_Once——实测残留的'移动魔法阵'面板会挡住卡带列表,导致 Collect_QuickCart_Menu 等节点全部匹配不上、Task timeout(20:21:15 / 20:21:35)。★2026-10-02 本地:加 max_hit:1 并把 next 收敛为 ['Collect_QuickCart_FastUI', '[JumpBack]Global_QuickCart_MenuReset', '[JumpBack]Global_ToSandBox']。原因:本节点是 DirectHit(永远命中),而 next 里的候选都'不成立就返回'(Global_BackPageHub_Once 是 [JumpBack]、FastUI 识别不中、MenuReset 跑完即回) ⇒ 候选轮完回到本节点重评 ⇒ 原地死循环(实测日志 11:26:36~11:26:55 反复'打开/关闭卡带列表')。max_hit 保证只跑一次。",
+        "desc": "[S18·收尾]地图1 + 战斗1(科库托斯圣域) + 战斗3(第一记忆空间) 都采完 ⇒ **本卡带采集完成**,按既有收尾退卡带(Collect_QuickCart_SuccessUI → 由卡带节点 Collect_Pack_Story_18 的 PatchPipeline 在 Collect_PackEnd_Ck 打完成标记),回到快速卡带菜单等下一张。★若你希望采完仍回到卡带内流程(而非直接退卡带),把下一行换成 Collect_OperationsMain_Sandplay 即可。★2026-10-01 本地:next 首位补两次通用返回 [JumpBack]Global_BackPageHub_Once——实测残留的'移动魔法阵'面板会挡住卡带列表,导致 Collect_QuickCart_Menu 等节点全部匹配不上、Task timeout(20:21:15 / 20:21:35)。★2026-10-02 本地:加 max_hit:1 并把 next 收敛为 ['Collect_QuickCart_SuccessUI', '[JumpBack]Global_QuickCart_MenuReset', '[JumpBack]Global_ToSandBox']。原因:本节点是 DirectHit(永远命中),而 next 里的候选都'不成立就返回'(Global_BackPageHub_Once 是 [JumpBack]、FastUI 识别不中、MenuReset 跑完即回) ⇒ 候选轮完回到本节点重评 ⇒ 原地死循环(实测日志 11:26:36~11:26:55 反复'打开/关闭卡带列表')。max_hit 保证只跑一次。",
         "max_hit": 1,
         "recognition": "DirectHit",
         "action": "DoNothing",
         "post_delay": 500,
         "next": [
             "[JumpBack]Collect_S18_Tags_Reset",
-            "Collect_QuickCart_FastUI",
+            "Collect_QuickCart_SuccessUI",
             "[JumpBack]Global_QuickCart_MenuReset",
             "[JumpBack]Global_ToSandBox"
         ],
@@ -1445,7 +1445,7 @@
         ],
         "inverse": true,
         "next": [
-            "Collect_QuickCart_FastUI",
+            "Collect_QuickCart_SuccessUI",
             "[JumpBack]Global_QuickCart_MenuReset",
             "[JumpBack]Global_ToSandBox"
         ],
@@ -1972,17 +1972,21 @@
         "post_delay": 2000
     },
     "Collect_QuickCart_FastUI": {
+        "desc": "快速卡带列表已打开，但当前返回未确认整卡采集成功；仅退回选卡，不打完成标记。",
         "recognition": "Or",
         "any_of": [
             "Global_QuickCart_MenuReset_Ocr"
         ],
         "next": [
-            "Collect_PackEnd_Ck"
+            "Collect_PackEnd_Failed"
         ],
         "focus": "QCB.确认快速卡带"
     },
     "Collect_PackEnd_Ck": {
-        "desc": "预留节点,禁止删除,远端传入action打完成卡带标记。",
+        "desc": "整卡正常完成的写档入口；具名卡注入 MarkComplete，成功后禁用本轮当前卡，再退回选卡。失败返回不得接入。",
+        "next": [
+            "Collect_PackEnd_Disable"
+        ],
         "focus": "CM.卡带内流程结束-执行完成打标记"
     },
     "Collect_QuickCart_TargetMapEnd": {
@@ -1993,7 +1997,7 @@
         ],
         "next": [
             "[Anchor]C3_Battle2_Trip",
-            "Collect_QuickCart_FastUI",
+            "Collect_QuickCart_SuccessUI",
             "[JumpBack]Global_QuickCart_MenuReset",
             "[JumpBack]Global_ToSandBox"
         ],
@@ -2329,5 +2333,44 @@
             ]
         },
         "focus": "S18.清零本轮标签"
+    },
+    "Collect_QuickCart_SuccessUI": {
+        "desc": "整卡正常完成后确认快速卡带列表已打开，再执行完成写档与本轮禁用。仅由明确成功出口调用。",
+        "recognition": "Or",
+        "any_of": [
+            "Collect_QuickCart_FastUI"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "Collect_PackEnd_Ck"
+        ],
+        "focus": "CM.卡带采集成功，确认列表并收尾"
+    },
+    "Collect_PackEnd_Disable": {
+        "desc": "完成写档成功后禁用本轮当前具名卡；动作执行后清当前卡锚，正常退栈。每周一次入口可覆写本节点 next 接任务收尾。",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "PatchPipeline",
+        "custom_action_param": {
+            "target": "[Anchor]CurrentCollectPack",
+            "patch": {
+                "enabled": false
+            }
+        },
+        "anchor": {
+            "CurrentCollectPack": ""
+        },
+        "post_delay": 0
+    },
+    "Collect_PackEnd_Failed": {
+        "desc": "卡内失败、放弃或未确认完成的退栈出口；不写完成存档、不禁用具名卡，重进由该卡 max_hit 限制。",
+        "pre_delay": 0,
+        "action": "DoNothing",
+        "anchor": {
+            "CurrentCollectPack": ""
+        },
+        "post_delay": 0,
+        "focus": "CM.[WRN]卡带未确认完成，返回列表继续处理"
     }
 }

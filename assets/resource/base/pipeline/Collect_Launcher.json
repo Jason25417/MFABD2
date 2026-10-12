@@ -33,11 +33,6 @@
         "custom_action": "PatchPipeline",
         "custom_action_param": {
             "patches": {
-                "Collect_PackEnd_Ck": {
-                    "next": [
-                        "Collect_PackEnd_Ck_OnlyOnce"
-                    ]
-                },
                 "Collect_Skill3_2": {
                     "next": [
                         "Collect_Skill3_2",
@@ -47,6 +42,11 @@
                         "Collect_Skill3_3_Nothing",
                         "Collect_Skill3_3",
                         "Collect_Skill_TapReset"
+                    ]
+                },
+                "Collect_PackEnd_Disable": {
+                    "next": [
+                        "Collect_PackEnd_Ck_OnlyOnce"
                     ]
                 }
             }
@@ -103,7 +103,7 @@
         ]
     },
     "Collect_AllLibGone": {
-        "desc": "全类标签已达标,结束task。⚠️已停用(2026-10-01):SimpleDone只是「本周期扫到过底」,不代表卡带真采完——卡带下双勾徽章才是完成事实。保留该闸会整周跳过未采完的卡带,与 PackBadgeNotDone 图标判据冲突。要恢复请同时恢复 Collect_*Pack_SetSimpleSkip 的存档闸。",
+        "desc": "保留旧配置兼容节点，当前停用；整类开关由目标选择器按启用名单和本周完成记录决定。",
         "enabled": false,
         "recognition": "Custom",
         "custom_recognition": "CheckCoolDown",
@@ -182,7 +182,7 @@
         "focus": "CM.P.应用自选采集卡带范围"
     },
     "Collect_DebugList_User": {
-        "desc": "应用卡带调试直采名单 | 调试用，默认关闭，由 interface 开关启用；启用后 Sandplay 走本节点，不经过「排除卡带」与「自选采集卡带范围」。从 attach 读取三类编号：名单内的具名卡带全部启用（含默认不支持采集的），其余具名卡带与无名卡兜底 Collect_Pack_Unnamed 全部禁用，没填的类别整类不进。名单内的卡带由 PackBadgeNotDone 无视双勾放行，目标选择器也把它们算作待采。",
+        "desc": "应用调试采集名单：只启用名单内的具名卡，允许默认不支持的卡；其余卡和无名兼容节点禁用。interface 同时启用独立调试选卡分支，不受彩色徽章条件限制。",
         "enabled": false,
         "pre_delay": 0,
         "action": "Custom",
@@ -285,12 +285,12 @@
             "max": 1
         },
         "anchor": {
-            "SetSimpleSkip": "Collect_StoryPack_SetSimpleSkip",
             "SmartSwipOut": ""
         },
         "timeout": 1,
         "next": [
-            "Collect_QuickCart_SelectType_StoryPack"
+            "[JumpBack]Global_QuickCart_MenuReset",
+            "Collect_StoryPack_SetSimpleSkip"
         ]
     },
     "Collect_FeatureSwitch_CharacterPack": {
@@ -345,31 +345,30 @@
         ]
     },
     "Collect_StoryPack_SetSimpleSkip": {
-        "desc": "原为「简单类跳过」存档闸(每周首扫后整类跳过)。2026-10-01 改 DirectHit:采集完成与否以卡带下双勾徽章为准(PackBadgeNotDone),存档闸会整周跳过没采完的卡带。类扫到底仍会经 SmartSwipOut 锚点打 SimpleDone 标,仅作记录。",
+        "desc": "设置本类扫描收尾后选择分类；保留旧 SimpleSkip 配置接口，具名卡完成记录只供外层类别选择。",
         "anchor": {
             "SmartSwipOut": "Collect_LocatePack_SimpleSkip_Story",
-            "SetSimpleSkip": "Collect_FirstBootPack_To1_Sandbox_Dit"
+            "PackScan_End": "Collect_QC_Scan_Mark_Story"
         },
         "next": [
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_LocatePackFrame_Loc1"
+            "Collect_QuickCart_SelectType_StoryPack"
         ]
     },
     "Collect_CharacterPack_SetSimpleSkip": {
-        "desc": "同 Story:存档闸已拆(2026-10-01),改 DirectHit,是否采集由卡带双勾徽章决定。",
+        "desc": "设置本类扫描收尾后选择分类；保留旧 SimpleSkip 配置接口，具名卡完成记录只供外层类别选择。",
         "anchor": {
             "SmartSwipOut": "Collect_LocatePack_SimpleSkip_Character",
-            "SetSimpleSkip": "Collect_FirstBootPack_To1_Sandbox_Dit"
+            "PackScan_End": "Collect_QC_Scan_Mark_Character"
         },
         "next": [
             "Collect_QuickCart_SelectType_CharacterPack"
         ]
     },
     "Collect_EventPack_SetSimpleSkip": {
-        "desc": "同 Story:存档闸已拆(2026-10-01),改 DirectHit,是否采集由卡带双勾徽章决定。",
+        "desc": "设置本类扫描收尾后选择分类；保留旧 SimpleSkip 配置接口，具名卡完成记录只供外层类别选择。",
         "anchor": {
             "SmartSwipOut": "Collect_LocatePack_SimpleSkip_Event",
-            "SetSimpleSkip": "Collect_FirstBootPack_To1_Sandbox_Dit"
+            "PackScan_End": "Collect_QC_Scan_Mark_Event"
         },
         "next": [
             "Collect_QuickCart_SelectType_EventPack",
@@ -377,6 +376,7 @@
         ]
     },
     "Collect_ManagerPack_SetSimpleSkip": {
+        "desc": "设置本类扫描收尾后选择分类；保留旧 SimpleSkip 配置接口，具名卡完成记录只供外层类别选择。",
         "recognition": "Custom",
         "custom_recognition": "CheckCoolDown",
         "custom_recognition_param": {
@@ -385,7 +385,7 @@
         },
         "anchor": {
             "SmartSwipOut": "Collect_LocatePack_SimpleSkip_Manager",
-            "SetSimpleSkip": "Collect_FirstBootPack_To1_Sandbox_Dit"
+            "PackScan_End": "Global_Null"
         },
         "next": [
             "Collect_QuickCart_SelectType_ManagerPack"
@@ -507,7 +507,7 @@
         "focus": "CM.L.生活玩法游戏卡带集"
     },
     "Collect_QuickCart_StoryPack_OcrCheck": {
-        "desc": "当前节点链层数标记：2。初次调取卡带菜单完毕，开始初次点击卡带.先复位再to1,to1没判定的!不可直接IsPresent,防止用户行为干扰",
+        "desc": "确认分类已选中，恢复本类滑动预算为零，再从列表左端开始探测；不预先进第一张卡。",
         "recognition": "ColorMatch",
         "roi": "Collect_QuickCart_SelectType_StoryPack",
         "lower": [
@@ -524,10 +524,10 @@
         "action": "Custom",
         "custom_action": "RestorePipeline",
         "custom_action_param": {
-            "target": "Collect_LocatePackFrame_Smart_Swip"
+            "target": "Collect_PackScroll_Restore"
         },
         "anchor": {
-            "LocSmartSwip_Limit Ctr": "Collect_Loc_Swip_1Page"
+            "PackScroll_Next": "Collect_PackScroll_ToPage2"
         },
         "next": [
             "Collect_FirstBootPack"
@@ -535,6 +535,7 @@
         "focus": "CM.L.剧情-卡带调取完毕"
     },
     "Collect_QuickCart_CharacterPack_OcrCheck": {
+        "desc": "确认分类已选中，恢复本类滑动预算为零，再从列表左端开始探测；不预先进第一张卡。",
         "recognition": "ColorMatch",
         "roi": "Collect_QuickCart_SelectType_CharacterPack",
         "lower": [
@@ -551,10 +552,10 @@
         "action": "Custom",
         "custom_action": "RestorePipeline",
         "custom_action_param": {
-            "target": "Collect_LocatePackFrame_Smart_Swip"
+            "target": "Collect_PackScroll_Restore"
         },
         "anchor": {
-            "LocSmartSwip_Limit Ctr": "Collect_Loc_Swip_1Page"
+            "PackScroll_Next": "Collect_PackScroll_ToPage2"
         },
         "next": [
             "Collect_FirstBootPack"
@@ -562,6 +563,7 @@
         "focus": "CM.L.角色-卡带调取完毕"
     },
     "Collect_QuickCart_EventPack_OcrCheck": {
+        "desc": "确认分类已选中，恢复本类滑动预算为零，再从列表左端开始探测；不预先进第一张卡。",
         "recognition": "ColorMatch",
         "roi": "Collect_QuickCart_SelectType_EventPack",
         "lower": [
@@ -578,10 +580,10 @@
         "action": "Custom",
         "custom_action": "RestorePipeline",
         "custom_action_param": {
-            "target": "Collect_LocatePackFrame_Smart_Swip"
+            "target": "Collect_PackScroll_Restore"
         },
         "anchor": {
-            "LocSmartSwip_Limit Ctr": "Collect_Loc_Swip_1Page"
+            "PackScroll_Next": "Collect_PackScroll_ToPage2"
         },
         "next": [
             "Collect_FirstBootPack"
@@ -589,6 +591,7 @@
         "focus": "CM.L.活动-卡带调取完毕"
     },
     "Collect_QuickCart_ManagerPack_OcrCheck": {
+        "desc": "确认分类已选中，恢复本类滑动预算为零，再从列表左端开始探测；不预先进第一张卡。",
         "recognition": "ColorMatch",
         "roi": "Collect_QuickCart_SelectType_ManagerPack",
         "lower": [
@@ -605,10 +608,10 @@
         "action": "Custom",
         "custom_action": "RestorePipeline",
         "custom_action_param": {
-            "target": "Collect_LocatePackFrame_Smart_Swip"
+            "target": "Collect_PackScroll_Restore"
         },
         "anchor": {
-            "LocSmartSwip_Limit Ctr": "Collect_Loc_Swip_1Page"
+            "PackScroll_Next": "Collect_PackScroll_ToPage2"
         },
         "next": [
             "Collect_FirstBootPack"
@@ -616,6 +619,7 @@
         "focus": "CM.L.店长-卡带调取完毕"
     },
     "Collect_QuickCart_BattleplayPack_OcrCheck": {
+        "desc": "确认分类已选中，恢复本类滑动预算为零，再从列表左端开始探测；不预先进第一张卡。",
         "recognition": "ColorMatch",
         "roi": "Collect_QuickCart_SelectType_BattleplayPack",
         "lower": [
@@ -632,10 +636,10 @@
         "action": "Custom",
         "custom_action": "RestorePipeline",
         "custom_action_param": {
-            "target": "Collect_LocatePackFrame_Smart_Swip"
+            "target": "Collect_PackScroll_Restore"
         },
         "anchor": {
-            "LocSmartSwip_Limit Ctr": "Collect_Loc_Swip_1Page"
+            "PackScroll_Next": "Collect_PackScroll_ToPage2"
         },
         "next": [
             "Collect_FirstBootPack"
@@ -643,6 +647,7 @@
         "focus": "CM.L.战斗玩法-卡带调取完毕"
     },
     "Collect_QuickCart_LifeplayPack_OcrCheck": {
+        "desc": "确认分类已选中，恢复本类滑动预算为零，再从列表左端开始探测；不预先进第一张卡。",
         "recognition": "ColorMatch",
         "roi": "Collect_QuickCart_SelectType_LifeplayPack",
         "lower": [
@@ -659,10 +664,10 @@
         "action": "Custom",
         "custom_action": "RestorePipeline",
         "custom_action_param": {
-            "target": "Collect_LocatePackFrame_Smart_Swip"
+            "target": "Collect_PackScroll_Restore"
         },
         "anchor": {
-            "LocSmartSwip_Limit Ctr": "Collect_Loc_Swip_1Page"
+            "PackScroll_Next": "Collect_PackScroll_ToPage2"
         },
         "next": [
             "Collect_FirstBootPack"
@@ -670,736 +675,8 @@
         "focus": "CM.L.生活玩法-卡带调取完毕"
     },
     "Collect_FirstBootPack": {
-        "next": [
-            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
-            "Collect_FirstBootPack_To1"
-        ]
-    },
-    "Collect_FirstBootPack_To1": {
-        "action": "Click",
-        "target": [
-            110,
-            626,
-            15,
-            14
-        ],
-        "post_delay": 5000,
-        "next": [
-            "[JumpBack]Global_WaitingForLoading",
-            "[JumpBack]Collect_FirstPack",
-            "[JumpBack]Collect_FirstPack_Talk",
-            "Collect_FirstBootPack_To1_Sandbox"
-        ],
-        "focus": "CM.L.卡带类型初次启动,进入1#位置"
-    },
-    "Collect_FirstBootPack_To1_Sandbox": {
-        "desc": "确认已在箱庭中,执行技能检测.之后:对于剧情卡执行简单类判定,对于其他卡,直接下一步.",
-        "recognition": "And",
-        "all_of": [
-            "Global_ToSandBox_Enter"
-        ],
-        "timeout": 5000,
-        "next": [
-            "[JumpBack]Setup_Entry5",
-            "Collect_FirstBootPack_To1_QuickCart_Menu",
-            "[JumpBack]Global_QuickCart_MenuReset"
-        ]
-    },
-    "Collect_FirstBootPack_To1_Sandbox_Dit": {
-        "desc": "其他类别卡带已检测过存档,直接进入选择器",
-        "next": [
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_LocatePackFrame_Loc1"
-        ]
-    },
-    "Collect_FirstBootPack_To1_QuickCart_Menu": {
-        "desc": "确认调出卡带菜单后,1ms逻辑判定",
-        "recognition": "Or",
-        "any_of": [
-            "Collect_QuickCart_Menu"
-        ],
-        "timeout": 1,
-        "next": [
-            "[Anchor]SetSimpleSkip"
-        ]
-    },
-    "Collect_PackProbe_IsPresent": {
-        "recognition": "Or",
-        "any_of": [
-            "Global_QuickCart_MenuReset_Ocr"
-        ],
-        "timeout": 2000,
-        "next": [
-            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
-            "Collect_PackProbe_Loc1",
-            "Collect_PackProbe_Loc2",
-            "Collect_PackProbe_Loc3",
-            "Collect_PackProbe_Loc4",
-            "Collect_PackProbe_Loc5",
-            "Collect_PackProbe_Loc6",
-            "Collect_PackProbe_Loc7",
-            "Collect_PackProbe_Loc8",
-            "Collect_PackProbe_Loc9",
-            "Collect_PackProbe_NotPresent"
-        ],
-        "focus": "CM.L.当前卡带位置探针存在"
-    },
-    "Collect_PackProbe_Loc1": {
-        "recognition": "ColorMatch",
-        "roi": [
-            0,
-            659,
-            197,
-            19
-        ],
-        "method": 40,
-        "lower": [
-            22,
-            67,
-            177
-        ],
-        "upper": [
-            30,
-            241,
-            255
-        ],
-        "count": 2,
-        "timeout": 2000,
-        "next": [
-            "Collect_LocatePackFrame_Loc2"
-        ]
-    },
-    "Collect_PackProbe_Loc2": {
-        "recognition": "ColorMatch",
-        "roi": [
-            119,
-            659,
-            230,
-            19
-        ],
-        "method": 40,
-        "lower": [
-            22,
-            67,
-            177
-        ],
-        "upper": [
-            30,
-            241,
-            255
-        ],
-        "count": 2,
-        "timeout": 2000,
-        "next": [
-            "Collect_LocatePackFrame_Loc3"
-        ]
-    },
-    "Collect_PackProbe_Loc3": {
-        "recognition": "ColorMatch",
-        "roi": [
-            262,
-            659,
-            232,
-            19
-        ],
-        "method": 40,
-        "lower": [
-            22,
-            67,
-            177
-        ],
-        "upper": [
-            30,
-            241,
-            255
-        ],
-        "count": 2,
-        "timeout": 2000,
-        "next": [
-            "Collect_LocatePackFrame_Loc4"
-        ]
-    },
-    "Collect_PackProbe_Loc4": {
-        "recognition": "ColorMatch",
-        "roi": [
-            406,
-            659,
-            233,
-            19
-        ],
-        "method": 40,
-        "lower": [
-            22,
-            67,
-            177
-        ],
-        "upper": [
-            30,
-            241,
-            255
-        ],
-        "count": 2,
-        "timeout": 2000,
-        "next": [
-            "Collect_LocatePackFrame_Loc5"
-        ]
-    },
-    "Collect_PackProbe_Loc5": {
-        "recognition": "ColorMatch",
-        "roi": [
-            552,
-            659,
-            228,
-            19
-        ],
-        "method": 40,
-        "lower": [
-            22,
-            67,
-            177
-        ],
-        "upper": [
-            30,
-            241,
-            255
-        ],
-        "count": 2,
-        "timeout": 2000,
-        "next": [
-            "Collect_LocatePackFrame_Loc6"
-        ]
-    },
-    "Collect_PackProbe_Loc6": {
-        "recognition": "ColorMatch",
-        "roi": [
-            697,
-            659,
-            230,
-            19
-        ],
-        "method": 40,
-        "lower": [
-            22,
-            67,
-            177
-        ],
-        "upper": [
-            30,
-            241,
-            255
-        ],
-        "count": 2,
-        "timeout": 2000,
-        "next": [
-            "Collect_LocatePackFrame_Loc7"
-        ]
-    },
-    "Collect_PackProbe_Loc7": {
-        "recognition": "ColorMatch",
-        "roi": [
-            841,
-            659,
-            229,
-            19
-        ],
-        "method": 40,
-        "lower": [
-            22,
-            67,
-            177
-        ],
-        "upper": [
-            30,
-            241,
-            255
-        ],
-        "count": 2,
-        "timeout": 2000,
-        "next": [
-            "Collect_LocatePackFrame_Loc8"
-        ]
-    },
-    "Collect_PackProbe_Loc8": {
-        "recognition": "ColorMatch",
-        "roi": [
-            985,
-            659,
-            228,
-            19
-        ],
-        "method": 40,
-        "lower": [
-            22,
-            67,
-            177
-        ],
-        "upper": [
-            30,
-            241,
-            255
-        ],
-        "count": 2,
-        "timeout": 2000,
-        "next": [
-            "Collect_LocatePackFrame_Loc9"
-        ]
-    },
-    "Collect_PackProbe_Loc9": {
-        "recognition": "ColorMatch",
-        "roi": [
-            1136,
-            659,
-            143,
-            19
-        ],
-        "method": 40,
-        "lower": [
-            22,
-            67,
-            177
-        ],
-        "upper": [
-            30,
-            241,
-            255
-        ],
-        "count": 2,
-        "timeout": 2000,
-        "next": [
-            "Collect_LocatePackFrame_Smart_Swip"
-        ]
-    },
-    "Collect_PackProbe_NotPresent": {
-        "recognition": "ColorMatch",
-        "roi": [
-            0,
-            659,
-            1280,
-            19
-        ],
-        "method": 40,
-        "lower": [
-            22,
-            67,
-            177
-        ],
-        "upper": [
-            30,
-            241,
-            255
-        ],
-        "count": 2,
-        "inverse": true,
-        "next": [
-            "Collect_LocatePackFrame_Loc1",
-            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc"
-        ],
-        "focus": "<span style=\"color:GoldenRod;\">CM.L.位置探针不存在</span>"
-    },
-    "Collect_LocatePackFrame_Loc1": {
-        "desc": "正常范围:[41,580,163,114]/缩小范围:[47,580,145,114],让滑动复位更精确|custom动作解析:批量替换卡带识别节点、修改swip使得next返回此处、重置swip的计数器",
-        "recognition": "TemplateMatch",
-        "roi": [
-            0,
-            580,
-            197,
-            114
-        ],
-        "template": [
-            "UI_StoryPack.png",
-            "UI_CharacterPack.png",
-            "UI_EventPack.png"
-        ],
-        "green_mask": true,
-        "action": "Custom",
-        "custom_action": "ResetTag",
-        "custom_action_param": {
-            "tags": [
-                "PackLocation_ToggleSwitch"
-            ]
-        },
-        "anchor": "PackFrame_Loc",
-        "timeout": 2000,
-        "next": [
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_LocatePackFrame_Smart_Swip",
-            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
-            "[JumpBack]Collect_PackLocation_PassFieldsAndHub",
-            "Collect_LocatePackFrame_Loc2"
-        ],
-        "on_error": [
-            "Collect_LocatePackFrame_Loc3",
-            "Collect_LocatePackFrame_Loc4",
-            "Collect_LocatePackFrame_Loc5",
-            "Collect_LocatePackFrame_Loc6",
-            "Collect_LocatePackFrame_Loc7",
-            "Collect_LocatePackFrame_Loc8",
-            "Collect_LocatePackFrame_Loc9",
-            "Global_Null_Exception",
-            "Global_Null_Panic"
-        ],
-        "focus": "CM.L.快速卡带盒定位-位置1"
-    },
-    "Collect_LocatePackFrame_Loc2": {
-        "recognition": "TemplateMatch",
-        "roi": [
-            119,
-            580,
-            230,
-            114
-        ],
-        "template": [
-            "UI_StoryPack.png",
-            "UI_CharacterPack.png",
-            "UI_EventPack.png"
-        ],
-        "green_mask": true,
-        "action": "Custom",
-        "custom_action": "ResetTag",
-        "custom_action_param": {
-            "tags": [
-                "PackLocation_ToggleSwitch"
-            ]
-        },
-        "anchor": "PackFrame_Loc",
-        "timeout": 2000,
-        "next": [
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_LocatePackFrame_Smart_Swip",
-            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
-            "[JumpBack]Collect_PackLocation_PassFieldsAndHub",
-            "Collect_LocatePackFrame_Loc3"
-        ],
-        "on_error": [
-            "Collect_LocatePackFrame_Loc4",
-            "Collect_LocatePackFrame_Loc5",
-            "Collect_LocatePackFrame_Loc6",
-            "Collect_LocatePackFrame_Loc7",
-            "Collect_LocatePackFrame_Loc8",
-            "Collect_LocatePackFrame_Loc9",
-            "Global_Null_Exception",
-            "Global_Null_Panic"
-        ],
-        "focus": "CM.L.快速卡带盒定位-位置2"
-    },
-    "Collect_LocatePackFrame_Loc3": {
-        "recognition": "TemplateMatch",
-        "roi": [
-            262,
-            580,
-            232,
-            114
-        ],
-        "template": [
-            "UI_StoryPack.png",
-            "UI_CharacterPack.png",
-            "UI_EventPack.png"
-        ],
-        "green_mask": true,
-        "action": "Custom",
-        "custom_action": "ResetTag",
-        "custom_action_param": {
-            "tags": [
-                "PackLocation_ToggleSwitch"
-            ]
-        },
-        "anchor": "PackFrame_Loc",
-        "timeout": 2000,
-        "next": [
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_LocatePackFrame_Smart_Swip",
-            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
-            "[JumpBack]Collect_PackLocation_PassFieldsAndHub",
-            "Collect_LocatePackFrame_Loc4"
-        ],
-        "on_error": [
-            "Collect_LocatePackFrame_Loc5",
-            "Collect_LocatePackFrame_Loc6",
-            "Collect_LocatePackFrame_Loc7",
-            "Collect_LocatePackFrame_Loc8",
-            "Collect_LocatePackFrame_Loc9",
-            "Global_Null_Exception",
-            "Global_Null_Panic"
-        ],
-        "focus": "CM.L.快速卡带盒定位-位置3"
-    },
-    "Collect_LocatePackFrame_Loc4": {
-        "recognition": "TemplateMatch",
-        "roi": [
-            406,
-            580,
-            233,
-            114
-        ],
-        "template": [
-            "UI_StoryPack.png",
-            "UI_CharacterPack.png",
-            "UI_EventPack.png"
-        ],
-        "green_mask": true,
-        "action": "Custom",
-        "custom_action": "ResetTag",
-        "custom_action_param": {
-            "tags": [
-                "PackLocation_ToggleSwitch"
-            ]
-        },
-        "anchor": "PackFrame_Loc",
-        "timeout": 2000,
-        "next": [
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_LocatePackFrame_Smart_Swip",
-            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
-            "[JumpBack]Collect_PackLocation_PassFieldsAndHub",
-            "Collect_LocatePackFrame_Loc5"
-        ],
-        "on_error": [
-            "Collect_LocatePackFrame_Loc6",
-            "Collect_LocatePackFrame_Loc7",
-            "Collect_LocatePackFrame_Loc8",
-            "Collect_LocatePackFrame_Loc9",
-            "Global_Null_Exception",
-            "Global_Null_Panic"
-        ],
-        "focus": "CM.L.快速卡带盒定位-位置4"
-    },
-    "Collect_LocatePackFrame_Loc5": {
-        "recognition": "TemplateMatch",
-        "roi": [
-            552,
-            580,
-            228,
-            114
-        ],
-        "template": [
-            "UI_StoryPack.png",
-            "UI_CharacterPack.png",
-            "UI_EventPack.png"
-        ],
-        "green_mask": true,
-        "action": "Custom",
-        "custom_action": "ResetTag",
-        "custom_action_param": {
-            "tags": [
-                "PackLocation_ToggleSwitch"
-            ]
-        },
-        "anchor": "PackFrame_Loc",
-        "timeout": 2000,
-        "next": [
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_LocatePackFrame_Smart_Swip",
-            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
-            "[JumpBack]Collect_PackLocation_PassFieldsAndHub",
-            "Collect_LocatePackFrame_Loc6"
-        ],
-        "on_error": [
-            "Collect_LocatePackFrame_Loc7",
-            "Collect_LocatePackFrame_Loc8",
-            "Collect_LocatePackFrame_Loc9",
-            "Global_Null_Exception",
-            "Global_Null_Panic"
-        ],
-        "focus": "CM.L.快速卡带盒定位-位置5"
-    },
-    "Collect_LocatePackFrame_Loc6": {
-        "recognition": "TemplateMatch",
-        "roi": [
-            697,
-            580,
-            230,
-            114
-        ],
-        "template": [
-            "UI_StoryPack.png",
-            "UI_CharacterPack.png",
-            "UI_EventPack.png"
-        ],
-        "green_mask": true,
-        "action": "Custom",
-        "custom_action": "ResetTag",
-        "custom_action_param": {
-            "tags": [
-                "PackLocation_ToggleSwitch"
-            ]
-        },
-        "anchor": "PackFrame_Loc",
-        "timeout": 2000,
-        "next": [
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_LocatePackFrame_Smart_Swip",
-            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
-            "[JumpBack]Collect_PackLocation_PassFieldsAndHub",
-            "Collect_LocatePackFrame_Loc7"
-        ],
-        "on_error": [
-            "Collect_LocatePackFrame_Loc8",
-            "Collect_LocatePackFrame_Loc9",
-            "Global_Null_Exception",
-            "Global_Null_Panic"
-        ],
-        "focus": "CM.L.快速卡带盒定位-位置6"
-    },
-    "Collect_LocatePackFrame_Loc7": {
-        "recognition": "TemplateMatch",
-        "roi": [
-            841,
-            580,
-            229,
-            114
-        ],
-        "template": [
-            "UI_StoryPack.png",
-            "UI_CharacterPack.png",
-            "UI_EventPack.png"
-        ],
-        "green_mask": true,
-        "action": "Custom",
-        "custom_action": "ResetTag",
-        "custom_action_param": {
-            "tags": [
-                "PackLocation_ToggleSwitch"
-            ]
-        },
-        "anchor": "PackFrame_Loc",
-        "timeout": 2000,
-        "next": [
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_LocatePackFrame_Smart_Swip",
-            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
-            "[JumpBack]Collect_PackLocation_PassFieldsAndHub",
-            "Collect_LocatePackFrame_Loc8"
-        ],
-        "on_error": [
-            "Collect_LocatePackFrame_Loc9",
-            "Global_Null_Exception",
-            "Global_Null_Panic"
-        ],
-        "focus": "CM.L.快速卡带盒定位-位置7"
-    },
-    "Collect_LocatePackFrame_Loc8": {
-        "recognition": "TemplateMatch",
-        "roi": [
-            985,
-            580,
-            228,
-            114
-        ],
-        "template": [
-            "UI_StoryPack.png",
-            "UI_CharacterPack.png",
-            "UI_EventPack.png"
-        ],
-        "green_mask": true,
-        "action": "Custom",
-        "custom_action": "ResetTag",
-        "custom_action_param": {
-            "tags": [
-                "PackLocation_ToggleSwitch"
-            ]
-        },
-        "anchor": "PackFrame_Loc",
-        "timeout": 2000,
-        "next": [
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_LocatePackFrame_Smart_Swip",
-            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
-            "[JumpBack]Collect_PackLocation_PassFieldsAndHub",
-            "Collect_LocatePackFrame_Loc9",
-            "Collect_Loc_OutToSwip_Hub_Ingress"
-        ],
-        "focus": "CM.L.快速卡带盒定位-位置8"
-    },
-    "Collect_LocatePackFrame_Loc9": {
-        "recognition": "TemplateMatch",
-        "roi": [
-            1136,
-            580,
-            143,
-            114
-        ],
-        "template": [
-            "UI_StoryPack.png",
-            "UI_CharacterPack.png",
-            "UI_EventPack.png"
-        ],
-        "green_mask": true,
-        "action": "Custom",
-        "custom_action": "ResetTag",
-        "custom_action_param": {
-            "tags": [
-                "PackLocation_ToggleSwitch"
-            ]
-        },
-        "anchor": "PackFrame_Loc",
-        "next": [
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_LocatePackFrame_Smart_Swip",
-            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
-            "[JumpBack]Collect_PackLocation_PassFieldsAndHub",
-            "Collect_Loc_OutToSwip_Hub_Ingress"
-        ],
-        "focus": "CM.L.快速卡带盒定位-位置9"
-    },
-    "Collect_LocatePackFrame_Loc1_ResetLoc": {
-        "desc": "稍微回移复位第一张卡带,向右。注意留够延迟等待动画消除。",
-        "max_hit": 40,
-        "recognition": "TemplateMatch",
-        "roi": [
-            0,
-            581,
-            26,
-            95
-        ],
-        "template": "PackReset.png",
-        "green_mask": true,
-        "action": "Swipe",
-        "begin": [
-            66,
-            637,
-            1,
-            1
-        ],
-        "end": [
-            80,
-            637,
-            1,
-            1
-        ],
-        "end_hold": 500,
-        "post_wait_freezes": 1000
-    },
-    "Collect_Loc_OutToSwip_Hub_Ingress": {
-        "next": [
-            "Collect_Loc_OutToSwip_Hub_Enter_Pin",
-            "[JumpBack]Global_BackPageHub_Once"
-        ]
-    },
-    "Collect_Loc_OutToSwip_Hub_Enter_Pin": {
-        "desc": "[通用复位]复位到主界面模块,结束,中继调用",
-        "recognition": "Or",
-        "any_of": [
-            "Rec_SandBox_Pin_Tpl",
-            "Rec_SandBox_Run_Tpl"
-        ],
-        "next": [
-            "Collect_Loc_OutToSwip_Hub_Enter_QuickCart_Menu",
-            "[JumpBack]Global_QuickCart_MenuReset"
-        ]
-    },
-    "Collect_Loc_OutToSwip_Hub_Enter_QuickCart_Menu": {
-        "desc": "快速卡带已调出,等待后续",
-        "recognition": "Or",
-        "any_of": [
-            "Global_QuickCart_MenuReset_Ocr"
-        ],
-        "next": [
-            "Collect_Loc_OutToSwip_Hub_Egress"
-        ],
-        "focus": "CM.L.调度器"
-    },
-    "Collect_Loc_OutToSwip_Hub_Egress": {
-        "desc": "滑动次数由万能锚点控制",
+        "desc": "新类别扫描初始化：仅清本次滑动计数，随后选择普通或调试探针。",
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "ResetTag",
         "custom_action_param": {
@@ -1407,110 +684,19 @@
                 "LocPage_SmartSwip"
             ]
         },
-        "next": [
-            "[Anchor]LocSmartSwip_Limit Ctr"
-        ]
-    },
-    "Collect_Loc_Swip_1Page": {
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_LocatePackFrame_Smart_Swip",
-            "patch": {
-                "custom_recognition_param": {
-                    "tag": "LocPage_SmartSwip",
-                    "max": 1
-                },
-                "focus": "CL.M.智能翻页,到第2页."
-            }
-        },
         "anchor": {
-            "LocSmartSwip_Limit Ctr": "Collect_Loc_Swip_2Page"
+            "CurrentCollectPack": "",
+            "PackFrame_Loc": "",
+            "PackBadge_Loc": ""
         },
+        "post_delay": 0,
         "next": [
-            "Collect_LocatePackFrame_Smart_Swip"
-        ]
-    },
-    "Collect_Loc_Swip_2Page": {
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_LocatePackFrame_Smart_Swip",
-            "patch": {
-                "custom_recognition_param": {
-                    "tag": "LocPage_SmartSwip",
-                    "max": 2
-                },
-                "focus": "CL.M.智能翻页,到第3页."
-            }
-        },
-        "anchor": {
-            "LocSmartSwip_Limit Ctr": "Collect_Loc_Swip_3Page"
-        },
-        "next": [
-            "Collect_LocatePackFrame_Smart_Swip"
-        ]
-    },
-    "Collect_Loc_Swip_3Page": {
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_LocatePackFrame_Smart_Swip",
-            "patch": {
-                "custom_recognition_param": {
-                    "tag": "LocPage_SmartSwip",
-                    "max": 3
-                },
-                "focus": "CL.M.智能翻页,到第4页."
-            }
-        },
-        "anchor": {
-            "LocSmartSwip_Limit Ctr": "Collect_Loc_Swip_4Page"
-        },
-        "next": [
-            "Collect_LocatePackFrame_Smart_Swip"
-        ]
-    },
-    "Collect_Loc_Swip_4Page": {
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_LocatePackFrame_Smart_Swip",
-            "patch": {
-                "custom_recognition_param": {
-                    "tag": "LocPage_SmartSwip",
-                    "max": 4
-                },
-                "focus": "CL.M.智能翻页,到第5页."
-            }
-        },
-        "anchor": {
-            "LocSmartSwip_Limit Ctr": "Collect_Loc_Swip_5Page"
-        },
-        "next": [
-            "Collect_LocatePackFrame_Smart_Swip"
-        ]
-    },
-    "Collect_Loc_Swip_5Page": {
-        "desc": "只做到兼容6页,目前已200%溢出非常足够.",
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_LocatePackFrame_Smart_Swip",
-            "patch": {
-                "custom_recognition_param": {
-                    "tag": "LocPage_SmartSwip",
-                    "max": 5
-                },
-                "focus": "CL.M.智能翻页,到第6页."
-            }
-        },
-        "next": [
-            "Collect_LocatePackFrame_Smart_Swip"
+            "Collect_PackScan_DebugMode",
+            "Collect_PackScan_NormalMode"
         ]
     },
     "Collect_LocatePack_Swip_VerifyOpen": {
-        "desc": "[加固·2026-10-07]定位链触底后的『列表是否真的开着』校验。SmartSwipe 判『触底』的根据是连续 4 次滑动画面不动,但**卡带列表没打开时画面同样不动** ⇒ 会把『列表没开』误判成『滑到最后一页』⇒ 走 on_error 的锚 SmartSwipOut = Collect_LocatePack_SimpleSkip_Story/Character/Event ⇒ **误打 SimpleDone 标、该分类分支提前结束**(2026-10-07 09:37 / 11:03 实测:剧情卡扫到 14 就转去角色分支,后面的卡带本轮没扫)。本节点判据=快速卡带列表已调出(OCR『最近』,与 Collect_QuickCart_FastUI 同款):列表真的开着 ⇒ 说明确实扫到底了 ⇒ 放行去打 SimpleDone(行为不变);列表没开 ⇒ 本节点不命中 ⇒ 落到下一候选 [JumpBack]Global_QuickCart_MenuReset 把列表调出来,不打标。★不动 Smart_Swip 的 recognition:它靠 PatchPipeline 改 custom_recognition_param 来设翻页预算,改成 And/Custom 组合会让该 patch 失效。",
+        "desc": "滑动失败后确认卡带列表仍开着，再走本类触底收尾；沿用列表校验方案，保留少见截图/动作故障提前结束的风险。",
         "recognition": "Or",
         "any_of": [
             "Global_QuickCart_MenuReset_Ocr"
@@ -1520,71 +706,8 @@
         ],
         "focus": "CL.M.触底校验-卡带列表已开"
     },
-    "Collect_LocatePackFrame_Smart_Swip": {
-        "recognition": "Custom",
-        "custom_recognition": "CheckTag",
-        "custom_recognition_param": {
-            "tag": "LocPage_SmartSwip",
-            "max": 0
-        },
-        "action": "Custom",
-        "custom_action": "SmartSwipe",
-        "custom_action_param": {
-            "proxy_node": "Custom_Proxy_Swipe",
-            "action": "Swipe",
-            "begin": [
-                1234,
-                637,
-                1,
-                1
-            ],
-            "end": [
-                106,
-                637,
-                1,
-                1
-            ],
-            "detect_roi": [
-                1064,
-                601,
-                213,
-                52
-            ],
-            "duration": 500,
-            "end_hold": 800,
-            "settle_delay": 1000,
-            "retry_times": 3,
-            "threshold": 3.0
-        },
-        "next": [
-            "Collect_LocatePackFrame_Smart_Swip_UpdateTag"
-        ],
-        "on_error": [
-            "Collect_LocatePack_Swip_VerifyOpen",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "Global_Null"
-        ]
-    },
-    "Collect_LocatePackFrame_Smart_Swip_UpdateTag": {
-        "action": "Custom",
-        "custom_action": "UpdateTag",
-        "custom_action_param": {
-            "tag": "LocPage_SmartSwip",
-            "value": 1
-        },
-        "next": [
-            "Collect_LocatePackFrame_Smart_Swip",
-            "Collect_Loc_SwipToIn_Hub"
-        ]
-    },
-    "Collect_Loc_SwipToIn_Hub": {
-        "desc": "卡带页翻页到位识别模块接口",
-        "next": [
-            "Collect_PackProbe_IsPresent"
-        ]
-    },
     "Collect_LocatePack_SimpleSkip_Story": {
-        "desc": "[触底出口]剧情类定位链滑到底(SmartSwipe JumpOut / 失败)时经锚 SmartSwipOut 调用。★2026-10-07 本地:加 next → Collect_QC_Scan_Mark_Story(置位「本轮剧情类已完整扫过一轮」)。本节点原为叶子(无 next),加 next 不改变原语义(MarkComplete 照旧执行,随后跑标记节点,标记节点也是叶子 ⇒ 再退栈)。",
+        "desc": "本类触底出口，暂保留旧 SimpleDone 记录兼容；本轮扫描标记用于防止再次分派，不批量标记单卡完成。",
         "action": "Custom",
         "custom_action": "MarkComplete",
         "custom_action_param": {
@@ -1594,10 +717,10 @@
         "next": [
             "Collect_QC_Scan_Mark_Story"
         ],
-        "focus": "Py.经典剧情卡简单全完成标记"
+        "focus": "CM.L.本轮剧情卡扫描结束"
     },
     "Collect_LocatePack_SimpleSkip_Character": {
-        "desc": "[触底出口]角色类,同 Story。★2026-10-07 本地:加 next → Collect_QC_Scan_Mark_Character。",
+        "desc": "本类触底出口，暂保留旧 SimpleDone 记录兼容；本轮扫描标记用于防止再次分派，不批量标记单卡完成。",
         "action": "Custom",
         "custom_action": "MarkComplete",
         "custom_action_param": {
@@ -1607,10 +730,10 @@
         "next": [
             "Collect_QC_Scan_Mark_Character"
         ],
-        "focus": "Py.角色剧情卡简单全完成标记"
+        "focus": "CM.L.本轮角色卡扫描结束"
     },
     "Collect_LocatePack_SimpleSkip_Event": {
-        "desc": "[触底出口]活动类,同 Story。★2026-10-07 本地:加 next → Collect_QC_Scan_Mark_Event。",
+        "desc": "本类触底出口，暂保留旧 SimpleDone 记录兼容；本轮扫描标记用于防止再次分派，不批量标记单卡完成。",
         "action": "Custom",
         "custom_action": "MarkComplete",
         "custom_action_param": {
@@ -1620,7 +743,7 @@
         "next": [
             "Collect_QC_Scan_Mark_Event"
         ],
-        "focus": "Py.活动卡简单全完成标记"
+        "focus": "CM.L.本轮活动卡扫描结束"
     },
     "Collect_QC_Scan_Mark_Story": {
         "desc": "[本地·本轮扫描标记①]置位 QC_Story_Scanned=1,表示本轮剧情类已完整扫过一轮,供 Collect_FeatureSwitch_StoryPack 的 CheckTag 判「不再进入本类」。★前置判据 Or[Collect_QuickCart_Menu](快速卡带列表确实开着)是故意加的:触底信号来自 SmartSwipe 的 on_error,而 2026-10-07 实测过「复位链退栈到定位链、人在箱庭而列表没开」时 SmartSwipe 会在箱庭画面上误判触底 → 那一次若打上标记就会变成整类跳过(漏采)。列表没开 ⇒ 不打标记 ⇒ 本类下一轮仍可进入(宁可重扫,不可漏采)。",
@@ -1683,16 +806,919 @@
         "focus": "QC.清空本轮分类扫描标记"
     },
     "Collect_LocatePack_SimpleSkip_Manager": {
+        "desc": "本类触底出口，暂保留旧 SimpleDone 记录兼容；本轮扫描标记用于防止再次分派，不批量标记单卡完成。",
         "action": "Custom",
         "custom_action": "MarkComplete",
         "custom_action_param": {
             "card_name": "Pack_Manager_SimpleDone",
             "cycle_type": "g_weekly"
         },
-        "focus": "Py.店长剧情卡简单全完成标记"
+        "focus": "CM.L.本轮店长卡扫描结束"
+    },
+    "Collect_PackScan_NormalMode": {
+        "desc": "普通选卡：先找两类彩色徽章，再定位卡框与名称。",
+        "pre_delay": 0,
+        "anchor": {
+            "PackScan_Ready": "Collect_PackScan_Ready",
+            "PackScan_Full": "Collect_PackScan_Full",
+            "PackScan_Right": "Collect_PackScan_Right",
+            "PackScan_Advance": "Collect_PackScan_Advance"
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_PackScan_Prepare"
+        ]
+    },
+    "Collect_PackScan_DebugMode": {
+        "desc": "调试选卡：按卡框从左到右查询名单，允许灰白已完成卡。",
+        "enabled": false,
+        "pre_delay": 0,
+        "anchor": {
+            "PackScan_Ready": "Collect_PackScan_DebugReady",
+            "PackScan_Full": "Collect_PackScan_DebugFull",
+            "PackScan_Right": "Collect_PackScan_DebugRight",
+            "PackScan_Advance": "Collect_PackScan_DebugRight"
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_PackScan_Prepare"
+        ]
+    },
+    "Collect_PackScan_Prepare": {
+        "desc": "返回选卡列表：列表已开时保留页位；确实需要重新打开时才清本次已滑计数。",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 5000,
+        "next": [
+            "Collect_PackScan_ListReady",
+            "[JumpBack]Collect_PackScan_OpenList"
+        ],
+        "on_error": [
+            "[JumpBack]Global_ToSandBox",
+            "Global_Null"
+        ]
+    },
+    "Collect_PackScan_OpenList": {
+        "desc": "列表重开会回到本类最左端，先清本次计数；目标滑动预算保留。",
+        "recognition": "Or",
+        "any_of": [
+            "Global_QuickCart_MenuReset"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ResetTag",
+        "custom_action_param": {
+            "tags": [
+                "LocPage_SmartSwip"
+            ]
+        },
+        "post_delay": 0,
+        "next": [
+            "Global_QuickCart_MenuReset"
+        ]
+    },
+    "Collect_PackScan_ListReady": {
+        "desc": "确认列表已开，必要时开启战场奖励显示，再等待徽章形状出现。",
+        "recognition": "Or",
+        "any_of": [
+            "Global_QuickCart_MenuReset_Ocr"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 5000,
+        "next": [
+            "[JumpBack]Collect_QC_RewardSwitch_Off_Click",
+            "[Anchor]PackScan_Ready"
+        ]
+    },
+    "Collect_PackScan_Ready": {
+        "desc": "普通模式显示就绪：仅检查徽章模板，不用颜色拦住灰白已完成状态。",
+        "recognition": "Or",
+        "any_of": [
+            "Rec_Collect_PackBadgesReady_Tpl"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 1,
+        "next": [
+            "Collect_PackScroll_Restore",
+            "[Anchor]PackScan_Full",
+            "Collect_PackScroll_Advance"
+        ]
+    },
+    "Collect_PackScan_DebugReady": {
+        "desc": "调试模式只需列表卡框可见，不要求存在采集徽章。",
+        "recognition": "Or",
+        "any_of": [
+            "Rec_Collect_PackFrames_Tpl"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 1,
+        "next": [
+            "Collect_PackScroll_Restore",
+            "[Anchor]PackScan_Full",
+            "Collect_PackScroll_Advance"
+        ]
+    },
+    "Rec_Collect_PackBadgesReady_Tpl": {
+        "desc": "[识别]检查卡带奖励徽章是否已经显示。",
+        "recognition": "TemplateMatch",
+        "roi": [
+            0,
+            653,
+            1240,
+            67
+        ],
+        "template": [
+            "Pack_Pickup.png",
+            "Pack_Monster.png"
+        ],
+        "green_mask": true,
+        "threshold": 0.85
+    },
+    "Rec_Collect_PackFrames_Tpl": {
+        "desc": "[识别]定位本页有效范围内的完整卡带框。",
+        "recognition": "TemplateMatch",
+        "roi": [
+            0,
+            580,
+            1240,
+            114
+        ],
+        "template": [
+            "UI_StoryPack.png",
+            "UI_CharacterPack.png",
+            "UI_EventPack.png"
+        ],
+        "green_mask": true,
+        "order_by": "Horizontal"
+    },
+    "Cpt_Collect_PackBadgeFull_Clr": {
+        "desc": "[运算]定位本页最左侧的可采徽章。",
+        "recognition": "And",
+        "all_of": [
+            {
+                "sub_name": "ChosenColor",
+                "recognition": "Or",
+                "any_of": [
+                    {
+                        "recognition": "And",
+                        "all_of": [
+                            {
+                                "sub_name": "Badge",
+                                "recognition": "TemplateMatch",
+                                "roi": [
+                                    0,
+                                    653,
+                                    1240,
+                                    67
+                                ],
+                                "template": [
+                                    "Pack_Pickup.png",
+                                    "Pack_Monster.png"
+                                ],
+                                "green_mask": true,
+                                "threshold": 0.85,
+                                "order_by": "Horizontal"
+                            },
+                            {
+                                "recognition": "ColorMatch",
+                                "roi": "Badge",
+                                "method": 40,
+                                "lower": [
+                                    [
+                                        68,
+                                        29,
+                                        103
+                                    ],
+                                    [
+                                        0,
+                                        39,
+                                        130
+                                    ]
+                                ],
+                                "upper": [
+                                    [
+                                        93,
+                                        158,
+                                        185
+                                    ],
+                                    [
+                                        14,
+                                        167,
+                                        194
+                                    ]
+                                ],
+                                "connected": false,
+                                "count": 20,
+                                "order_by": "Horizontal"
+                            }
+                        ],
+                        "box_index": 1
+                    }
+                ]
+            },
+            "Sub_Collect_PackBadgeBox_Tpl"
+        ],
+        "box_index": 1
+    },
+    "Cpt_Collect_PackBadgeRight_Clr": {
+        "desc": "[运算]定位当前卡框右侧的下一枚可采徽章。",
+        "recognition": "And",
+        "all_of": [
+            {
+                "sub_name": "ChosenColor",
+                "recognition": "Or",
+                "any_of": [
+                    {
+                        "recognition": "And",
+                        "all_of": [
+                            {
+                                "sub_name": "Room",
+                                "recognition": "ColorMatch",
+                                "roi": "[Anchor]PackFrame_Loc",
+                                "roi_offset": [
+                                    114,
+                                    60,
+                                    -114,
+                                    -77
+                                ],
+                                "method": 4,
+                                "lower": [
+                                    0,
+                                    0,
+                                    0
+                                ],
+                                "upper": [
+                                    255,
+                                    255,
+                                    255
+                                ],
+                                "connected": false,
+                                "count": 41
+                            },
+                            {
+                                "sub_name": "Badge",
+                                "recognition": "TemplateMatch",
+                                "roi": "Room",
+                                "roi_offset": [
+                                    0,
+                                    0,
+                                    -40,
+                                    66
+                                ],
+                                "template": [
+                                    "Pack_Pickup.png",
+                                    "Pack_Monster.png"
+                                ],
+                                "green_mask": true,
+                                "threshold": 0.85,
+                                "order_by": "Horizontal"
+                            },
+                            {
+                                "recognition": "ColorMatch",
+                                "roi": "Badge",
+                                "method": 40,
+                                "lower": [
+                                    [
+                                        68,
+                                        29,
+                                        103
+                                    ],
+                                    [
+                                        0,
+                                        39,
+                                        130
+                                    ]
+                                ],
+                                "upper": [
+                                    [
+                                        93,
+                                        158,
+                                        185
+                                    ],
+                                    [
+                                        14,
+                                        167,
+                                        194
+                                    ]
+                                ],
+                                "connected": false,
+                                "count": 20,
+                                "order_by": "Horizontal"
+                            }
+                        ],
+                        "box_index": 2
+                    }
+                ]
+            },
+            "Sub_Collect_PackBadgeBox_Tpl"
+        ],
+        "box_index": 1
+    },
+    "Cpt_Collect_PackBadgeAdvance_Clr": {
+        "desc": "[运算]跳过异常位置，定位后续可采徽章。",
+        "recognition": "And",
+        "all_of": [
+            {
+                "sub_name": "ChosenColor",
+                "recognition": "Or",
+                "any_of": [
+                    {
+                        "recognition": "And",
+                        "all_of": [
+                            {
+                                "sub_name": "Room",
+                                "recognition": "ColorMatch",
+                                "roi": "[Anchor]PackBadge_Loc",
+                                "roi_offset": [
+                                    48,
+                                    -24,
+                                    -24,
+                                    -22
+                                ],
+                                "method": 4,
+                                "lower": [
+                                    0,
+                                    0,
+                                    0
+                                ],
+                                "upper": [
+                                    255,
+                                    255,
+                                    255
+                                ],
+                                "connected": false,
+                                "count": 41
+                            },
+                            {
+                                "sub_name": "Badge",
+                                "recognition": "TemplateMatch",
+                                "roi": "Room",
+                                "roi_offset": [
+                                    0,
+                                    0,
+                                    -40,
+                                    66
+                                ],
+                                "template": [
+                                    "Pack_Pickup.png",
+                                    "Pack_Monster.png"
+                                ],
+                                "green_mask": true,
+                                "threshold": 0.85,
+                                "order_by": "Horizontal"
+                            },
+                            {
+                                "recognition": "ColorMatch",
+                                "roi": "Badge",
+                                "method": 40,
+                                "lower": [
+                                    [
+                                        68,
+                                        29,
+                                        103
+                                    ],
+                                    [
+                                        0,
+                                        39,
+                                        130
+                                    ]
+                                ],
+                                "upper": [
+                                    [
+                                        93,
+                                        158,
+                                        185
+                                    ],
+                                    [
+                                        14,
+                                        167,
+                                        194
+                                    ]
+                                ],
+                                "connected": false,
+                                "count": 20,
+                                "order_by": "Horizontal"
+                            }
+                        ],
+                        "box_index": 2
+                    }
+                ]
+            },
+            "Sub_Collect_PackBadgeBox_Tpl"
+        ],
+        "box_index": 1
+    },
+    "Sub_Collect_PackBadgeBox_Tpl": {
+        "desc": "[子识别]接收调用方的选中结果，定位对应的完整徽章框。",
+        "recognition": "TemplateMatch",
+        "roi": "ChosenColor",
+        "roi_offset": [
+            24,
+            23,
+            -48,
+            -46
+        ],
+        "template": [
+            "Pack_Pickup.png",
+            "Pack_Monster.png"
+        ],
+        "green_mask": true,
+        "threshold": 0.85,
+        "order_by": "Horizontal"
+    },
+    "Anc_Collect_PackFrame_Tpl": {
+        "desc": "[识别]定位当前徽章所属的完整卡带框。",
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackBadge_Loc",
+        "roi_offset": [
+            90,
+            -92,
+            -209,
+            80
+        ],
+        "template": [
+            "UI_StoryPack.png",
+            "UI_CharacterPack.png",
+            "UI_EventPack.png"
+        ],
+        "green_mask": true,
+        "order_by": "Score"
+    },
+    "Cpt_Collect_PackFrameRight_Tpl": {
+        "desc": "[运算]调试模式下定位当前卡框右侧的下一张完整卡框。",
+        "recognition": "And",
+        "all_of": [
+            {
+                "sub_name": "Room",
+                "recognition": "ColorMatch",
+                "roi": "[Anchor]PackFrame_Loc",
+                "roi_offset": [
+                    114,
+                    0,
+                    -114,
+                    -77
+                ],
+                "method": 4,
+                "lower": [
+                    0,
+                    0,
+                    0
+                ],
+                "upper": [
+                    255,
+                    255,
+                    255
+                ],
+                "connected": false,
+                "count": 41
+            },
+            {
+                "recognition": "TemplateMatch",
+                "roi": "Room",
+                "roi_offset": [
+                    0,
+                    0,
+                    -40,
+                    77
+                ],
+                "template": [
+                    "UI_StoryPack.png",
+                    "UI_CharacterPack.png",
+                    "UI_EventPack.png"
+                ],
+                "green_mask": true,
+                "order_by": "Horizontal"
+            }
+        ],
+        "box_index": 1
+    },
+    "Collect_PackScan_Full": {
+        "desc": "从本页有效范围开始查找可采卡带。",
+        "recognition": "Or",
+        "any_of": [
+            "Cpt_Collect_PackBadgeFull_Clr"
+        ],
+        "pre_delay": 0,
+        "anchor": "PackBadge_Loc",
+        "post_delay": 0,
+        "timeout": 2000,
+        "next": [
+            "Collect_PackScan_Frame"
+        ],
+        "on_error": [
+            "Collect_PackScan_FrameError",
+            "Collect_PackScroll_Recover",
+            "Global_Null"
+        ]
+    },
+    "Collect_PackScan_Right": {
+        "desc": "继续查找当前卡框右侧的可采卡带。",
+        "recognition": "Or",
+        "any_of": [
+            "Cpt_Collect_PackBadgeRight_Clr"
+        ],
+        "pre_delay": 0,
+        "anchor": "PackBadge_Loc",
+        "post_delay": 0,
+        "timeout": 2000,
+        "next": [
+            "Collect_PackScan_Frame"
+        ],
+        "on_error": [
+            "Collect_PackScan_FrameError",
+            "Collect_PackScroll_Recover",
+            "Global_Null"
+        ]
+    },
+    "Collect_PackScan_Advance": {
+        "desc": "跳过异常位置后继续查找可采卡带。",
+        "recognition": "Or",
+        "any_of": [
+            "Cpt_Collect_PackBadgeAdvance_Clr"
+        ],
+        "pre_delay": 0,
+        "anchor": "PackBadge_Loc",
+        "post_delay": 0,
+        "timeout": 2000,
+        "next": [
+            "Collect_PackScan_Frame"
+        ],
+        "on_error": [
+            "Collect_PackScan_FrameError",
+            "Collect_PackScroll_Recover",
+            "Global_Null"
+        ]
+    },
+    "Collect_PackScan_Frame": {
+        "desc": "确认当前完整卡框并清本格分发开关；名称未命中继续右侧，真正进卡后改回列表恢复入口。",
+        "recognition": "Or",
+        "any_of": [
+            "Anc_Collect_PackFrame_Tpl"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ResetTag",
+        "custom_action_param": {
+            "tags": [
+                "PackLocation_ToggleSwitch"
+            ]
+        },
+        "anchor": {
+            "PackFrame_Loc": "Collect_PackScan_Frame",
+            "PackScan_Return": "Collect_PackScan_NextRight"
+        },
+        "post_delay": 0,
+        "timeout": 1,
+        "next": [
+            "[JumpBack]Collect_PackLocation_PassFieldsAndHub",
+            "[Anchor]PackScan_Return"
+        ]
+    },
+    "Collect_PackScan_DebugFull": {
+        "desc": "确认当前完整卡框并清本格分发开关；名称未命中继续右侧，真正进卡后改回列表恢复入口。",
+        "recognition": "Or",
+        "any_of": [
+            "Rec_Collect_PackFrames_Tpl"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ResetTag",
+        "custom_action_param": {
+            "tags": [
+                "PackLocation_ToggleSwitch"
+            ]
+        },
+        "anchor": {
+            "PackFrame_Loc": "Collect_PackScan_DebugFull",
+            "PackScan_Return": "Collect_PackScan_NextRight"
+        },
+        "post_delay": 0,
+        "timeout": 1,
+        "next": [
+            "[JumpBack]Collect_PackLocation_PassFieldsAndHub",
+            "[Anchor]PackScan_Return"
+        ]
+    },
+    "Collect_PackScan_DebugRight": {
+        "desc": "确认当前完整卡框并清本格分发开关；名称未命中继续右侧，真正进卡后改回列表恢复入口。",
+        "recognition": "Or",
+        "any_of": [
+            "Cpt_Collect_PackFrameRight_Tpl"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ResetTag",
+        "custom_action_param": {
+            "tags": [
+                "PackLocation_ToggleSwitch"
+            ]
+        },
+        "anchor": {
+            "PackFrame_Loc": "Collect_PackScan_DebugRight",
+            "PackScan_Return": "Collect_PackScan_NextRight"
+        },
+        "post_delay": 0,
+        "timeout": 1,
+        "next": [
+            "[JumpBack]Collect_PackLocation_PassFieldsAndHub",
+            "[Anchor]PackScan_Return"
+        ]
+    },
+    "Collect_PackScan_NextRight": {
+        "desc": "名称分发没有进入卡带，继续当前卡框右侧；无剩余候选再翻页。",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 1,
+        "next": [
+            "[Anchor]PackScan_Right"
+        ],
+        "on_error": [
+            "Collect_PackScroll_Advance",
+            "Global_Null"
+        ]
+    },
+    "Collect_PackScan_FrameError": {
+        "desc": "徽章对应卡框未识别时记录异常，跳过当前位置继续扫描。",
+        "recognition": "Or",
+        "any_of": [
+            "Global_QuickCart_MenuReset_Ocr"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 1,
+        "next": [
+            "[Anchor]PackScan_Advance"
+        ],
+        "on_error": [
+            "Collect_PackScroll_Advance",
+            "Global_Null"
+        ],
+        "focus": "CM.L.徽章对应卡框未识别，跳过该位置继续"
+    },
+    "Collect_PackScroll_Advance": {
+        "desc": "当前有效范围已无目标，提升一次目标滑动预算；保留已滑次数，不重复开关列表。",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "[Anchor]PackScroll_Next",
+            "Collect_PackScroll_Limit"
+        ]
+    },
+    "Collect_PackScroll_ToPage2": {
+        "desc": "将本类目标滑动预算设为1次；恢复原页与向新页推进共用同一计数门槛。",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "PatchPipeline",
+        "custom_action_param": {
+            "target": "Collect_PackScroll_Restore",
+            "patch": {
+                "custom_recognition_param": {
+                    "tag": "LocPage_SmartSwip",
+                    "max": 1
+                }
+            }
+        },
+        "anchor": {
+            "PackScroll_Next": "Collect_PackScroll_ToPage3"
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_PackScroll_Restore"
+        ]
+    },
+    "Collect_PackScroll_ToPage3": {
+        "desc": "将本类目标滑动预算设为2次；恢复原页与向新页推进共用同一计数门槛。",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "PatchPipeline",
+        "custom_action_param": {
+            "target": "Collect_PackScroll_Restore",
+            "patch": {
+                "custom_recognition_param": {
+                    "tag": "LocPage_SmartSwip",
+                    "max": 2
+                }
+            }
+        },
+        "anchor": {
+            "PackScroll_Next": "Collect_PackScroll_ToPage4"
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_PackScroll_Restore"
+        ]
+    },
+    "Collect_PackScroll_ToPage4": {
+        "desc": "将本类目标滑动预算设为3次；恢复原页与向新页推进共用同一计数门槛。",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "PatchPipeline",
+        "custom_action_param": {
+            "target": "Collect_PackScroll_Restore",
+            "patch": {
+                "custom_recognition_param": {
+                    "tag": "LocPage_SmartSwip",
+                    "max": 3
+                }
+            }
+        },
+        "anchor": {
+            "PackScroll_Next": "Collect_PackScroll_ToPage5"
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_PackScroll_Restore"
+        ]
+    },
+    "Collect_PackScroll_ToPage5": {
+        "desc": "将本类目标滑动预算设为4次；恢复原页与向新页推进共用同一计数门槛。",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "PatchPipeline",
+        "custom_action_param": {
+            "target": "Collect_PackScroll_Restore",
+            "patch": {
+                "custom_recognition_param": {
+                    "tag": "LocPage_SmartSwip",
+                    "max": 4
+                }
+            }
+        },
+        "anchor": {
+            "PackScroll_Next": "Collect_PackScroll_ToPage6"
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_PackScroll_Restore"
+        ]
+    },
+    "Collect_PackScroll_ToPage6": {
+        "desc": "将本类目标滑动预算设为5次；恢复原页与向新页推进共用同一计数门槛。",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "PatchPipeline",
+        "custom_action_param": {
+            "target": "Collect_PackScroll_Restore",
+            "patch": {
+                "custom_recognition_param": {
+                    "tag": "LocPage_SmartSwip",
+                    "max": 5
+                }
+            }
+        },
+        "anchor": {
+            "PackScroll_Next": ""
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_PackScroll_Restore"
+        ]
+    },
+    "Collect_PackScroll_Restore": {
+        "desc": "本次成功滑动次数不足目标预算时滑一次；画面一变即结束该次动作，计数后再判断是否到位。",
+        "recognition": "Custom",
+        "custom_recognition": "CheckTag",
+        "custom_recognition_param": {
+            "tag": "LocPage_SmartSwip",
+            "max": 0
+        },
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "SmartAction",
+        "custom_action_param": {
+            "proxy_node": "Agt_Proxy_Blank",
+            "proxy_override": {
+                "action": "Swipe",
+                "begin": [
+                    1234,
+                    637,
+                    1,
+                    1
+                ],
+                "end": [
+                    106,
+                    637,
+                    1,
+                    1
+                ],
+                "duration": 500,
+                "end_hold": 800,
+                "post_delay": 1000
+            },
+            "detect_roi": [
+                1064,
+                601,
+                213,
+                52
+            ],
+            "settle_delay": 1000,
+            "threshold": 3.0,
+            "on_changed": "next",
+            "on_unchanged": "error",
+            "unchanged_streak": 4
+        },
+        "post_delay": 0,
+        "timeout": 1000,
+        "next": [
+            "Collect_PackScroll_Count"
+        ],
+        "on_error": [
+            "Collect_LocatePack_Swip_VerifyOpen",
+            "Collect_PackScroll_Recover",
+            "Global_Null"
+        ]
+    },
+    "Collect_PackScroll_Count": {
+        "desc": "记录一次成功滑动，完成左侧对齐后继续流程。",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "UpdateTag",
+        "custom_action_param": {
+            "tag": "LocPage_SmartSwip",
+            "value": 1
+        },
+        "post_delay": 0,
+        "next": [
+            "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
+            "Collect_PackScroll_Restore",
+            "[Anchor]PackScan_Full",
+            "Collect_PackScroll_Advance"
+        ]
+    },
+    "Collect_LocatePackFrame_Loc1_ResetLoc": {
+        "desc": "检测并微调列表左侧残留卡框。",
+        "max_hit": 40,
+        "recognition": "TemplateMatch",
+        "roi": [
+            0,
+            581,
+            26,
+            95
+        ],
+        "template": "PackReset.png",
+        "green_mask": true,
+        "action": "Swipe",
+        "begin": [
+            66,
+            637,
+            1,
+            1
+        ],
+        "end": [
+            80,
+            637,
+            1,
+            1
+        ],
+        "end_hold": 500,
+        "post_wait_freezes": 1000
+    },
+    "Collect_PackScroll_Recover": {
+        "desc": "滑动或定位异常且列表不在时重新恢复；不把失败动作计入成功次数。",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ResetTag",
+        "custom_action_param": {
+            "tags": [
+                "LocPage_SmartSwip"
+            ]
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_PackScan_Prepare"
+        ]
+    },
+    "Collect_PackScroll_Limit": {
+        "desc": "达到本类五次滑动预算上限，结束本轮该类扫描，不写单卡完成记录。",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "[Anchor]PackScan_End"
+        ],
+        "focus": "CM.L.达到翻页上限，结束当前类别"
+    },
+    "Collect_Pack_Prepare": {
+        "desc": "仅在真正选中具名卡后复位本次IM尝试标签；保留已确认完成的S06分层进度。",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ResetTag",
+        "custom_action_param": {
+            "tags": [
+                "IM_Skill_OnlyOnec",
+                "IM_Skill_1",
+                "IM_Skill_End"
+            ]
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_Pack_Click"
+        ]
     },
     "Collect_PackLocation_PassFieldsAndHub": {
-        "desc": "[路由节点]不可删除。计数器开关，防止同一节点多次进入，下一个节点的action阶段重置计数。★2026-10-10 新增 anchor 清锚:每次扫卡带列表(即准备点下一张卡带之前)注销上一张卡带注册的卡带专属锚 S18_Map1_Trip / C3_Battle1_Done / C3_Battle2_Trip。原因:MaaFW 的 anchor 一经 set 就会**跨卡带残留** —— 实测 2026-10-10 15:44:54,跑完卡带18 再进卡带19 时,Collect_OperationsMain_Sandplay.next 首位的 [Anchor]S18_Map1_Trip 仍被解析并命中(S18_Map1_Trip 的判据只有箱庭HUD + per-run 标签,不含卡带特征)⇒ S18 旁路抢跑 ⇒ 卡带19 一张图没采却被打了完成标记。注销写法=把锚的键值填空字符串,与上游 Collect_IM_M14_MenuReady、Collect_IM_OnFoot_NviMap_M14_Egress 的清锚写法同一范式。",
+        "desc": "当前卡框只分发一次名称；未命中按整框跳过。进入下一张前清理专属路线锚点。",
         "recognition": "Custom",
         "custom_recognition": "CheckTag",
         "custom_recognition_param": {
@@ -1746,57 +1772,22 @@
             "Collect_Pack_Event_2",
             "Collect_Pack_Event_3",
             "Collect_Pack_Event_4",
-            "Collect_Pack_Event_5",
-            "Collect_Pack_Unnamed"
+            "Collect_Pack_Event_5"
         ]
     },
     "Collect_Pack_Unnamed": {
-        "desc": "【无名卡带兜底】排在 33 个具名候选项之后：当前槽位这张卡带没有任何具名节点（新卡带/改版卡带/模板缺失），但徽章显示未双勾时，直接按槽位点击进卡带采集。命中前先反查黑名单——把被禁用的具名节点临时启用后在本槽位跑一次识别，谁的画面模板命中就判为屏蔽卡带并跳过。max_hit 是本轮重进上限。",
-        "max_hit": 6,
-        "recognition": "Custom",
-        "custom_recognition": "PackUnnamedNotDone",
-        "custom_recognition_param": {},
-        "roi": "[Anchor]PackFrame_Loc",
-        "action": "Custom",
-        "custom_action": "PatchPipeline",
-        "custom_action_param": {
-            "target": "Collect_PackEnd_Ck",
-            "patch": {
-                "action": "Custom",
-                "custom_action": "MarkComplete",
-                "custom_action_param": {
-                    "card_name": "Pack_Unnamed_Scan",
-                    "cycle_type": "g_weekly"
-                }
-            }
-        },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
-        "next": [
-            "Collect_Pack_Click"
-        ]
+        "desc": "名单配置兼容目标；新选卡链对身份未识别统一跳过，不再自动进入无名卡。",
+        "enabled": false
     },
     "Collect_Pack_Story_1": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp1.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_01_血骑士"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp1.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -1810,33 +1801,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_1",
+            "CurrentCollectPack": "Collect_Pack_Story_1",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_2": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp2.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_02_苍蓝魔女"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp2.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -1850,33 +1833,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_2",
+            "CurrentCollectPack": "Collect_Pack_Story_2",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_3": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp3.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_03_迷雾神射手"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp3.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -1890,33 +1865,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_3",
+            "CurrentCollectPack": "Collect_Pack_Story_3",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_4": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp4.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_04_眼镜与猫"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp4.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -1930,33 +1897,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_4",
+            "CurrentCollectPack": "Collect_Pack_Story_4",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_5": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp5.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_05_沙漠之花"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp5.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -1970,33 +1929,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_5",
+            "CurrentCollectPack": "Collect_Pack_Story_5",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_6": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp6.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_06_异教塔"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp6.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2010,33 +1961,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_6",
+            "CurrentCollectPack": "Collect_Pack_Story_6",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_7": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp7.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_07_愤怒天使"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp7.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2050,33 +1993,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_7",
+            "CurrentCollectPack": "Collect_Pack_Story_7",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_8": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp8.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_08_血之狂想曲"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp8.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2090,33 +2025,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_8",
+            "CurrentCollectPack": "Collect_Pack_Story_8",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_9": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp9.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_09_铁假面"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp9.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2130,33 +2057,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_9",
+            "CurrentCollectPack": "Collect_Pack_Story_9",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_10": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp10.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_10_霍尔蒙克斯"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp10.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2170,33 +2089,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_10",
+            "CurrentCollectPack": "Collect_Pack_Story_10",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_11": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp11.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_11_虚假游戏"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp11.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2210,33 +2121,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_11",
+            "CurrentCollectPack": "Collect_Pack_Story_11",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_12": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp12.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_12_黑羽毛"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp12.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2250,33 +2153,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_12",
+            "CurrentCollectPack": "Collect_Pack_Story_12",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_13": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp13.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_13_雪之歌"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp13.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2290,33 +2185,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_13",
+            "CurrentCollectPack": "Collect_Pack_Story_13",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_14": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp14.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_14_神圣审判"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp14.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2330,33 +2217,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_14",
+            "CurrentCollectPack": "Collect_Pack_Story_14",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_15": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp15.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_15_复仇的誓言"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp15.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2370,33 +2249,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_15",
+            "CurrentCollectPack": "Collect_Pack_Story_15",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_16": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp16.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_16_三国同盟"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp16.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2410,33 +2281,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_16",
+            "CurrentCollectPack": "Collect_Pack_Story_16",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_17": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp17.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_17_试炼之路"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp17.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2450,34 +2313,26 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_17",
+            "CurrentCollectPack": "Collect_Pack_Story_17",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_18": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp18.png"
-                ],
-                "threshold": 0.85
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_18_救赎"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp18.png"
         ],
-        "box_index": 0,
+        "threshold": 0.85,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2493,34 +2348,24 @@
         },
         "anchor": {
             "Pack_Click": "Collect_Pack_Story_18",
-            "S18_Map1_Trip": "Collect_S18_Map1_Trip"
+            "S18_Map1_Trip": "Collect_S18_Map1_Trip",
+            "CurrentCollectPack": "Collect_Pack_Story_18",
+            "PackScan_Return": "Collect_PackScan_Prepare"
         },
-        "post_delay": 5000,
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_19": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp19.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_19_被遗忘的战争"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp19.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2534,35 +2379,26 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_19",
+            "CurrentCollectPack": "Collect_Pack_Story_19",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Story_20": {
-        "desc": "【不参与采集·上游默认禁用】Story_20_堕入深渊。禁用=该卡带不进候选列表,任何完成判定(含 PackBadgeNotDone 图标判定)都不会碰到它。要启用前先确认该卡带是否支持采集。",
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "enabled": false,
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_sp20.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Story_20_堕入深渊"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_sp20.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2576,33 +2412,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Story_20",
+            "CurrentCollectPack": "Collect_Pack_Story_20",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Character_1": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_cp1.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Character_1_杰登之门"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_cp1.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2616,33 +2444,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Character_1",
+            "CurrentCollectPack": "Collect_Pack_Character_1",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Character_2": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_cp2.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Character_2_火晶片"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_cp2.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2656,33 +2476,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Character_2",
+            "CurrentCollectPack": "Collect_Pack_Character_2",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Character_3": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_cp3.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Character_3_美丽无望"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_cp3.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2699,34 +2511,24 @@
         "anchor": {
             "Pack_Click": "Collect_Pack_Character_3",
             "C3_Battle2_Trip": "Collect_C3_Trip",
-            "C3_Battle1_Done": "Collect_C3_Battle1_Done"
+            "C3_Battle1_Done": "Collect_C3_Battle1_Done",
+            "CurrentCollectPack": "Collect_Pack_Character_3",
+            "PackScan_Return": "Collect_PackScan_Prepare"
         },
-        "post_delay": 5000,
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Character_4": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_cp4.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Character_4_大逃脱"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_cp4.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2740,34 +2542,26 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Character_4",
+            "CurrentCollectPack": "Collect_Pack_Character_4",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Character_5": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_cp5.png"
-                ],
-                "threshold": 0.85
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Character_5_鲁的迷宫"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_cp5.png"
         ],
-        "box_index": 0,
+        "threshold": 0.85,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2781,33 +2575,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Character_5",
+            "CurrentCollectPack": "Collect_Pack_Character_5",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Character_6": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_cp6.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Character_6_御剑传"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_cp6.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2821,33 +2607,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Character_6",
+            "CurrentCollectPack": "Collect_Pack_Character_6",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Character_7": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_cp7.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Character_7_合约之战"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_cp7.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2861,35 +2639,26 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Character_7",
+            "CurrentCollectPack": "Collect_Pack_Character_7",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Character_8": {
-        "desc": "【不参与采集·上游默认禁用】Character_8_妖魔讨伐团。同 Story_20:禁用=不进候选列表。",
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "enabled": false,
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_cp8.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Character_8_妖魔讨伐团"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_cp8.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2903,34 +2672,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Character_8",
+            "CurrentCollectPack": "Collect_Pack_Character_8",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Event_1": {
-        "desc": "特殊地图特殊处理.此地图没有传送阵",
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_vp1.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Event_1_夏日骑士"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_vp1.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2944,40 +2704,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Event_1",
+            "CurrentCollectPack": "Collect_Pack_Event_1",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Event_2": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_vp2.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Event_2_恶梦之冬",
-                    "single_coin": true,
-                    "star_coin": [
-                        44,
-                        81,
-                        26,
-                        26
-                    ]
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_vp2.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -2991,33 +2736,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Event_2",
+            "CurrentCollectPack": "Collect_Pack_Event_2",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Event_3": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_vp3.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Event_3_海滨天使"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_vp3.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -3031,33 +2768,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Event_3",
+            "CurrentCollectPack": "Collect_Pack_Event_3",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Event_4": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_vp4.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Event_4_记忆边缘"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_vp4.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -3071,33 +2800,25 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Event_4",
+            "CurrentCollectPack": "Collect_Pack_Event_4",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Event_5": {
+        "desc": "在已定位的当前卡框内查询身份；进入只看探针与运行态启用，不再读取完成存档或重复查徽章。",
         "max_hit": 3,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "TemplateMatch",
-                "roi": "[Anchor]PackFrame_Loc",
-                "template": [
-                    "Cartridges/Q_vp5.png"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "PackBadgeNotDone",
-                "custom_recognition_param": {
-                    "card_name": "Event_5_戏水女王"
-                },
-                "roi": "[Anchor]PackFrame_Loc"
-            }
+        "recognition": "TemplateMatch",
+        "roi": "[Anchor]PackFrame_Loc",
+        "template": [
+            "Cartridges/Q_vp5.png"
         ],
-        "box_index": 0,
+        "pre_delay": 0,
         "action": "Custom",
         "custom_action": "PatchPipeline",
         "custom_action_param": {
@@ -3111,10 +2832,14 @@
                 }
             }
         },
-        "anchor": "Pack_Click",
-        "post_delay": 5000,
+        "anchor": {
+            "Pack_Click": "Collect_Pack_Event_5",
+            "CurrentCollectPack": "Collect_Pack_Event_5",
+            "PackScan_Return": "Collect_PackScan_Prepare"
+        },
+        "post_delay": 0,
         "next": [
-            "Collect_Pack_Click"
+            "Collect_Pack_Prepare"
         ]
     },
     "Collect_Pack_Click": {
@@ -3137,6 +2862,8 @@
         "post_delay": 5000,
         "next": [
             "[JumpBack]Global_WaitingForLoading",
+            "[JumpBack]Collect_FirstPack",
+            "[JumpBack]Collect_FirstPack_Talk",
             "Collect_OperationsMain_Sandplay",
             "Collect_Pack_Click"
         ]

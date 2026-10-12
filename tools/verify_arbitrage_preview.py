@@ -276,23 +276,23 @@ class PriceListSwipeTests(unittest.TestCase):
 
         context = Context()
         controller = ar.ArbitrageSellController()
-        state = {"page": 0, "swipes": 0, "captures": 0}
+        state = {"page": 0, "swipes": 0, "captures": 0, "calibrations": 0}
         events = []
 
         def capture():
             state["captures"] += 1
             events.append("capture")
             image = None if screenshot_failure and state["captures"] == 2 else np.full(
-                (720, 1280, 3), state["page"] * 100, dtype=np.uint8
+                (720, 1280, 3), state["page"] * 100 + state["calibrations"] * 10, dtype=np.uint8
             )
             return SimpleNamespace(wait=lambda: SimpleNamespace(get=lambda: image))
 
         def swipe(node, override=None):
-            self.assertEqual(node, "Arbitrage_Swip_PriceList")
-            self.assertEqual(PIPELINE[node]["next"], ["Arbitrage_Swip_Calibration_Hub"])
-            self.assertIsNone(override)
+            self.assertEqual(node, "Agt_Proxy_Blank")
+            self.assertEqual(override, {node: params["proxy_override"]})
+            self.assertFalse(override[node].get("next"))
             state["swipes"] += 1
-            events.append("swipe_and_calibrate")
+            events.append("swipe")
             if state["swipes"] > missed:
                 state["page"] = 1
             return Detail()
@@ -303,9 +303,12 @@ class PriceListSwipeTests(unittest.TestCase):
             if not_started:
                 return None
             argv = SimpleNamespace(node_name=node, custom_action_param=params)
-            return SimpleNamespace(status=SimpleNamespace(
-                succeeded=smart_action.SmartAction().run(context, argv)
-            ))
+            succeeded = smart_action.SmartAction().run(context, argv)
+            if succeeded:
+                self.assertEqual(PIPELINE[node]["next"], ["Arbitrage_Swip_Calibration_Hub"])
+                state["calibrations"] += 1
+                events.append("calibrate")
+            return SimpleNamespace(status=SimpleNamespace(succeeded=succeeded))
 
         context.tasker.controller = SimpleNamespace(post_screencap=capture)
         context.run_task = task
@@ -317,7 +320,12 @@ class PriceListSwipeTests(unittest.TestCase):
 
         with patch.object(smart_action.time, "sleep", side_effect=settle):
             scan = controller._scan_price_list(context, max_scan_pages=8, stop_at_non_max=False)
-        self.assertEqual(events, ["capture", "swipe_and_calibrate", "settle", "capture"] * state["swipes"])
+        attempt = ["capture", "swipe", "settle", "capture"]
+        expected = attempt * state["swipes"]
+        if not screenshot_failure and not not_started:
+            expected = attempt * (missed + 1) + ["calibrate"] + attempt * 3 + ["calibrate"]
+        self.assertEqual(events, expected)
+        self.assertEqual(state["calibrations"], 0 if screenshot_failure or not_started else 2)
         return scan, state["swipes"]
 
     def test_transient_misses_retry_without_skipping_pages_and_bottom_is_bounded(self):

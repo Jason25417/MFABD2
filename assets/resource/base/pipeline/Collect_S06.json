@@ -1309,9 +1309,7 @@
         "recognition": "DirectHit",
         "action": "DoNothing",
         "next": [
-            "Collect_QuickCart_SuccessUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
+            "Collect_PackFinish"
         ],
         "focus": "S06.异教塔采集收尾-退出卡带"
     },
@@ -1321,9 +1319,7 @@
         "recognition": "DirectHit",
         "action": "DoNothing",
         "next": [
-            "Collect_QuickCart_FastUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
+            "Collect_PackAbort"
         ],
         "focus": "S06.[WRN]楼层移动失败,结束卡带"
     }

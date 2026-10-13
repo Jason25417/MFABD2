@@ -692,28 +692,24 @@
         "focus": "C3.战斗2已采完-本卡带完成"
     },
     "Collect_C3_S8_Finish": {
-        "desc": "[C3·收尾]战斗1 + 战斗2(=禁闭室) 都采完 ⇒ 本卡带采集完成。先关掉可能残留的面板/地图,再走既有收尾退卡带(Collect_QuickCart_SuccessUI → Collect_PackEnd_Ck 会由卡带节点 Collect_Pack_Character_3 的 PatchPipeline 打完成标记)。★2026-10-02 本地:加 max_hit:1 并把 next 收敛为 ['Collect_QuickCart_SuccessUI', '[JumpBack]Global_QuickCart_MenuReset', '[JumpBack]Global_ToSandBox']。原因:本节点是 DirectHit(永远命中),而 next 里的候选都'不成立就返回'(Global_BackPageHub_Once 是 [JumpBack]、FastUI 识别不中、MenuReset 跑完即回) ⇒ 候选轮完回到本节点重评 ⇒ 原地死循环(实测日志 11:26:36~11:26:55 反复'打开/关闭卡带列表')。max_hit 保证只跑一次。",
+        "desc": "C3战斗2采集正常结束，交公共成功收尾 | 保留本卡一次收尾限制，列表恢复与完成写入由公共出口处理。",
         "max_hit": 1,
         "recognition": "DirectHit",
         "action": "DoNothing",
         "post_delay": 500,
         "next": [
-            "Collect_QuickCart_SuccessUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
+            "Collect_PackFinish"
         ],
         "focus": "C3.采集完成-退出卡带"
     },
     "Collect_C3_S_Abort": {
-        "desc": "[C3·断臂]去战斗2(=禁闭室)途中任一环失败:先关掉可能残留的面板,再直接结束卡带内流程回快速卡带菜单(与 Collect_S06_Abort/Collect_S18_Abort 同思路:最多丢本卡剩余资源,不把状态机卡死)。★2026-10-02 本地:加 max_hit:1 并把 next 收敛为 ['Collect_QuickCart_FastUI', '[JumpBack]Global_QuickCart_MenuReset', '[JumpBack]Global_ToSandBox']。原因:本节点是 DirectHit(永远命中),而 next 里的候选都'不成立就返回'(Global_BackPageHub_Once 是 [JumpBack]、FastUI 识别不中、MenuReset 跑完即回) ⇒ 候选轮完回到本节点重评 ⇒ 原地死循环(实测日志 11:26:36~11:26:55 反复'打开/关闭卡带列表')。max_hit 保证只跑一次。",
+        "desc": "C3战斗2采集失败，交公共失败收尾 | 保留本卡一次收尾限制，不写完成记录。",
         "max_hit": 1,
         "recognition": "DirectHit",
         "action": "DoNothing",
         "post_delay": 0,
         "next": [
-            "Collect_QuickCart_FastUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
+            "Collect_PackAbort"
         ],
         "focus": "C3.[WRN]战斗2采集失败-结束卡带"
     },
@@ -865,9 +861,7 @@
         "post_delay": 0,
         "timeout": 10000,
         "next": [
-            "Collect_QuickCart_SuccessUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
+            "Collect_PackFinish"
         ],
         "on_error": [
             "Collect_S18_Abort",
@@ -888,9 +882,7 @@
         },
         "post_delay": 0,
         "next": [
-            "Collect_QuickCart_FastUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
+            "Collect_PackAbort"
         ],
         "focus": "S18.[WRN]补采或返程未确认成功，返回列表"
     },
@@ -1000,9 +992,7 @@
         ],
         "inverse": true,
         "next": [
-            "Collect_QuickCart_SuccessUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
+            "Collect_PackFinish"
         ],
         "focus": "QBC.[INF]特殊地图.类EP6区域地图到底"
     },
@@ -1051,9 +1041,7 @@
             35
         ],
         "next": [
-            "Collect_QuickCart_FastUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
+            "Collect_PackAbort"
         ],
         "focus": "CM-P.[WRN]状态机底层逻辑防护被触发\n直接结束卡带"
     },
@@ -1408,9 +1396,7 @@
         "threshold": 0.85,
         "post_delay": 1000,
         "next": [
-            "Collect_QuickCart_FastUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
+            "Collect_PackAbort"
         ],
         "focus": "CBB.[WRN]中继特殊结束-不存在右换页"
     },
@@ -1552,9 +1538,7 @@
         ],
         "next": [
             "[Anchor]C3_Battle2_Trip",
-            "Collect_QuickCart_SuccessUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
+            "Collect_PackFinish"
         ],
         "focus": "CCB.快速卡带-卡带内流程进入END环节"
     },
@@ -1789,6 +1773,30 @@
             "Collect_S06_To1F_Panel"
         ],
         "focus": "S06.[WRN]异教塔-人不在第1层,用面板传送过去"
+    },
+    "Collect_PackFinish": {
+        "desc": "整卡已确认完成的公共收尾 | 先确认快速卡带列表，否则调出列表或复位箱庭；只有列表确认后才写完成并禁用当前卡，等待失败交失败收尾。",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 20000,
+        "next": [
+            "Collect_QuickCart_SuccessUI",
+            "[JumpBack]Global_QuickCart_MenuReset",
+            "[JumpBack]Global_ToSandBox"
+        ],
+        "on_error": [
+            "Collect_PackAbort"
+        ]
+    },
+    "Collect_PackAbort": {
+        "desc": "整卡失败或未确认完成的公共收尾 | 尝试恢复快速卡带列表后交失败出口；不写完成记录、不禁用当前卡，复位本身也失败则按默认规则退栈。",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "Collect_QuickCart_FastUI",
+            "[JumpBack]Global_QuickCart_MenuReset",
+            "[JumpBack]Global_ToSandBox"
+        ]
     },
     "Collect_QuickCart_SuccessUI": {
         "desc": "整卡正常完成后确认快速卡带列表已打开，再执行完成写档与本轮禁用。仅由明确成功出口调用。",

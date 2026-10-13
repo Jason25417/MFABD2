@@ -834,7 +834,7 @@
             ]
         },
         "next": [
-            "Collect_IM_ReturnToQuickCart"
+            "Collect_PackFinish"
         ],
         "focus": "步行吸取环境复位"
     },
@@ -2272,17 +2272,6 @@
             "Collect_ForceTeleporCircle_No"
         ],
         "focus": "CTB.到达-放传送技能复位"
-    },
-    "Collect_IM_ReturnToQuickCart": {
-        "desc": "步行吸取正常完成后恢复快速卡带列表；只有列表确认成功才进入统一完成写档出口。",
-        "pre_delay": 0,
-        "post_delay": 0,
-        "next": [
-            "Collect_QuickCart_SuccessUI",
-            "[JumpBack]Global_QuickCart_MenuReset",
-            "[JumpBack]Global_ToSandBox"
-        ],
-        "focus": "CTB.步行吸取完成，恢复列表收尾"
     },
     "Rec_QuickMove_Busy": {
         "recognition": "Or",

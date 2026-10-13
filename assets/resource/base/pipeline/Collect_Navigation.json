@@ -828,7 +828,6 @@
             "Collect_TeleporCircle_Ico_Enter"
         ],
         "action": "Click",
-        "target": "Collect_TeleporCircle_Ico_Enter",
         "post_delay": 1000,
         "timeout": 5000,
         "next": [

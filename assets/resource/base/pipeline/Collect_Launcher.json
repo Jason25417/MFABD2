@@ -6,7 +6,6 @@
             "[JumpBack]Collect_QC_Scan_Reset",
             "[JumpBack]Collect_RunTags_Reset",
             "[JumpBack]Collect_PerPetTask",
-            "Collect_AllLibGone",
             "Collect_Sandplay",
             "[JumpBack]Global_ToSandBox"
         ]
@@ -56,7 +55,6 @@
             "[JumpBack]Collect_QC_Scan_Reset",
             "[JumpBack]Collect_RunTags_Reset",
             "[JumpBack]Collect_PerPetTask",
-            "Collect_AllLibGone",
             "Collect_Sandplay",
             "[JumpBack]Global_ToSandBox"
         ]
@@ -101,32 +99,6 @@
             "Collect_BlackList_User",
             "[JumpBack]Global_QuickCart_MenuReset"
         ]
-    },
-    "Collect_AllLibGone": {
-        "desc": "保留旧配置兼容节点，当前停用；整类开关由目标选择器按启用名单和本周完成记录决定。",
-        "enabled": false,
-        "recognition": "Custom",
-        "custom_recognition": "CheckCoolDown",
-        "custom_recognition_param": {
-            "targets": [
-                {
-                    "card_name": "Pack_Story_SimpleDone",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Pack_Character_SimpleDone",
-                    "cycle_type": "g_weekly"
-                },
-                {
-                    "card_name": "Pack_Event_SimpleDone",
-                    "cycle_type": "g_weekly"
-                }
-            ],
-            "match": "all_done"
-        },
-        "pre_delay": 0,
-        "post_delay": 0,
-        "focus": "全类已有完成标签,停止任务"
     },
     "Collect_BlackList_User": {
         "desc": "应用「排除卡带」 | 按 attach 中三类编号禁用对应具名卡带；空名单不修改节点。节点保持启用，interface 关闭功能时将 action 改为 DoNothing，后续仍进入自选采集范围节点 Collect_WhiteList_User。",
@@ -275,7 +247,7 @@
         "focus": "QC.查看战场奖励开关(关闭则勾上)"
     },
     "Collect_FeatureSwitch_StoryPack": {
-        "desc": "[分类分支入口]剧情游戏卡。★2026-10-07 本地两处改动(修「停止重跑后剧情/角色被跳过、直接去活动」):①max_hit 1→3——上游的 1 表示「本轮只进一次」,但那唯一一次若被浪费(实测:停止任务时脚本正在进卡带、重跑后残留载入态,分支空等 15s 就退栈),本轮该类就再也进不去,调度器只能落到还没用过的活动分支(日志证据 10:46:21/10:46:43 `max_hit reached [Collect_FeatureSwitch_StoryPack] [current_hit=1]`);3 保留死循环防护,又允许「进了但没扫完」时重进。②新增 CheckTag(QC_Story_Scanned,max=1) 识别——本轮**已完整扫过一轮**(由 Collect_QC_Scan_Mark_Story 在定位链触底时置位)则本节点不再命中,直接落到下一个分类候选,避免放宽 max_hit 后重复扫 2~3 遍。★两个条件互补:目标选择器 Collect_PackType_Select 管「本周还有没有要采的」(存档,没有就关掉本节点),本节点管「本轮扫过没有」(内存 tag,每轮由 Collect_QC_Scan_Reset 清空)。",
+        "desc": "剧情卡分类入口：目标选择器决定本类是否启用，本轮扫描结束标记阻止重复分派；未完成扫描时最多进入三次。每轮入口清空扫描标记，停止后重跑仍可重新扫描。",
         "enabled": true,
         "max_hit": 3,
         "recognition": "Custom",
@@ -285,16 +257,16 @@
             "max": 1
         },
         "anchor": {
-            "SmartSwipOut": ""
+            "PackScan_End": ""
         },
         "timeout": 1,
         "next": [
             "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_StoryPack_SetSimpleSkip"
+            "Collect_StoryPack_PrepareScan"
         ]
     },
     "Collect_FeatureSwitch_CharacterPack": {
-        "desc": "[分类分支入口]角色游戏卡。★2026-10-07 同 Story:max_hit 1→3 + CheckTag(QC_Char_Scanned,max=1)(本轮已完整扫过一轮则不再命中)。上游 max_hit:1 会让「空跑那一次」耗尽本类唯一配额,重跑后整类被跳过。",
+        "desc": "角色卡分类入口：目标选择器决定本类是否启用，本轮扫描结束标记阻止重复分派；未完成扫描时最多进入三次。",
         "enabled": true,
         "max_hit": 3,
         "recognition": "Custom",
@@ -304,16 +276,16 @@
             "max": 1
         },
         "anchor": {
-            "SmartSwipOut": ""
+            "PackScan_End": ""
         },
         "timeout": 1,
         "next": [
             "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_CharacterPack_SetSimpleSkip"
+            "Collect_CharacterPack_PrepareScan"
         ]
     },
     "Collect_FeatureSwitch_EvenPack": {
-        "desc": "[分类分支入口]活动游戏卡。★2026-10-07 同 Story:max_hit 1→3 + CheckTag(QC_Event_Scanned,max=1)。三类都扫完 ⇒ 调度器 next 逐个落空 ⇒ 退栈收尾(与上游原行为一致)。",
+        "desc": "活动卡分类入口：目标选择器决定本类是否启用，本轮扫描结束标记阻止重复分派；未完成扫描时最多进入三次。",
         "enabled": true,
         "max_hit": 3,
         "recognition": "Custom",
@@ -323,51 +295,48 @@
             "max": 1
         },
         "anchor": {
-            "SmartSwipOut": ""
+            "PackScan_End": ""
         },
         "timeout": 1,
         "next": [
             "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_EventPack_SetSimpleSkip"
+            "Collect_EventPack_PrepareScan"
         ]
     },
     "Collect_FeatureSwitch_ManagerPack": {
-        "desc": "店长游戏卡类的启用开关,当前整类关闭(该类型不支持采集)。⚠️要启用先把 Pack_Manager_SimpleDone 加进 Collect_AllLibGone 的 targets——那个总闸现在只数故事/角色/活动三类,三类做完就会退栈收尾,本类会被整类漏掉。注:Collect_AllLibGone 已于 2026-10-01 停用,启用本类时不必再管那段提示。",
+        "desc": "店长卡分类入口，当前不支持采集，整类保持关闭。",
         "enabled": false,
         "max_hit": 1,
         "anchor": {
-            "SmartSwipOut": ""
+            "PackScan_End": ""
         },
         "timeout": 1,
         "next": [
             "[JumpBack]Global_QuickCart_MenuReset",
-            "Collect_ManagerPack_SetSimpleSkip"
+            "Collect_ManagerPack_PrepareScan"
         ]
     },
-    "Collect_StoryPack_SetSimpleSkip": {
-        "desc": "设置本类扫描收尾后选择分类；保留旧 SimpleSkip 配置接口，具名卡完成记录只供外层类别选择。",
+    "Collect_StoryPack_PrepareScan": {
+        "desc": "设置剧情类扫描收尾后选择分类；触底或达到滑动上限时只记录本轮扫描结束。",
         "anchor": {
-            "SmartSwipOut": "Collect_LocatePack_SimpleSkip_Story",
             "PackScan_End": "Collect_QC_Scan_Mark_Story"
         },
         "next": [
             "Collect_QuickCart_SelectType_StoryPack"
         ]
     },
-    "Collect_CharacterPack_SetSimpleSkip": {
-        "desc": "设置本类扫描收尾后选择分类；保留旧 SimpleSkip 配置接口，具名卡完成记录只供外层类别选择。",
+    "Collect_CharacterPack_PrepareScan": {
+        "desc": "设置角色类扫描收尾后选择分类；触底或达到滑动上限时只记录本轮扫描结束。",
         "anchor": {
-            "SmartSwipOut": "Collect_LocatePack_SimpleSkip_Character",
             "PackScan_End": "Collect_QC_Scan_Mark_Character"
         },
         "next": [
             "Collect_QuickCart_SelectType_CharacterPack"
         ]
     },
-    "Collect_EventPack_SetSimpleSkip": {
-        "desc": "设置本类扫描收尾后选择分类；保留旧 SimpleSkip 配置接口，具名卡完成记录只供外层类别选择。",
+    "Collect_EventPack_PrepareScan": {
+        "desc": "设置活动类扫描收尾后选择分类；触底或达到滑动上限时只记录本轮扫描结束。",
         "anchor": {
-            "SmartSwipOut": "Collect_LocatePack_SimpleSkip_Event",
             "PackScan_End": "Collect_QC_Scan_Mark_Event"
         },
         "next": [
@@ -375,17 +344,10 @@
             "[JumpBack]Global_QuickCart_SwipTo_2P"
         ]
     },
-    "Collect_ManagerPack_SetSimpleSkip": {
-        "desc": "设置本类扫描收尾后选择分类；保留旧 SimpleSkip 配置接口，具名卡完成记录只供外层类别选择。",
-        "recognition": "Custom",
-        "custom_recognition": "CheckCoolDown",
-        "custom_recognition_param": {
-            "card_name": "Pack_Manager_SimpleDone",
-            "cycle_type": "g_weekly"
-        },
+    "Collect_ManagerPack_PrepareScan": {
+        "desc": "设置店长类扫描退栈出口后选择分类；当前整类入口关闭。",
         "anchor": {
-            "SmartSwipOut": "Collect_LocatePack_SimpleSkip_Manager",
-            "PackScan_End": "Global_Null"
+            "PackScan_End": "Collect_QC_Scan_End_Manager"
         },
         "next": [
             "Collect_QuickCart_SelectType_ManagerPack"
@@ -696,57 +658,18 @@
         ]
     },
     "Collect_LocatePack_Swip_VerifyOpen": {
-        "desc": "滑动失败后确认卡带列表仍开着，再走本类触底收尾；沿用列表校验方案，保留少见截图/动作故障提前结束的风险。",
+        "desc": "滑动失败后确认卡带列表仍开着，再结束本轮该类扫描；不写周完成记录，仍保留少见截图或动作故障提前结束本轮的风险。",
         "recognition": "Or",
         "any_of": [
             "Global_QuickCart_MenuReset_Ocr"
         ],
         "next": [
-            "[Anchor]SmartSwipOut"
+            "[Anchor]PackScan_End"
         ],
         "focus": "CL.M.触底校验-卡带列表已开"
     },
-    "Collect_LocatePack_SimpleSkip_Story": {
-        "desc": "本类触底出口，暂保留旧 SimpleDone 记录兼容；本轮扫描标记用于防止再次分派，不批量标记单卡完成。",
-        "action": "Custom",
-        "custom_action": "MarkComplete",
-        "custom_action_param": {
-            "card_name": "Pack_Story_SimpleDone",
-            "cycle_type": "g_weekly"
-        },
-        "next": [
-            "Collect_QC_Scan_Mark_Story"
-        ],
-        "focus": "CM.L.本轮剧情卡扫描结束"
-    },
-    "Collect_LocatePack_SimpleSkip_Character": {
-        "desc": "本类触底出口，暂保留旧 SimpleDone 记录兼容；本轮扫描标记用于防止再次分派，不批量标记单卡完成。",
-        "action": "Custom",
-        "custom_action": "MarkComplete",
-        "custom_action_param": {
-            "card_name": "Pack_Character_SimpleDone",
-            "cycle_type": "g_weekly"
-        },
-        "next": [
-            "Collect_QC_Scan_Mark_Character"
-        ],
-        "focus": "CM.L.本轮角色卡扫描结束"
-    },
-    "Collect_LocatePack_SimpleSkip_Event": {
-        "desc": "本类触底出口，暂保留旧 SimpleDone 记录兼容；本轮扫描标记用于防止再次分派，不批量标记单卡完成。",
-        "action": "Custom",
-        "custom_action": "MarkComplete",
-        "custom_action_param": {
-            "card_name": "Pack_Event_SimpleDone",
-            "cycle_type": "g_weekly"
-        },
-        "next": [
-            "Collect_QC_Scan_Mark_Event"
-        ],
-        "focus": "CM.L.本轮活动卡扫描结束"
-    },
     "Collect_QC_Scan_Mark_Story": {
-        "desc": "[本地·本轮扫描标记①]置位 QC_Story_Scanned=1,表示本轮剧情类已完整扫过一轮,供 Collect_FeatureSwitch_StoryPack 的 CheckTag 判「不再进入本类」。★前置判据 Or[Collect_QuickCart_Menu](快速卡带列表确实开着)是故意加的:触底信号来自 SmartSwipe 的 on_error,而 2026-10-07 实测过「复位链退栈到定位链、人在箱庭而列表没开」时 SmartSwipe 会在箱庭画面上误判触底 → 那一次若打上标记就会变成整类跳过(漏采)。列表没开 ⇒ 不打标记 ⇒ 本类下一轮仍可进入(宁可重扫,不可漏采)。",
+        "desc": "记录本轮剧情类扫描结束，阻止本轮再次分派；触底和达到滑动上限共用，不代表全类已采完。只在快速卡带列表开着时记录，避免列表未开时的滑动失败封住本类。",
         "recognition": "Or",
         "any_of": [
             "Collect_QuickCart_Menu"
@@ -758,10 +681,10 @@
             "value": 1
         },
         "timeout": 1,
-        "focus": "QC.本轮剧情类已扫完一轮"
+        "focus": "QC.本轮剧情类扫描结束"
     },
     "Collect_QC_Scan_Mark_Character": {
-        "desc": "[本地·本轮扫描标记②]置位 QC_Char_Scanned=1,判据与前置条件同 Story。",
+        "desc": "记录本轮角色类扫描结束，阻止本轮再次分派；仅在列表开着时记录，不代表全类已采完。",
         "recognition": "Or",
         "any_of": [
             "Collect_QuickCart_Menu"
@@ -773,10 +696,10 @@
             "value": 1
         },
         "timeout": 1,
-        "focus": "QC.本轮角色类已扫完一轮"
+        "focus": "QC.本轮角色类扫描结束"
     },
     "Collect_QC_Scan_Mark_Event": {
-        "desc": "[本地·本轮扫描标记③]置位 QC_Event_Scanned=1,判据与前置条件同 Story。",
+        "desc": "记录本轮活动类扫描结束，阻止本轮再次分派；仅在列表开着时记录，不代表全类已采完。",
         "recognition": "Or",
         "any_of": [
             "Collect_QuickCart_Menu"
@@ -788,10 +711,10 @@
             "value": 1
         },
         "timeout": 1,
-        "focus": "QC.本轮活动类已扫完一轮"
+        "focus": "QC.本轮活动类扫描结束"
     },
     "Collect_QC_Scan_Reset": {
-        "desc": "[本地·本轮扫描标记清零]每轮采集开始时清空 QC_Story_Scanned / QC_Char_Scanned / QC_Event_Scanned。★必须清:这三个 tag 存在 Agent 进程内存(TAG_STORE)里,**停止任务不会重置**(不重启 MFAA/Agent 就一直在),不清零会让下一轮直接跳过所有已扫过的分类。挂在 Collect_Sandplay.next(采集主入口),max_hit:1 保证一轮只清一次(退回箱庭再命中也不会把标记洗掉)。",
+        "desc": "每轮采集开始时清空三类扫描结束标记；标记保存在 Agent 内存中，停止任务不会自动清空。两个任务入口及箱庭配置入口均挂载，max_hit:1 保证一轮只清一次。",
         "max_hit": 1,
         "action": "Custom",
         "custom_action": "ResetTag",
@@ -805,14 +728,8 @@
         "timeout": 1,
         "focus": "QC.清空本轮分类扫描标记"
     },
-    "Collect_LocatePack_SimpleSkip_Manager": {
-        "desc": "本类触底出口，暂保留旧 SimpleDone 记录兼容；本轮扫描标记用于防止再次分派，不批量标记单卡完成。",
-        "action": "Custom",
-        "custom_action": "MarkComplete",
-        "custom_action_param": {
-            "card_name": "Pack_Manager_SimpleDone",
-            "cycle_type": "g_weekly"
-        },
+    "Collect_QC_Scan_End_Manager": {
+        "desc": "店长类扫描的独立退栈出口，不记录完成状态；当前整类入口关闭。",
         "focus": "CM.L.本轮店长卡扫描结束"
     },
     "Collect_PackScan_NormalMode": {

@@ -275,7 +275,7 @@
                 "Adb",
                 "PlayCover"
             ],
-            "description": "进入卡带，对含传送阵的地图依次执行探查、吸取、召集。<br><span style=\"background-color:rgba(255,160,0,0.2)\"><b>前提：</b>传送阵须已激活，且周围箱庭迷雾已探明，使区域地图能完整显示传送阵图标。</span><br><b>选卡：</b>按剧情→角色→活动推进，优先处理列表中彩色亮起的采集徽章；已完成记录用于判断整类是否还有任务。成功采集后记录进度并在本轮跳过该卡。",
+            "description": "进入卡带，对含传送阵的地图依次执行探查、吸取、召集。<br><span style=\"background-color:rgba(255,160,0,0.2)\"><b>前提：</b>传送阵须已激活，且周围箱庭迷雾已探明，使区域地图能完整显示传送阵图标。</span><br><b>选卡：</b>按剧情→角色→活动推进。某类允许采集的卡带本周均有完成记录时，跳过整类；进入类别后，普通模式只采集徽章彩色亮起且能识别身份的卡带，未知或未识别卡带跳过。成功采集后记录进度并在本轮跳过该卡；扫描结束不代表整类已采完。",
             "option": [
                 "采集卡带指定",
                 "采集卡带屏蔽",
@@ -1060,29 +1060,6 @@
                 }
             ]
         },
-        "简单类跳过": {
-            "type": "switch",
-            "description": "卡带右滑到底时，认为该大类本周已全部刷完并打标，下次运行跳过。<br>可<b>节省时间</b>，每周重置。",
-            "cases": [
-                {
-                    "name": "No",
-                    "pipeline_override": {
-                        "Collect_StoryPack_SetSimpleSkip": {
-                            "recognition": "DirectHit"
-                        },
-                        "Collect_CharacterPack_SetSimpleSkip": {
-                            "recognition": "DirectHit"
-                        },
-                        "Collect_EventPack_SetSimpleSkip": {
-                            "recognition": "DirectHit"
-                        }
-                    }
-                },
-                {
-                    "name": "Yes"
-                }
-            ]
-        },
         "采集卡带屏蔽": {
             "label": "排除卡带",
             "type": "switch",
@@ -1113,7 +1090,7 @@
             "label": "自选采集卡带范围",
             "type": "switch",
             "default_case": "No",
-            "description": "只采集范围内的卡带，范围外的（包括没填写的类别）都不采集。<br>范围内本周已完成的卡带照常跳过；同一张卡带同时在「排除卡带」里时，不采集。三类都不填写时不限制范围。",
+            "description": "只允许采集范围内的卡带，范围外的（包括没填写的类别）都不采集。<br>此选项只限制范围：某类允许采集的卡带本周均有完成记录时，跳过整类；进入类别后，普通模式只采集徽章彩色亮起且能识别身份的卡带。未知或未识别卡带跳过，默认不支持采集的卡带不会因填写编号而启用。<br>同一张卡带同时在「排除卡带」里时，不采集。三类都不填写时不限制范围。",
             "cases": [
                 {
                     "name": "No",
@@ -8061,10 +8038,7 @@
                 },
                 {
                     "name": "[执行]地图采集[单章]",
-                    "enabled": true,
-                    "option": {
-                        "简单类跳过": "Yes"
-                    }
+                    "enabled": true
                 },
                 {
                     "name": "[执行]竞技场",
@@ -8104,10 +8078,7 @@
                 },
                 {
                     "name": "[执行]地图采集[完整]",
-                    "enabled": true,
-                    "option": {
-                        "简单类跳过": "Yes"
-                    }
+                    "enabled": true
                 },
                 {
                     "name": "[执行]商店套利",
@@ -8203,10 +8174,7 @@
                 },
                 {
                     "name": "[执行]地图采集[完整]",
-                    "enabled": true,
-                    "option": {
-                        "简单类跳过": "Yes"
-                    }
+                    "enabled": true
                 },
                 {
                     "name": "[执行]商店套利",

@@ -6,8 +6,8 @@ _EvenPack 上游写死 max_hit:1 —— 一个 task 内每个分类**只能进�
 本轮该类再也进不去，调度器只能落到还没用过的活动分支(实测 10:46:49 直接去活动)。
 
 修法三部分，本测试各锁一层：
-  1. 静态接线：三个分支 max_hit==3 + CheckTag(QC_*_Scanned)；触底出口
-     (Collect_LocatePack_SimpleSkip_*) 挂上 Mark 节点；Mark 节点必须带
+  1. 静态接线：三个分支 max_hit==3 + CheckTag(QC_*_Scanned)；触底和滑动上限
+     共用 PackScan_End，只更新本轮标记，不写完成存档；Mark 节点必须带
      「快速卡带列表开着」前置判据(否则 2026-10-07 那个「列表没开→空滑→误判触底」
      的 bug 会升级成整类跳过)；两个任务入口先检查通信，Reset 节点挂在采集流程首位
      (每周模式先经 Collect_OnlyOnce_Switch 检查本周期)。
@@ -34,14 +34,14 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 LAUNCHER = "assets/resource/base/pipeline/Collect_Launcher.json"
 
-# (分支节点, 本轮扫描标记, 触底出口, 置位节点)
+# (分支节点, 本轮扫描标记, 分类准备节点, 置位节点)
 BRANCHES = [
     ("Collect_FeatureSwitch_StoryPack", "QC_Story_Scanned",
-     "Collect_LocatePack_SimpleSkip_Story", "Collect_QC_Scan_Mark_Story"),
+     "Collect_StoryPack_PrepareScan", "Collect_QC_Scan_Mark_Story"),
     ("Collect_FeatureSwitch_CharacterPack", "QC_Char_Scanned",
-     "Collect_LocatePack_SimpleSkip_Character", "Collect_QC_Scan_Mark_Character"),
+     "Collect_CharacterPack_PrepareScan", "Collect_QC_Scan_Mark_Character"),
     ("Collect_FeatureSwitch_EvenPack", "QC_Event_Scanned",
-     "Collect_LocatePack_SimpleSkip_Event", "Collect_QC_Scan_Mark_Event"),
+     "Collect_EventPack_PrepareScan", "Collect_QC_Scan_Mark_Event"),
 ]
 
 ENTRIES = ["Collect_StartGame_HomePage", "Collect_StartGame_HomePage_OnlyOnce"]
@@ -99,13 +99,13 @@ class StaticWiringTests(unittest.TestCase):
 
     def test_branch_max_hit_is_three(self):
         """根因修复:每个分类本轮最多可进 3 次(不是上游的 1 次)。"""
-        for name, _tag, _out, _mark in BRANCHES:
+        for name, _tag, _setup, _mark in BRANCHES:
             with self.subTest(node=name):
                 self.assertEqual(self.d[name].get("max_hit"), 3)
 
     def test_branch_has_scanned_gate(self):
         """每个分支带 CheckTag(本轮已扫过则不再命中)，tag 名一对一。"""
-        for name, tag, _out, _mark in BRANCHES:
+        for name, tag, _setup, _mark in BRANCHES:
             with self.subTest(node=name):
                 node = self.d[name]
                 self.assertEqual(node.get("recognition"), "Custom")
@@ -116,23 +116,30 @@ class StaticWiringTests(unittest.TestCase):
 
     def test_hit_gate_tags_are_distinct(self):
         """三个 tag 不能重名，否则一类的扫描会封死别类。"""
-        tags = [t for _n, t, _o, _m in BRANCHES]
+        tags = [t for _n, t, _s, _m in BRANCHES]
         self.assertEqual(len(tags), len(set(tags)))
 
-    def test_touchdown_exits_point_at_mark_nodes(self):
-        """每类在选分类之前设好两种收尾去向，触底出口再接本轮扫描标记。"""
-        setups = [
-            ("Collect_StoryPack_SetSimpleSkip", "Collect_QuickCart_SelectType_StoryPack"),
-            ("Collect_CharacterPack_SetSimpleSkip", "Collect_QuickCart_SelectType_CharacterPack"),
-            ("Collect_EventPack_SetSimpleSkip", "Collect_QuickCart_SelectType_EventPack"),
+    def test_scan_exits_only_mark_current_round(self):
+        """触底和达到滑动上限共用本类出口，收尾只更新本轮标记，不写周完成记录。"""
+        select_types = [
+            "Collect_QuickCart_SelectType_StoryPack",
+            "Collect_QuickCart_SelectType_CharacterPack",
+            "Collect_QuickCart_SelectType_EventPack",
         ]
-        for (name, _tag, out, mark), (setup, select_type) in zip(BRANCHES, setups):
-            with self.subTest(node=out):
+        for (name, _tag, setup, mark), select_type in zip(BRANCHES, select_types):
+            with self.subTest(node=setup):
                 self.assertEqual(self.d[name]["next"], ["[JumpBack]Global_QuickCart_MenuReset", setup])
-                self.assertEqual(self.d[setup]["anchor"]["SmartSwipOut"], out)
-                self.assertEqual(self.d[setup]["anchor"]["PackScan_End"], mark)
+                self.assertEqual(self.d[name]["anchor"], {"PackScan_End": ""})
+                self.assertEqual(self.d[setup]["anchor"], {"PackScan_End": mark})
+                self.assertEqual(self.d[setup].get("recognition", "DirectHit"), "DirectHit")
+                self.assertNotIn("custom_action", self.d[setup])
                 self.assertEqual(self.d[setup]["next"][0], select_type)
-                self.assertIn(mark, self.d[out].get("next", []))
+                self.assertEqual(self.d[mark]["custom_action"], "UpdateTag")
+                self.assertNotIn("next", self.d[mark])
+        for exit_node in ("Collect_LocatePack_Swip_VerifyOpen", "Collect_PackScroll_Limit"):
+            with self.subTest(node=exit_node):
+                self.assertEqual(self.d[exit_node]["next"], ["[Anchor]PackScan_End"])
+                self.assertNotIn("custom_action", self.d[exit_node])
 
     def test_only_once_stops_after_success_and_disable(self):
         """单卡模式仍先写完成记录、禁用当前卡，随后才写每周一次记录并停止。"""
@@ -151,7 +158,7 @@ class StaticWiringTests(unittest.TestCase):
         2026-10-07 实测过「复位链退栈到定位链、人在箱庭而列表没开」时 SmartSwipe
         会在箱庭画面上误判触底。若此时也打标记 ⇒ 整类跳过 ⇒ 漏采。
         """
-        for _name, tag, _out, mark in BRANCHES:
+        for _name, tag, _setup, mark in BRANCHES:
             with self.subTest(node=mark):
                 node = self.d[mark]
                 self.assertEqual(node.get("recognition"), "Or")
@@ -165,7 +172,7 @@ class StaticWiringTests(unittest.TestCase):
         node = self.d["Collect_QC_Scan_Reset"]
         self.assertEqual(node.get("custom_action"), "ResetTag")
         self.assertEqual(sorted(node["custom_action_param"]["tags"]),
-                         sorted(t for _n, t, _o, _m in BRANCHES))
+                         sorted(t for _n, t, _s, _m in BRANCHES))
         self.assertEqual(node.get("max_hit"), 1)
 
     def test_reset_hooked_on_both_entries(self):
@@ -250,7 +257,7 @@ class StaticWiringTests(unittest.TestCase):
                 self.assertIn(f"[JumpBack]{t['switch']}", menu)
                 prefix = t["pack_prefix"]
                 self.assertTrue(any(k.startswith(prefix) and k[len(prefix):].isdigit() for k in self.d))
-        self.assertEqual({t["switch"] for t in types_}, {n for n, _t, _o, _m in BRANCHES})
+        self.assertEqual({t["switch"] for t in types_}, {n for n, _t, _s, _m in BRANCHES})
 
     def test_old_gate_chain_removed(self):
         for name in ("Collect_QC_Skip_Story", "Collect_QC_Skip_Character",
@@ -460,6 +467,13 @@ class SelectorTests(unittest.TestCase):
         _r, patches = self._run(done=[c for n, c in self.char.items() if n <= 7])
         self.assertEqual(patches, {"Collect_FeatureSwitch_CharacterPack": {"enabled": False}})
 
+    def test_legacy_category_marks_do_not_close_pending_types(self):
+        """旧存档里的类别标记可以留存；没有单卡完成记录时，三类仍需检查。"""
+        _r, patches = self._run(done=[
+            "Pack_Story_SimpleDone", "Pack_Character_SimpleDone", "Pack_Event_SimpleDone",
+        ])
+        self.assertEqual(patches, {})
+
     def test_blacklisted_undone_card_does_not_keep_type_open(self):
         """★用户的例子:角色 1~6 已完成，7 未完成但被屏蔽 -> 角色整类不进。"""
         done = [c for n, c in self.char.items() if n <= 6]
@@ -609,7 +623,7 @@ class GateStateMachineTests(unittest.TestCase):
     def _reset_all(self):
         act = self.c.ResetTag()
         argv = types.SimpleNamespace(
-            custom_action_param=json.dumps({"tags": [t for _n, t, _o, _m in BRANCHES]}))
+            custom_action_param=json.dumps({"tags": [t for _n, t, _s, _m in BRANCHES]}))
         return act.run(None, argv)
 
     def _admit(self, node, tag):
@@ -630,13 +644,13 @@ class GateStateMachineTests(unittest.TestCase):
 
     def test_first_round_all_branches_admitted(self):
         """首轮三类标记都是 0 ⇒ 剧情分支可进(修复前空跑一次就再也进不去)。"""
-        for node, tag, _out, _mark in BRANCHES:
+        for node, tag, _setup, _mark in BRANCHES:
             with self.subTest(node=node):
                 self.assertTrue(self._admit(node, tag))
 
     def test_after_real_touchdown_story_not_reentered(self):
         """剧情正常扫完一轮(列表开着触底)⇒ 置位 ⇒ 不再进入，落到下一类。"""
-        node, tag, _out, mark = BRANCHES[0]
+        node, tag, _setup, mark = BRANCHES[0]
         self.assertTrue(self._admit(node, tag))
         self.assertTrue(self._touchdown(mark, tag, quickcart_open=True))
         self.assertFalse(self._admit(node, tag))
@@ -645,14 +659,14 @@ class GateStateMachineTests(unittest.TestCase):
 
     def test_bogus_touchdown_does_not_lock_the_class(self):
         """★列表没开的误触底(2026-10-07 已知 bug)不打标记 ⇒ 本类仍可进入。"""
-        node, tag, _out, mark = BRANCHES[0]
+        node, tag, _setup, mark = BRANCHES[0]
         self.assertTrue(self._admit(node, tag))
         self.assertFalse(self._touchdown(mark, tag, quickcart_open=False))
         self.assertTrue(self._admit(node, tag), "误触底不应封死本类")
 
     def test_new_round_reset_clears_marks(self):
         """新一轮入口 Reset 后标记归零 ⇒ 剧情重新可进(停止重跑场景)。"""
-        node, tag, _out, mark = BRANCHES[0]
+        node, tag, _setup, mark = BRANCHES[0]
         self.assertTrue(self._admit(node, tag))
         self.assertTrue(self._touchdown(mark, tag, quickcart_open=True))
         self.assertFalse(self._admit(node, tag))
@@ -661,7 +675,7 @@ class GateStateMachineTests(unittest.TestCase):
 
     def test_max_hit_caps_at_three(self):
         """就算一直没触底，同一类最多进 3 次 ⇒ 不会无限重扫(防死循环)。"""
-        node, tag, _out, _mark = BRANCHES[0]
+        node, tag, _setup, _mark = BRANCHES[0]
         self.assertEqual([self._admit(node, tag) for _ in range(4)],
                          [True, True, True, False])
 

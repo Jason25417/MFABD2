@@ -2283,5 +2283,546 @@
             "[JumpBack]Global_ToSandBox"
         ],
         "focus": "CTB.步行吸取完成，恢复列表收尾"
+    },
+    "Rec_QuickMove_Busy": {
+        "recognition": "Or",
+        "any_of": [
+            "Collect_IM_OnFoot_Moveing",
+            "Global_WaitingForLoading"
+        ]
+    },
+    "Rec_QuickMove_Menu": {
+        "desc": "识别快速移动列表中的已支持目的地，用于阻止菜单仍开时误判到达。",
+        "recognition": "OCR",
+        "roi": [
+            247,
+            59,
+            201,
+            440
+        ],
+        "expected": [
+            "艾琳",
+            "酒[馆館]",
+            "旅[馆館]",
+            "探索告示板",
+            "探索佈告欄",
+            "狩[猎獵][场場]"
+        ]
+    },
+    "Rec_QuickMove_Ready": {
+        "desc": "快速移动后的可操作箱庭；不在自动移动、载入或目的地列表中。",
+        "recognition": "And",
+        "all_of": [
+            "Global_ToSandBox_Enter",
+            {
+                "recognition": "Custom",
+                "custom_recognition": "NotRecognition",
+                "custom_recognition_param": {
+                    "node": "Rec_QuickMove_Busy"
+                }
+            },
+            {
+                "recognition": "Custom",
+                "custom_recognition": "NotRecognition",
+                "custom_recognition_param": {
+                    "node": "Rec_QuickMove_Menu"
+                }
+            }
+        ]
+    },
+    "Collect_QuickMove_Entry": {
+        "desc": "快速移动到指定地点，确认到达并回到箱庭后交还调用方。 | 五个锚点：\n1. QuickMove_Target【调用方必传】：本次目的地方案，指向 Collect_QuickMove_ToEileen / ToTavern / ToInn / ToBoard / ToHunt 之一；目标不命中时不改选其他地点。\n2. QuickMove_Success【调用方必传】：确认移动完成后的业务去向，例如开始吸取或继续返程。\n3. QuickMove_Failure【调用方必传】：本次未确认完成时的业务去向；模块会尝试恢复箱庭，但失败返回不保证复位成功。\n4. QuickMove_Exit_Result【模块内部】：由各 To* 节点指向对应 At*；以目的地文字与 Rec_QuickMove_Ready 共同确认结果，不要求先观察到载入。\n5. QuickMove_Exit_Process【模块内部】：本次点击目标后识别到载入，由 Loading 指向 Arrived；随后仍须 Rec_QuickMove_Ready 确认载入结束并回到箱庭，过程出现本身不算成功，此路不核对目的地名称。\n调用与清理：普通 next 进入本入口，调用方每次完整设置前三个锚点；后两个在入口清空、由内部流程设置。目的地节点依次处理确认和载入两个 JumpBack，再检查结果与过程出口，最后才自环重试。成功或失败分发前清理目标及两个内部出口锚；成功/失败返回锚保留至交还，由返回接收方清理或覆盖。",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ClearNodeHitCount",
+        "custom_action_param": {
+            "node_name": [
+                "Collect_QuickMove_ResetSandbox",
+                "Collect_QuickMove_Open",
+                "Collect_QuickMove_Loading",
+                "Collect_QuickMove_Confirm",
+                "Collect_QuickMove_FailureReset",
+                "Collect_QuickMove_ToEileen",
+                "Collect_QuickMove_ToTavern",
+                "Collect_QuickMove_ToInn",
+                "Collect_QuickMove_ToBoard",
+                "Collect_QuickMove_ToHunt"
+            ]
+        },
+        "anchor": {
+            "QuickMove_Exit_Process": "",
+            "QuickMove_Exit_Result": ""
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_QuickMove_Sandbox"
+        ],
+        "focus": "QM.准备快速移动"
+    },
+    "Collect_QuickMove_Sandbox": {
+        "desc": "先确认箱庭，再打开寻路菜单；界面复位不代表移动成功。",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 10000,
+        "next": [
+            "Collect_QuickMove_Dispatch",
+            "[JumpBack]Collect_QuickMove_ResetSandbox"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_Dispatch": {
+        "desc": "在箱庭分发唯一指定目的地 | 找不到目标不改选其他地点。",
+        "recognition": "Or",
+        "any_of": [
+            "Global_ToSandBox_Enter"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 8000,
+        "next": [
+            "[Anchor]QuickMove_Target",
+            "[JumpBack]Collect_QuickMove_Open"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_ResetSandbox": {
+        "desc": "本次移动的箱庭复位调用；内部返回后仍由调用点确认箱庭。",
+        "max_hit": 2,
+        "recognition": "Custom",
+        "custom_recognition": "NotRecognition",
+        "custom_recognition_param": {
+            "node": "Global_ToSandBox_Enter"
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "Global_ToSandBox"
+        ]
+    },
+    "Collect_QuickMove_Open": {
+        "desc": "展开左上快速移动列表 | 借用现有按钮识别，避免重写模板参数。",
+        "max_hit": 2,
+        "recognition": "Or",
+        "any_of": [
+            "Collect_WayPoint_Open_Tpl",
+            "Collect_WayPoint_Csm"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "post_delay": 800
+    },
+    "Collect_QuickMove_Loading": {
+        "desc": "已观察到本次点击后的转场；结束后允许箱庭到达检查。",
+        "max_hit": 24,
+        "recognition": "Or",
+        "any_of": [
+            "Global_WaitingForLoading"
+        ],
+        "pre_delay": 0,
+        "anchor": {
+            "QuickMove_Exit_Process": "Collect_QuickMove_Arrived"
+        },
+        "post_delay": 1000
+    },
+    "Collect_QuickMove_Confirm": {
+        "desc": "快速移动中的生成或确认弹框；处理后继续等待，不单独证明已到达。",
+        "max_hit": 3,
+        "recognition": "Or",
+        "any_of": [
+            "Collect_IM_Move_MGS"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "target": "Collect_IM_Move_MGS",
+        "post_delay": 800
+    },
+    "Collect_QuickMove_Arrived": {
+        "desc": "本次已观察到载入，且已回到可操作箱庭；该入口本身不核对目的地名称。",
+        "recognition": "Or",
+        "any_of": [
+            "Rec_QuickMove_Ready"
+        ],
+        "pre_delay": 0,
+        "post_delay": 1500,
+        "timeout": 5000,
+        "next": [
+            "Collect_QuickMove_Succeed"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_Succeed": {
+        "desc": "确认移动成功后交还调用方 | 保留成功返回锚至分发完成。",
+        "recognition": "Or",
+        "any_of": [
+            "Rec_QuickMove_Ready"
+        ],
+        "pre_delay": 0,
+        "anchor": {
+            "QuickMove_Target": "",
+            "QuickMove_Exit_Process": "",
+            "QuickMove_Exit_Result": ""
+        },
+        "post_delay": 0,
+        "timeout": 1,
+        "next": [
+            "[Anchor]QuickMove_Success"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Failure",
+            "Global_Null"
+        ],
+        "focus": "QM.快速移动完成，已回到箱庭"
+    },
+    "Collect_QuickMove_Fail": {
+        "desc": "快速移动失败后先尝试恢复箱庭；恢复不了也只走失败返回。",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 8000,
+        "next": [
+            "Collect_QuickMove_FailureReady",
+            "[JumpBack]Collect_QuickMove_FailureReset"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Failure",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_FailureReset": {
+        "desc": "本次失败收尾最多调用一次箱庭复位。",
+        "max_hit": 1,
+        "recognition": "Custom",
+        "custom_recognition": "NotRecognition",
+        "custom_recognition_param": {
+            "node": "Global_ToSandBox_Enter"
+        },
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "Global_ToSandBox"
+        ]
+    },
+    "Collect_QuickMove_FailureReady": {
+        "desc": "失败收尾确认已回箱庭，不把复位成功当作移动成功。",
+        "recognition": "Or",
+        "any_of": [
+            "Global_ToSandBox_Enter"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "Collect_QuickMove_Failure"
+        ]
+    },
+    "Collect_QuickMove_Failure": {
+        "desc": "快速移动未确认到达，交还调用方失败出口；不触发成功返回。",
+        "pre_delay": 0,
+        "anchor": {
+            "QuickMove_Target": "",
+            "QuickMove_Exit_Process": "",
+            "QuickMove_Exit_Result": ""
+        },
+        "post_delay": 0,
+        "timeout": 1,
+        "next": [
+            "[Anchor]QuickMove_Failure"
+        ],
+        "focus": "QM.[WRN]快速移动未确认完成；调用方需按失败处理"
+    },
+    "Collect_QuickMove_ToEileen": {
+        "desc": "快速移动到指定地点 | 点击后先处理确认和载入，再检查到达；菜单项仍在才重试点击，本次最多点击3次。",
+        "max_hit": 3,
+        "recognition": "OCR",
+        "roi": [
+            247,
+            59,
+            201,
+            440
+        ],
+        "expected": [
+            "艾琳"
+        ],
+        "action": "Click",
+        "anchor": {
+            "QuickMove_Exit_Result": "Collect_QuickMove_AtEileen"
+        },
+        "post_delay": 1500,
+        "next": [
+            "[JumpBack]Collect_QuickMove_Confirm",
+            "[JumpBack]Collect_QuickMove_Loading",
+            "[Anchor]QuickMove_Exit_Result",
+            "[Anchor]QuickMove_Exit_Process",
+            "Collect_QuickMove_ToEileen"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_AtEileen": {
+        "desc": "本来就在目标附近或移动太快时，以目标文字及可操作箱庭确认；菜单内文字不能充当到达证据。",
+        "recognition": "And",
+        "all_of": [
+            "Rec_QuickMove_Ready",
+            {
+                "recognition": "OCR",
+                "expected": [
+                    "艾琳"
+                ]
+            }
+        ],
+        "pre_delay": 0,
+        "post_delay": 1500,
+        "timeout": 5000,
+        "next": [
+            "Collect_QuickMove_Succeed"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_ToTavern": {
+        "desc": "快速移动到指定地点 | 点击后先处理确认和载入，再检查到达；菜单项仍在才重试点击，本次最多点击3次。",
+        "max_hit": 3,
+        "recognition": "OCR",
+        "roi": [
+            247,
+            59,
+            201,
+            440
+        ],
+        "expected": [
+            "酒[馆館]"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "anchor": {
+            "QuickMove_Exit_Result": "Collect_QuickMove_AtTavern"
+        },
+        "post_delay": 1500,
+        "next": [
+            "[JumpBack]Collect_QuickMove_Confirm",
+            "[JumpBack]Collect_QuickMove_Loading",
+            "[Anchor]QuickMove_Exit_Result",
+            "[Anchor]QuickMove_Exit_Process",
+            "Collect_QuickMove_ToTavern"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_AtTavern": {
+        "desc": "本来就在目标附近或移动太快时，以目标文字及可操作箱庭确认；菜单内文字不能充当到达证据。",
+        "recognition": "And",
+        "all_of": [
+            "Rec_QuickMove_Ready",
+            {
+                "recognition": "Or",
+                "any_of": [
+                    {
+                        "recognition": "OCR",
+                        "expected": [
+                            "酒[馆館]"
+                        ]
+                    },
+                    {
+                        "recognition": "OCR",
+                        "roi": [
+                            497,
+                            153,
+                            307,
+                            154
+                        ],
+                        "expected": [
+                            "科[库庫]托斯暗黑治[疗療][师師]"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "pre_delay": 0,
+        "post_delay": 1500,
+        "timeout": 5000,
+        "next": [
+            "Collect_QuickMove_Succeed"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_ToInn": {
+        "desc": "快速移动到指定地点 | 点击后先处理确认和载入，再检查到达；菜单项仍在才重试点击，本次最多点击3次。",
+        "max_hit": 3,
+        "recognition": "OCR",
+        "roi": [
+            247,
+            59,
+            201,
+            440
+        ],
+        "expected": [
+            "旅[馆館]"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "anchor": {
+            "QuickMove_Exit_Result": "Collect_QuickMove_AtInn"
+        },
+        "post_delay": 1500,
+        "next": [
+            "[JumpBack]Collect_QuickMove_Confirm",
+            "[JumpBack]Collect_QuickMove_Loading",
+            "[Anchor]QuickMove_Exit_Result",
+            "[Anchor]QuickMove_Exit_Process",
+            "Collect_QuickMove_ToInn"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_AtInn": {
+        "desc": "本来就在目标附近或移动太快时，以目标文字及可操作箱庭确认；菜单内文字不能充当到达证据。",
+        "recognition": "And",
+        "all_of": [
+            "Rec_QuickMove_Ready",
+            {
+                "recognition": "OCR",
+                "expected": [
+                    "旅[馆館]"
+                ]
+            }
+        ],
+        "pre_delay": 0,
+        "post_delay": 1500,
+        "timeout": 5000,
+        "next": [
+            "Collect_QuickMove_Succeed"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_ToBoard": {
+        "desc": "快速移动到指定地点 | 点击后先处理确认和载入，再检查到达；菜单项仍在才重试点击，本次最多点击3次。",
+        "max_hit": 3,
+        "recognition": "OCR",
+        "roi": [
+            247,
+            59,
+            201,
+            440
+        ],
+        "expected": [
+            "探索告示板",
+            "探索佈告欄"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "anchor": {
+            "QuickMove_Exit_Result": "Collect_QuickMove_AtBoard"
+        },
+        "post_delay": 1500,
+        "next": [
+            "[JumpBack]Collect_QuickMove_Confirm",
+            "[JumpBack]Collect_QuickMove_Loading",
+            "[Anchor]QuickMove_Exit_Result",
+            "[Anchor]QuickMove_Exit_Process",
+            "Collect_QuickMove_ToBoard"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_AtBoard": {
+        "desc": "本来就在目标附近或移动太快时，以目标文字及可操作箱庭确认；菜单内文字不能充当到达证据。",
+        "recognition": "And",
+        "all_of": [
+            "Rec_QuickMove_Ready",
+            {
+                "recognition": "OCR",
+                "expected": [
+                    "探索告示板",
+                    "探索佈告欄"
+                ]
+            }
+        ],
+        "pre_delay": 0,
+        "post_delay": 1500,
+        "timeout": 5000,
+        "next": [
+            "Collect_QuickMove_Succeed"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_ToHunt": {
+        "desc": "快速移动到指定地点 | 点击后先处理确认和载入，再检查到达；菜单项仍在才重试点击，本次最多点击3次。",
+        "max_hit": 3,
+        "recognition": "OCR",
+        "roi": [
+            247,
+            59,
+            201,
+            440
+        ],
+        "expected": [
+            "狩[猎獵][场場]"
+        ],
+        "pre_delay": 0,
+        "action": "Click",
+        "anchor": {
+            "QuickMove_Exit_Result": "Collect_QuickMove_AtHunt"
+        },
+        "post_delay": 1500,
+        "next": [
+            "[JumpBack]Collect_QuickMove_Confirm",
+            "[JumpBack]Collect_QuickMove_Loading",
+            "[Anchor]QuickMove_Exit_Result",
+            "[Anchor]QuickMove_Exit_Process",
+            "Collect_QuickMove_ToHunt"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
+    },
+    "Collect_QuickMove_AtHunt": {
+        "desc": "本来就在目标附近或移动太快时，以目标文字及可操作箱庭确认；菜单内文字不能充当到达证据。",
+        "recognition": "And",
+        "all_of": [
+            "Rec_QuickMove_Ready",
+            {
+                "recognition": "OCR",
+                "expected": [
+                    "狩[猎獵][场場]"
+                ]
+            }
+        ],
+        "pre_delay": 0,
+        "post_delay": 1500,
+        "timeout": 5000,
+        "next": [
+            "Collect_QuickMove_Succeed"
+        ],
+        "on_error": [
+            "Collect_QuickMove_Fail",
+            "Global_Null"
+        ]
     }
 }

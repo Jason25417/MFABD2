@@ -1650,7 +1650,6 @@
             "value": 1
         },
         "anchor": {
-            "S18_Map1_Trip": "",
             "C3_Battle1_Done": "",
             "C3_Battle2_Trip": ""
         },
@@ -2265,7 +2264,6 @@
         },
         "anchor": {
             "Pack_Click": "Collect_Pack_Story_18",
-            "S18_Map1_Trip": "Collect_S18_Map1_Trip",
             "CurrentCollectPack": "Collect_Pack_Story_18",
             "PackScan_Return": "Collect_PackScan_Prepare"
         },

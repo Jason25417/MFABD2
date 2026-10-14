@@ -639,7 +639,9 @@
             101,
             57
         ],
-        "expected": ["能力测试"],
+        "expected": [
+            "能力测试"
+        ],
         "pre_delay": 0,
         "post_delay": 0,
         "next": [
@@ -1086,16 +1088,38 @@
     },
     "SeasonEvent_Mamono_Bypass": {
         "desc": "魔兽准备期识别",
-        "recognition": "OCR",
-        "roi": [
-            174,
-            425,
-            923,
-            172
+        "recognition": "And",
+        "all_of": [
+            {
+                "sub_name": "OCR",
+                "recognition": "OCR",
+                "roi": [
+                    99,
+                    433,
+                    1126,
+                    293
+                ],
+                "expected": [
+                    "魔兽追踪者",
+                    "魔獸追蹤者"
+                ]
+            },
+            {
+                "recognition": "OCR",
+                "roi": "OCR",
+                "roi_offset": [
+                    -50,
+                    -50,
+                    100,
+                    -300
+                ],
+                "expected": [
+                    "可练习战斗",
+                    "可進行練習"
+                ]
+            }
         ],
-        "expected": [
-            "可练习战斗"
-        ]
+        "box_index": 1
     },
     "Even_MamonoFollowUp_InMamono": {
         "recognition": "OCR",

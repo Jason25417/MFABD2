@@ -163,9 +163,11 @@
         "action": "Custom",
         "custom_action": "PC_ResizeWindow",
         "next": [
+            "StartGame_Update_Data",
+            "StartGame_Update_Data_DownLoading",
+            "StartGame_Loading",
             "StartGame_Logo",
             "StartGame_LoadingPage",
-            "StartGame_Update_Data",
             "StartGame_TouchStart",
             "StartGame_SandPlayPage",
             "StartGame_MainMsgBox_Remove"

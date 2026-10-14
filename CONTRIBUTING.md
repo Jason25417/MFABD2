@@ -91,7 +91,14 @@
 
 **别拿 MFAAvalonia 当测试环境。** MFAA 是发给终端用户的**构建物**（打包好的 GUI），人手一份；它不是开发调试用的。想用它验改动，得开调试模式、或手动替换包里的资源文件，很折腾。开发阶段用上面的调试器，别从 MFAA 起步。
 
-**提交前格式化。** Pipeline JSON 有既定字段顺序，靠 prettier 保证，两种方式随你：VSCode 装 prettier 插件、保存自动格式化；或命令行 `pnpm install` 一次、之后 `pnpm prettier --write`。（配置见 `package.json`。）
+**提交前格式化。** Pipeline JSON 有既定的字段顺序和换行风格，在仓库根目录跑一条命令就行：
+
+```bash
+pnpm install   # 只需一次，装上 prettier 及其插件
+node tools/format-json.cjs "assets/resource/**/*.json" assets/interface.json
+```
+
+它先做一遍 VSCode 自带的 JSON 格式化、再跑 prettier，跑一次就是最终结果，也不碰你的 VSCode 设置。加 `--check` 只预览、不写入；只想整理自己改过的文件，把引号那段换成文件路径即可。需要 Node.js 22.17 以上。VSCode 装 prettier 插件、保存时自动格式化也可以留着，但它不会把写成一行的数组和对象展开，提交前还是跑一下上面这条。（规则见 `.prettierrc.mjs`。）
 
 **你不必跟我一样。** [MaaFramework 主页](https://github.com/MaaXYZ/MaaFramework)还挂了一堆工具（如 [MFAToolsPlus](https://github.com/SweetSmellFox/MFAToolsPlus)），挑顺手的用；用 AI（配 MCP）开发也完全可行。个人建议**两边都摸一摸**——只会手写会累，只会 AI 会飘，**都会才不受限**。
 
@@ -104,7 +111,7 @@
 不严苛，只要别给后人添乱：
 
 - **先看懂，再动手**：改现有的东西前，先搞懂它**现在为什么这么写**。很多看着"多余"的节点或字段，是踩过坑留下的柱子——看到一根不明所以的柱子，先弄清它撑着什么再决定拆不拆。搞不懂就来问，我乐意讲来龙去脉。**问一句，好过重复造轮子、或拆掉承重墙。**
-- **Pipeline JSON**：提交前跑过 prettier（上面那步），保持字段顺序一致。
+- **Pipeline JSON**：提交前跑过上面那条格式化命令，保持字段顺序和换行一致。
 - **Python**：跟着 `agent/` 现有风格走，日志用项目里的 `mfaalog`，别裸 `print`。
 - **模块文档**：钓鱼模块有一份 [开发说明](docs/zh_cn/钓鱼模块开发说明.md)，写清了接口、参数在哪调、哪些是死代码。动这块之前先读它。
 - **Commit**：本仓库带了提交辅助，执行一次 `git config core.hooksPath scripts/hooks`，之后 `git commit` 会弹出辅助界面帮你规范格式。没用也行，把改动说清楚即可。

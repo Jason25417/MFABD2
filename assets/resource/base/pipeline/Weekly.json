@@ -172,7 +172,9 @@
             "Rec_HomePage_GA_Ocr",
             "Sub_HomePage_GA_Bright_Clr"
         ],
-        "anchor": {"QCPack": "Weekly_LastNight_Pack"},
+        "anchor": {
+            "QCPack": "Weekly_LastNight_Pack"
+        },
         "next": [
             "Global_BackToQC_Battleplay_Anc",
             "[JumpBack]Global_ToSandBox"
@@ -188,7 +190,9 @@
             1248,
             114
         ],
-        "template": ["Pack_LastNight.png"],
+        "template": [
+            "Pack_LastNight.png"
+        ],
         "action": "Click",
         "target_offset": [
             -15,
@@ -529,7 +533,9 @@
     },
     "Weekly_VisitCabin_Like1Chg": {
         "recognition": "Or",
-        "any_of": ["Weekly_VisitCabin_Like1"],
+        "any_of": [
+            "Weekly_VisitCabin_Like1"
+        ],
         "action": "Click",
         "target": [
             850,

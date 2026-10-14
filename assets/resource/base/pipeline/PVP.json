@@ -1,6 +1,8 @@
 {
     "PVP_TaskStart": {
-        "anchor": {"QCPack": "PVP_PullUp_QuickCart_PVP"},
+        "anchor": {
+            "QCPack": "PVP_PullUp_QuickCart_PVP"
+        },
         "timeout": 5000,
         "next": [
             "Env_AgentLost_Stop",
@@ -26,7 +28,9 @@
             "QuickCart_PVP.png"
         ],
         "action": "Click",
-        "anchor": {"QCPack": ""},
+        "anchor": {
+            "QCPack": ""
+        },
         "post_delay": 2000,
         "timeout": 3000,
         "next": [
@@ -71,7 +75,9 @@
     "PVP_Sandplay_Again": {
         "desc": "第二次已确认,1/除消除弹窗,2/还要进入舞台,3/复位异常位置",
         "recognition": "Or",
-        "any_of": ["PVP_Sandplay"],
+        "any_of": [
+            "PVP_Sandplay"
+        ],
         "next": [
             "PVP_Drill_Enter",
             "PVP_Results",
@@ -118,7 +124,9 @@
             69,
             40
         ],
-        "template": ["pvp_wine_Rt&Dn.png"]
+        "template": [
+            "pvp_wine_Rt&Dn.png"
+        ]
     },
     "PVP_Results": {
         "desc": "pvp赛季正在结算中(按印象,缺乏实测)",
@@ -130,7 +138,9 @@
             54
         ],
         "expected": "结算中",
-        "next": ["Global_BackToQC1"]
+        "next": [
+            "Global_BackToQC1"
+        ]
     },
     "PVP_InsandboxAndlocAbnormal": {
         "recognition": "TemplateMatch",
@@ -154,7 +164,7 @@
             284
         ],
         "expected": [
-            "确认"
+            "^确认$"
         ],
         "action": "Click",
         "post_delay": 1500,
@@ -163,7 +173,9 @@
     "PVP_PVPMes2": {
         "desc": "防守分结算，点击画面返回",
         "recognition": "Or",
-        "any_of": ["Rec_Reward_Ocr"],
+        "any_of": [
+            "Rec_Reward_Ocr"
+        ],
         "action": "Click",
         "target": [
             1,
@@ -180,7 +192,9 @@
             122,
             33
         ],
-        "expected": ["战场角色设置"],
+        "expected": [
+            "战场角色设置"
+        ],
         "action": "Click",
         "target": [
             1,
@@ -214,7 +228,9 @@
         "desc": "宠物派遣。初始位置就在pvp图防错",
         "max_hit": 3,
         "recognition": "Or",
-        "any_of": ["StartGame_PerPetTask"],
+        "any_of": [
+            "StartGame_PerPetTask"
+        ],
         "action": "Click",
         "post_delay": 5000,
         "focus": "PM.宠物派遣"
@@ -319,14 +335,18 @@
         "desc": "修改freeap滑块",
         "max_hit": 2,
         "recognition": "And",
-        "all_of": ["Anc_SliderSwitch_GryOff_Clr"],
+        "all_of": [
+            "Anc_SliderSwitch_GryOff_Clr"
+        ],
         "action": "Click",
         "post_delay": 2000
     },
     "PVP_JustUseFreeOK": {
         "desc": "识别是否仅用免费鸡尾酒",
         "recognition": "And",
-        "all_of": ["Anc_SliderSwitch_YewOn_Clr"],
+        "all_of": [
+            "Anc_SliderSwitch_YewOn_Clr"
+        ],
         "timeout": 5000,
         "next": [
             "PVP_Multiplier_Verify"
@@ -830,7 +850,9 @@
     "PVP_BackPVEPage": {
         "desc": "找到图钉-点击返回主页",
         "recognition": "Or",
-        "any_of": ["PVP_Sandplay"],
+        "any_of": [
+            "PVP_Sandplay"
+        ],
         "next": [
             "Global_BackToQC1"
         ],

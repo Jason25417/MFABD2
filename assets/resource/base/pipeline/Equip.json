@@ -834,7 +834,9 @@
         "desc": "点击第一个装备",
         "max_hit": 10,
         "recognition": "And",
-        "all_of": ["Equip_Backpack_Equip_Enter"],
+        "all_of": [
+            "Equip_Backpack_Equip_Enter"
+        ],
         "action": "Click",
         "target": [
             622,
@@ -869,7 +871,9 @@
     "Equip_Overdrive_RefLvMax_filter": {
         "desc": "点击左上筛选",
         "recognition": "And",
-        "all_of": ["Equip_Refine_filter"],
+        "all_of": [
+            "Equip_Refine_filter"
+        ],
         "action": "Click",
         "post_delay": 2000,
         "next": [
@@ -881,7 +885,9 @@
     "Equip_Overdrive_RefLvMax_filter_SubMenu": {
         "desc": "筛选,二级菜单,已确认",
         "recognition": "And",
-        "all_of": ["Equip_filter_SubMenu"],
+        "all_of": [
+            "Equip_filter_SubMenu"
+        ],
         "next": [
             "[JumpBack]Equip_filter_SubMenu_Mamono",
             "Equip_Overdrive_RefLvMax_Second_Clr",
@@ -1084,7 +1090,9 @@
     "Equip_TouchRefiningBack": {
         "desc": "精炼界面，返回",
         "recognition": "And",
-        "all_of": ["Equip_TouchRefining"],
+        "all_of": [
+            "Equip_TouchRefining"
+        ],
         "post_delay": 3000,
         "next": [
             "Equip_Daily_End"

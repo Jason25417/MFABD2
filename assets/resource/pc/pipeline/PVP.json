@@ -46,8 +46,8 @@
     },
     "PVP_PVPMes": {
         "expected": [
-            "确认",
-            "確認"
+            "^确认$",
+            "^確認$"
         ]
     },
     "PVP_Errmsg1#_Clear": {

@@ -18,7 +18,9 @@
                 "NviMap_Sub_Err"
             ]
         },
-        "anchor": {"Pack_Click": ""},
+        "anchor": {
+            "Pack_Click": ""
+        },
         "post_delay": 1000,
         "timeout": 5000,
         "next": [
@@ -58,7 +60,9 @@
     "Collect_FindPickupCat_LeaveCircle_Ty1": {
         "desc": "自动寻路菜单",
         "recognition": "Or",
-        "any_of": ["Arbitrage_NviGuide_Butt"],
+        "any_of": [
+            "Arbitrage_NviGuide_Butt"
+        ],
         "action": "Click",
         "post_delay": 800,
         "next": [
@@ -74,7 +78,9 @@
             190,
             307
         ],
-        "expected": ["酒馆"],
+        "expected": [
+            "酒馆"
+        ],
         "action": "Click",
         "post_delay": 800,
         "next": [
@@ -85,7 +91,9 @@
     "Collect_FindPickupCat_LeaveCircle_Ty3": {
         "desc": "自动寻路酒馆-等待进入步行态,再等x秒",
         "recognition": "Or",
-        "any_of": ["Arbitrage_NviGuide_Onfoot_Loop"],
+        "any_of": [
+            "Arbitrage_NviGuide_Onfoot_Loop"
+        ],
         "post_delay": 3000,
         "next": [
             "Collect_FindPickupCat_LeaveCircle_Ty4"
@@ -94,7 +102,9 @@
     "Collect_FindPickupCat_LeaveCircle_Ty4": {
         "desc": "停止自动寻路",
         "recognition": "Or",
-        "any_of": ["Arbitrage_NviGuide_Onfoot_Loop"],
+        "any_of": [
+            "Arbitrage_NviGuide_Onfoot_Loop"
+        ],
         "action": "Click",
         "post_delay": 800,
         "next": [
@@ -105,7 +115,9 @@
     "Collect_FindPickupCat_LeaveCircle_Ty5": {
         "desc": "放下猫咪，等待x秒，让它走开",
         "recognition": "Or",
-        "any_of": ["Collect_FindPickupCat"],
+        "any_of": [
+            "Collect_FindPickupCat"
+        ],
         "action": "Click",
         "post_delay": 4000
     },
@@ -523,7 +535,9 @@
     "Collect_MapRight_NoFind": {
         "desc": "EP6.特殊地图，最后一图是紧接战斗2的狩猎图,特征是无右侧箭头。处理，直接结束箱庭内流程|EP.15/17吸取第三图直接是最后一图,需要这个方式退出",
         "recognition": "Or",
-        "any_of": ["Rec_AreaMap_ButtRight_Tmp"],
+        "any_of": [
+            "Rec_AreaMap_ButtRight_Tmp"
+        ],
         "inverse": true,
         "next": [
             "Collect_QuickCart_FastUI",
@@ -535,7 +549,9 @@
     "Collect_TargetMapEnd_End": {
         "desc": "维护点C02末端.快速卡带pipeline_override了此处next，去了C_QuickCart_TargetMapEnd,因为是中断内next，故必须结束退回上一个流程，单独end",
         "recognition": "Or",
-        "any_of": ["Collect_QuickCart_TargetMapEnd"],
+        "any_of": [
+            "Collect_QuickCart_TargetMapEnd"
+        ],
         "target": [
             120,
             35
@@ -630,7 +646,9 @@
     "Collect_TeleporNotFind_Right": {
         "desc": "方案1:识别到存在右侧按键,点一下.next:1.若是旅馆安全图,异常消除,退出中断/2.有传送阵,点进去(非安全),尝试吸取【？，万一是狩猎场呢，逻辑又漏洞！】/3.还是没传送标,前位循环",
         "recognition": "Or",
-        "any_of": ["Rec_AreaMap_ButtRight_Tmp"],
+        "any_of": [
+            "Rec_AreaMap_ButtRight_Tmp"
+        ],
         "action": "Click",
         "post_delay": 1000,
         "next": [
@@ -643,7 +661,9 @@
     "Collect_TeleporNotFind_NORight": {
         "desc": "方案2:识别到右侧按键不存在,这是卡带中最后一图,如火片.操作,切到快速卡带界面,传递退出信号",
         "recognition": "Or",
-        "any_of": ["Rec_AreaMap_ButtRight_Tmp"],
+        "any_of": [
+            "Rec_AreaMap_ButtRight_Tmp"
+        ],
         "inverse": true,
         "post_delay": 1000,
         "next": [
@@ -740,7 +760,9 @@
     "Collect_ClickTelepor_TargetClass_White": {
         "desc": "详细地图内传送阵选择",
         "recognition": "Or",
-        "any_of": ["Collect_ClickTeleporCircleIco"],
+        "any_of": [
+            "Collect_ClickTeleporCircleIco"
+        ],
         "action": "Click",
         "post_delay": 5000,
         "next": [
@@ -763,7 +785,9 @@
             "QuickSkill_Egress": "Collect_Skill_Egress"
         },
         "post_delay": 0,
-        "next": ["Collect_Skill_Start"]
+        "next": [
+            "Collect_Skill_Start"
+        ]
     },
     "Collect_Skill_Egress": {
         "desc": "[出口]技能模块返回卡带主线:确认技能页已复位(色核)→清出口锚→继续切图。原名Collect_Skill_End,自Collect_skills.json迁入——它做的是导航的事,不属于技能模块。",
@@ -882,7 +906,9 @@
     "Collect_OperationsMain_OperationsEnd": {
         "desc": "确认区域地图，准备切图",
         "recognition": "Or",
-        "any_of": ["Collect_OperationsMain_ToAreaMap"],
+        "any_of": [
+            "Collect_OperationsMain_ToAreaMap"
+        ],
         "timeout": 3000,
         "next": [
             "Collect_MapRight",
@@ -915,7 +941,9 @@
     "Collect_MapRight": {
         "desc": "详细地图内右图标，目的右移动1格[缺陷，此步骤缺乏验证方法]",
         "recognition": "Or",
-        "any_of": ["Rec_AreaMap_ButtRight_Tmp"],
+        "any_of": [
+            "Rec_AreaMap_ButtRight_Tmp"
+        ],
         "action": "Custom",
         "custom_action": "SmartAction",
         "custom_action_param": {
@@ -944,7 +972,9 @@
     },
     "Collect_FindTeleporCircle0.9": {
         "recognition": "And",
-        "all_of": ["Collect_TeleporCircle_Ico_Enter"],
+        "all_of": [
+            "Collect_TeleporCircle_Ico_Enter"
+        ],
         "action": "Custom",
         "custom_action": "SmartAction",
         "custom_action_param": {
@@ -1012,7 +1042,9 @@
     "Collect_MapLift": {
         "desc": "详细地图内左图标，目的移动到最左,直接5连击.",
         "recognition": "Or",
-        "any_of": ["Rec_AreaMap_ButtLift_Tmp"],
+        "any_of": [
+            "Rec_AreaMap_ButtLift_Tmp"
+        ],
         "action": "Click",
         "repeat": 7,
         "repeat_delay": 150,
@@ -1020,7 +1052,9 @@
     },
     "Collect_QuickCart_FastUI": {
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset_Ocr"],
+        "any_of": [
+            "Global_QuickCart_MenuReset_Ocr"
+        ],
         "next": [
             "Collect_PackEnd_Ck"
         ],
@@ -1033,7 +1067,9 @@
     "Collect_QuickCart_TargetMapEnd": {
         "desc": "维护点C02开端",
         "recognition": "Or",
-        "any_of": ["Cpt_Collect_TargetMapEnd_Ocr"],
+        "any_of": [
+            "Cpt_Collect_TargetMapEnd_Ocr"
+        ],
         "next": [
             "Collect_QuickCart_FastUI",
             "[JumpBack]Global_QuickCart_MenuReset",
@@ -1044,7 +1080,9 @@
     "Collect_QuickCart_TargetMapEnd_End": {
         "desc": "维护点C02末端，同步_QuickCart_TargetMapEnd判定与动作，保留后续空节点",
         "recognition": "Or",
-        "any_of": ["Cpt_Collect_TargetMapEnd_Ocr"],
+        "any_of": [
+            "Cpt_Collect_TargetMapEnd_Ocr"
+        ],
         "focus": "CCB.[退出中断]快速卡带-卡带内流程进入END环节"
     },
     "Collect_OnlyOnce_SkillUsed": {
@@ -1072,7 +1110,9 @@
             "card_name": "Collect_OnlyOnce",
             "cycle_type": "g_weekly"
         },
-        "next": ["Collect_PackEnd_Ck_OnlyOnce_StopTask"]
+        "next": [
+            "Collect_PackEnd_Ck_OnlyOnce_StopTask"
+        ]
     },
     "Collect_PackEnd_Ck_OnlyOnce_StopTask": {
         "action": "StopTask",
@@ -1164,7 +1204,9 @@
                 "I"
             ]
         ],
-        "anchor": {"SandBox_Bypass": "Collect_Special_M14_NviMap_Open"},
+        "anchor": {
+            "SandBox_Bypass": "Collect_Special_M14_NviMap_Open"
+        },
         "post_delay": 200,
         "timeout": 3000,
         "next": [
@@ -1197,17 +1239,23 @@
             34,
             38
         ],
-        "anchor": {"SandBox_Bypass": ""},
+        "anchor": {
+            "SandBox_Bypass": ""
+        },
         "post_delay": 2500,
         "timeout": 5000,
-        "next": ["Collect_Special_M14_NviMap_Enter"],
+        "next": [
+            "Collect_Special_M14_NviMap_Enter"
+        ],
         "focus": "C14.展开导航地图"
     },
     "Collect_Special_M14_NviMap_Enter": {
         "desc": "点击导航地图左边的剑之神殿左侧回廊。",
         "max_hit": 2,
         "recognition": "And",
-        "all_of": ["Collect_TeleporCircle_OnFoot_NviMap"],
+        "all_of": [
+            "Collect_TeleporCircle_OnFoot_NviMap"
+        ],
         "post_delay": 1000,
         "timeout": 5000,
         "next": [

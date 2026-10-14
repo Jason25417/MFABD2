@@ -102,7 +102,9 @@
     },
     "SemiAuto_Evil_SemiautoTower_AuDaemon": {
         "recognition": "Or",
-        "any_of": ["SemiAuto_Evil_SemiautoTower_InManual"],
+        "any_of": [
+            "SemiAuto_Evil_SemiautoTower_InManual"
+        ],
         "pre_delay": 10000,
         "next": [
             "SemiAuto_Evil_SemiautoTower_InManual"
@@ -325,7 +327,9 @@
                     101,
                     35
                 ],
-                "expected": ["连续精炼"]
+                "expected": [
+                    "连续精炼"
+                ]
             },
             "Sub_Ocr_Enable_Clr"
         ],
@@ -344,7 +348,9 @@
             132,
             75
         ],
-        "expected": ["连续精炼"],
+        "expected": [
+            "连续精炼"
+        ],
         "pre_delay": 0,
         "post_delay": 0,
         "next": [
@@ -380,7 +386,9 @@
         ],
         "pre_delay": 0,
         "post_delay": 0,
-        "next": ["SemiAuto_SRef_HaltOnSuccess_TrunOff"],
+        "next": [
+            "SemiAuto_SRef_HaltOnSuccess_TrunOff"
+        ],
         "focus": "连续精炼-最大值确认"
     },
     "SemiAuto_SRef_TabMax": {
@@ -391,7 +399,9 @@
             59,
             33
         ],
-        "expected": ["MAX"],
+        "expected": [
+            "MAX"
+        ],
         "only_rec": true,
         "action": "Click",
         "post_delay": 800
@@ -431,7 +441,9 @@
             42,
             24
         ],
-        "expected": ["精炼"],
+        "expected": [
+            "精炼"
+        ],
         "only_rec": true,
         "action": "Click",
         "post_delay": 2000,
@@ -450,7 +462,9 @@
             129,
             148
         ],
-        "expected": ["強化粉末不足"],
+        "expected": [
+            "強化粉末不足"
+        ],
         "focus": "[ERR]强化粉末不足,无法继续"
     },
     "SemiAuto_SRef_Skip": {
@@ -478,7 +492,9 @@
             59,
             39
         ],
-        "expected": ["确认"],
+        "expected": [
+            "确认"
+        ],
         "only_rec": true,
         "action": "Click",
         "post_delay": 800,
@@ -498,7 +514,9 @@
         "next": [
             "SemiAuto_SRef_Count_R"
         ],
-        "on_error": ["SemiAuto_SequentialRefined_End"]
+        "on_error": [
+            "SemiAuto_SequentialRefined_End"
+        ]
     },
     "SemiAuto_SRef_Count_R": {
         "recognition": "Custom",
@@ -507,7 +525,9 @@
             "tag": "SRef",
             "max": 300
         },
-        "next": ["SemiAuto_SRef_SequentialRefined"]
+        "next": [
+            "SemiAuto_SRef_SequentialRefined"
+        ]
     },
     "SemiAuto_SequentialRefined_End": {
         "focus": "半自动-连续精炼结束"

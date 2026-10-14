@@ -1,14 +1,52 @@
 {
     "Collect_S06_ReadMe": {
-        "desc": "异教塔（Story_06）整卡旁路说明 | 第2、5层没有传送阵，移动魔法阵面板里也没有它们的页，通用切图流程处理不了，具名卡用 Pack_Bypass 把整卡交给本模块。路线：快速移动到狩猎场（脚下即传送阵）→ 面板向左选第1层传送 → 采第1层 → 走楼梯上第2层采集 → 快速移动回狩猎场 → 面板选第6层传送 → 采第6层 → 点红叉下第5层采集 → 公共成功收尾。 | 进度记在本轮标签 S06_F1/F2/F6/F5，只在该层采完并补放后置位，同轮重进卡带时跳过已采楼层。主轴全用 next 串在选卡扫描压下的同一层栈里，任何一步失败都直接退栈回 Collect_PackScan_Frame，由 PackScan_Return 恢复卡带列表，不写完成。返回锚在入口清空、用前设置、正常收尾再清：QuickSkill_Egress（技能模块出口）、S06_Done_Ck（补放出口，C3 共用）、S06_Arrive_Ck 与 S06_Leg_Ck（换层后核对与重走）。"
+        "desc": "异教塔（Story_06）整卡旁路说明 | 第2、5层没有传送阵，移动魔法阵面板里也没有它们的页，通用切图流程处理不了，具名卡用 Pack_Bypass 把整卡交给本模块。路线：快速移动到狩猎场（脚下即传送阵）→ 面板向左选第1层传送 → 采第1层 → 走楼梯上第2层采集 → 快速移动回狩猎场 → 面板选第6层传送 → 采第6层 → 点红叉下第5层采集 → 公共成功收尾。 | 进度记在本轮标签 S06_F1/F2/F6/F5，只在该层采完并补放后置位，同轮重进卡带时跳过已采楼层。主轴全用 next 串在选卡扫描压下的同一层栈里，任何一步失败都直接退栈回 Collect_PackScan_Frame，由 PackScan_Return 恢复卡带列表，不写完成。入口清零本模块计数并清空返回锚，返回锚用前设置、正常收尾再清：QuickSkill_Egress（技能模块出口）、S06_Done_Ck（补放出口，C3 共用）、S06_Arrive_Ck 与 S06_Leg_Ck（换层后核对与重走）。"
     },
     "Collect_S06_Entry": {
-        "desc": "异教塔整卡入口 | 确认箱庭后设置快速移动参数（去狩猎场，成功到 AtHunt，失败退栈）；已站在传送阵上看得到手标时直接开面板。 | 同轮补采会再次进入，这里先清空本模块的返回锚，让每次进入都和首次一样从全空开始；残留路线若漏设，引用空锚只会被跳过退栈，不会跳到旧去向。本卡绕过通用箱庭入口，顺带清掉 Pack_Click 与 SandBox_Bypass 这两个通用锚。",
+        "desc": "异教塔整卡入口 | 确认箱庭后清零本模块所有节点的 max_hit 计数，设置快速移动参数（去狩猎场，成功到 AtHunt，失败退栈）；已站在传送阵上看得到手标时直接开面板。 | 同轮补采会再次进入，这里把计数与返回锚都清成首次进入时的状态；进卡总次数由 Collect_Pack_Story_6 的 max_hit 限制。本模块新增带 max_hit 的节点时要补进这份清单。引用空锚只会被跳过退栈，不会跳到旧去向。本卡绕过通用箱庭入口，顺带清掉 Pack_Click 与 SandBox_Bypass 这两个通用锚。",
         "recognition": "Or",
         "any_of": [
             "Global_ToSandBox_Enter"
         ],
         "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ClearNodeHitCount",
+        "custom_action_param": {
+            "node_name": [
+                "Collect_S06_2F_Entry",
+                "Collect_S06_2F_Check",
+                "Collect_S06_6F_Check",
+                "Collect_S06_5F_Check",
+                "Collect_S06_Resume_F2",
+                "Collect_S06_Resume_F1_Ck",
+                "Collect_S06_Extra_Gather",
+                "Collect_S06_Extra_Suppress",
+                "Collect_S06_ExtraEntry_F1",
+                "Collect_S06_ExtraEntry_F2",
+                "Collect_S06_ExtraEntry_F6",
+                "Collect_S06_ExtraEntry_F5",
+                "Collect_S06_Stage_Done_F1",
+                "Collect_S06_Stage_Done_F2",
+                "Collect_S06_Stage_Done_F6",
+                "Collect_S06_Stage_Done_F5",
+                "Collect_S06_1F_Skill",
+                "Collect_S06_1F_To2F",
+                "Collect_S06_2F_Skill",
+                "Collect_S06_ReturnToHunt",
+                "Collect_S06_Panel_Open",
+                "Collect_S06_Panel_Left",
+                "Collect_S06_Panel_TeleportF1",
+                "Collect_S06_Panel_Ck_F6",
+                "Collect_S06_6F_Skill",
+                "Collect_S06_NotYetF5",
+                "Collect_S06_6F_To5F",
+                "Collect_S06_5F_Skill",
+                "Collect_S06_Floor_Read",
+                "Collect_S06_Ck_Retry",
+                "Collect_S06_Ck_F5",
+                "Collect_S06_Ck_F6_Collect"
+            ]
+        },
         "anchor": {
             "QuickMove_Target": "Collect_QuickMove_ToHunt",
             "QuickMove_Success": "Collect_S06_AtHunt",
@@ -28,7 +66,7 @@
         "focus": "S06.整卡旁路启动，快速移动到狩猎场"
     },
     "Collect_S06_AtHunt": {
-        "desc": "到达狩猎场后的选页准备 | 清零面板相关节点的 max_hit，再用手标打开传送阵面板。 | 一张卡至少到两次狩猎场（开局、第2层采完），max_hit 整个 task 累计，不清零第二次选页会没有翻页次数。",
+        "desc": "到达狩猎场后的选页准备 | 清零选页相关节点的 max_hit，再用手标打开传送阵面板。 | 同一次进卡会到两次狩猎场（开局、第2层采完），max_hit 整个 task 累计，不清零第二次选页会没有翻页次数。",
         "pre_delay": 0,
         "action": "Custom",
         "custom_action": "ClearNodeHitCount",
@@ -483,13 +521,18 @@
         "focus": "S06.快速移动到狩猎场传送阵"
     },
     "Collect_S06_Panel_Open": {
-        "desc": "用传送阵手标打开移动魔法阵面板 | 站在传送阵上点手标，面板出现后交 Panel_Select；载入中先等载入。 | 没打开时重点自身，max_hit 3 由 AtHunt 清零。",
+        "desc": "用传送阵手标打开移动魔法阵面板 | 站在传送阵上点手标，面板出现后交 Panel_Select；载入中先等载入。点开时清掉快速移动三参数：入口直开面板与快速移动到狩猎场两条路线都在这里汇合，之后再快速移动由 ReturnToHunt 重设。 | 没打开时重点自身，max_hit 3 由入口和 AtHunt 清零。",
         "max_hit": 3,
         "recognition": "Or",
         "any_of": [
             "Collect_TeleporCircle_Ico_Enter"
         ],
         "action": "Click",
+        "anchor": {
+            "QuickMove_Target": "",
+            "QuickMove_Success": "",
+            "QuickMove_Failure": ""
+        },
         "post_delay": 1000,
         "timeout": 10000,
         "next": [
@@ -958,16 +1001,14 @@
         "focus": "S06.[校验]已在施塔因之塔第6层(去采集)"
     },
     "Collect_S06_Finish": {
-        "desc": "异教塔整卡成功出口 | 清掉本卡设过的返回锚（技能出口、补放出口、换层到达与重走、快速移动成败去向），交公共成功收尾。 | Pack_Bypass 由选卡扫描在每张卡前清理；QuickMove_Target 与快速移动内部锚由该模块自己清。失败不经这里，直接退栈。",
+        "desc": "异教塔整卡成功出口 | 清掉本卡设过的返回锚（技能出口、补放出口、换层到达与重走），交公共成功收尾。 | 快速移动三参数已在 Panel_Open 清掉；Pack_Bypass 由选卡扫描在每张卡前清理。失败不经这里，直接退栈。",
         "recognition": "DirectHit",
         "action": "DoNothing",
         "anchor": {
             "QuickSkill_Egress": "",
             "S06_Done_Ck": "",
             "S06_Arrive_Ck": "",
-            "S06_Leg_Ck": "",
-            "QuickMove_Success": "",
-            "QuickMove_Failure": ""
+            "S06_Leg_Ck": ""
         },
         "next": [
             "Collect_PackFinish"

@@ -117,6 +117,7 @@
     "SeasonEvent_TabTo_Challenge": {
         "all_of": [
             {
+                "sub_name": "OCR",
                 "recognition": "OCR",
                 "roi": [
                     175,
@@ -331,10 +332,10 @@
     },
     "Rec_<SeasonEvent_MamonoFollow_Practice>_Ocr_02": {
         "roi": [
-            722,
-            202,
-            212,
-            73
+            747,
+            225,
+            213,
+            74
         ],
         "expected": [
             "狩猎期间开始解除",
@@ -343,35 +344,30 @@
     },
     "Even_MamonoFollow_lv1_Ck": {
         "roi": [
-            906,
-            73,
-            143,
-            52
-        ]
-    },
-    "Even_MamonoFollow_lvCustom_Ck": {
-        "roi": [
-            906,
-            73,
-            143,
-            52
+            630,
+            109,
+            88,
+            33
         ]
     },
     "Even_MamonoFollowUp_lvdown": {
         "target": [
-            924,
-            101,
+            619,
+            125,
             2,
             2
-        ]
+        ],
+        "repeat": 1,
+        "focus": null
     },
     "Even_MamonoFollowUp_MmnHpUp": {
         "target": [
-            1025,
-            101,
+            727,
+            125,
             2,
             2
-        ]
+        ],
+        "focus": null
     },
     "SeasonEvent_MamonoFollow_QuickBattle_Enable": {
         "all_of": [
@@ -478,70 +474,72 @@
     },
     "Even_MamonoFollowUp_onSubMain": {
         "roi": [
-            617,
-            140,
-            112,
-            36
+            622,
+            171,
+            113,
+            37
         ],
         "expected": [
             "阶段最高",
-            "階段最高"
+            "階段最高",
+            "最高伤害",
+            "最高傷害"
         ]
     },
     "SeasonEvent_Mamono_HP_Lift_Red": {
         "roi": [
-            594,
-            118,
-            8,
-            25
+            608,
+            142,
+            9,
+            26
         ]
     },
     "SeasonEvent_Mamono_HP_Right_Red": {
         "roi": [
-            1030,
-            115,
-            11,
-            32
+            1034,
+            143,
+            7,
+            24
         ]
     },
     "SeasonEvent_Mamono_HP_Right_Gray": {
         "roi": [
-            1030,
-            115,
-            11,
-            32
+            1032,
+            147,
+            6,
+            17
         ]
     },
     "SeasonEvent_Mamono_HP_Lift_Gray": {
         "roi": [
-            594,
-            118,
-            8,
-            25
+            610,
+            147,
+            6,
+            17
         ]
     },
     "Rec_Mamono_HP_Hunted_Ocr": {
         "roi": [
-            589,
-            114,
-            277,
-            30
+            612,
+            143,
+            272,
+            22
         ]
     },
     "Rec_Mamono_HP_NoMeetHunt_Ocr": {
         "roi": [
-            589,
-            114,
-            277,
-            30
+            612,
+            143,
+            272,
+            22
         ]
     },
     "Rec_Mamono_HP_Hunting_Ocr": {
         "roi": [
-            589,
-            114,
-            277,
-            30
+            612,
+            143,
+            272,
+            22
         ]
     },
     "Event_MiniGame_Run_Goin": {

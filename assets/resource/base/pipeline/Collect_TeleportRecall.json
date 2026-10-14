@@ -2784,7 +2784,7 @@
         "pre_delay": 0,
         "action": "Click",
         "target_offset": [
-            0,
+            5,
             5,
             0,
             -5

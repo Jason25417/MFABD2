@@ -9,6 +9,7 @@
     },
     "StartGame_Start": {
         "next": [
+            "Env_AgentLost_Stop",
             "[JumpBack]Env_AccountSave_Switch",
             "StartGame_Check_App_Alive"
         ]
@@ -43,6 +44,9 @@
             "[JumpBack]StartGame_LinkError",
             "[JumpBack]StartGame_Error_API",
             "StartGame_GameIsMaint",
+            "StartGame_Update_Data",
+            "StartGame_Update_Data_DownLoading",
+            "StartGame_Loading",
             "StartGame_Logo",
             "StartGame_LoadingPage",
             "StartGame_TouchStart",
@@ -64,6 +68,9 @@
             "[JumpBack]StartGame_LinkError",
             "[JumpBack]StartGame_Error_API",
             "StartGame_GameIsMaint",
+            "StartGame_Update_Data",
+            "StartGame_Update_Data_DownLoading",
+            "StartGame_Loading",
             "StartGame_Logo",
             "StartGame_LoadingPage",
             "StartGame_TouchStart",
@@ -417,10 +424,12 @@
         "expected": [
             "OUCH"
         ],
-        "replace": [[
+        "replace": [
+            [
                 " ",
                 ""
-            ]],
+            ]
+        ],
         "only_rec": true,
         "color_filter": "Dummy_StartGame_TouchStart_Clr",
         "pre_delay": 5000,
@@ -499,7 +508,9 @@
         "expected": "7天内不再显示",
         "action": "Click",
         "post_delay": 1000,
-        "next": ["StartGame_7dAD_Clear"]
+        "next": [
+            "StartGame_7dAD_Clear"
+        ]
     },
     "StartGame_7dAD_Clear": {
         "action": "Click",
@@ -551,7 +562,9 @@
     "StartGame_MainMsgBox_Remove": {
         "desc": "开始暴力解决广告，左侧点击10次",
         "recognition": "And",
-        "all_of": ["Rec_HomePage_GA_Ocr"],
+        "all_of": [
+            "Rec_HomePage_GA_Ocr"
+        ],
         "action": "Click",
         "target": [
             60,
@@ -726,7 +739,9 @@
     "StartGame_AtPack_FantasiaSquare": {
         "desc": "在广场启动游戏",
         "recognition": "And",
-        "all_of": ["Rec_Pack_FantasiaSquare"],
+        "all_of": [
+            "Rec_Pack_FantasiaSquare"
+        ],
         "next": [
             "Global_BackToQC1"
         ]
@@ -734,7 +749,9 @@
     "StartGame_AtPack_GoldenColosseum": {
         "desc": "在黄金角斗场启动游戏",
         "recognition": "And",
-        "all_of": ["Rec_Pack_GoldenColosseum"],
+        "all_of": [
+            "Rec_Pack_GoldenColosseum"
+        ],
         "next": [
             "Global_BackToQC1"
         ],
@@ -780,7 +797,9 @@
     "StartGame_AtPack_GlupyDiner": {
         "desc": "意料外卡带-格鲁菲餐厅",
         "recognition": "And",
-        "all_of": ["Rec_Pack_GlupyDiner"],
+        "all_of": [
+            "Rec_Pack_GlupyDiner"
+        ],
         "next": [
             "Global_BackToPve_1#"
         ],

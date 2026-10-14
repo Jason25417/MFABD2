@@ -2071,6 +2071,7 @@
                     "pipeline_override": {
                         "Practise_Start": {
                             "next": [
+                                "Env_AgentLost_Stop",
                                 "Practise_Skill_Bargaining"
                             ]
                         }

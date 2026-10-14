@@ -273,6 +273,7 @@
             "MainMenu_GoFishing": "Fishing_InFishingNet"
         },
         "next": [
+            "Env_AgentLost_Stop",
             "Daily_Busin_Hub_Post",
             "Fishing_Already_Setsail",
             "[JumpBack]Global_ToHomePage"
@@ -426,7 +427,9 @@
             87,
             67
         ],
-        "template": ["Fish/fishbuff.png"],
+        "template": [
+            "Fish/fishbuff.png"
+        ],
         "green_mask": true
     },
     "Rec_Fishing_UI_Ocr": {

@@ -1,6 +1,7 @@
 {
     "Collect_StartGame_HomePage": {
         "next": [
+            "Env_AgentLost_Stop",
             "[JumpBack]Collect_PerPetTask",
             "Collect_AllLibGone",
             "Collect_Sandplay",
@@ -8,6 +9,17 @@
         ]
     },
     "Collect_StartGame_HomePage_OnlyOnce": {
+        "desc": "地图采集（每周一次）入口：先确认 Agent 通信正常，再做本周期检查。周期检查是自定义识别，放在入口上会让通道断开时静默结束，所以挪到 Collect_OnlyOnce_Switch。timeout 与原入口一致：本周期已完成时 5 秒后静默结束。",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "timeout": 5000,
+        "next": [
+            "Env_AgentLost_Stop",
+            "Collect_OnlyOnce_Switch"
+        ]
+    },
+    "Collect_OnlyOnce_Switch": {
+        "desc": "地图采集（每周一次）的本周期检查：未完成才命中，并改写采集链的收尾与技能节点后开始采集。",
         "recognition": "Custom",
         "custom_recognition": "CheckCoolDown",
         "custom_recognition_param": {
@@ -97,9 +109,18 @@
         "custom_recognition": "CheckCoolDown",
         "custom_recognition_param": {
             "targets": [
-                {"card_name": "Pack_Story_SimpleDone", "cycle_type": "g_weekly"},
-                {"card_name": "Pack_Character_SimpleDone", "cycle_type": "g_weekly"},
-                {"card_name": "Pack_Event_SimpleDone", "cycle_type": "g_weekly"}
+                {
+                    "card_name": "Pack_Story_SimpleDone",
+                    "cycle_type": "g_weekly"
+                },
+                {
+                    "card_name": "Pack_Character_SimpleDone",
+                    "cycle_type": "g_weekly"
+                },
+                {
+                    "card_name": "Pack_Event_SimpleDone",
+                    "cycle_type": "g_weekly"
+                }
             ],
             "match": "all_done"
         },
@@ -152,7 +173,9 @@
     "Collect_QuickCart_Menu": {
         "desc": "快速卡带已调出,等待后续",
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset_Ocr"],
+        "any_of": [
+            "Global_QuickCart_MenuReset_Ocr"
+        ],
         "next": [
             "[JumpBack]Collect_FeatureSwitch_StoryPack",
             "[JumpBack]Collect_FeatureSwitch_CharacterPack",
@@ -607,7 +630,9 @@
     },
     "Collect_PackProbe_IsPresent": {
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset_Ocr"],
+        "any_of": [
+            "Global_QuickCart_MenuReset_Ocr"
+        ],
         "timeout": 2000,
         "next": [
             "[JumpBack]Collect_LocatePackFrame_Loc1_ResetLoc",
@@ -1270,7 +1295,9 @@
     "Collect_Loc_OutToSwip_Hub_Enter_QuickCart_Menu": {
         "desc": "快速卡带已调出,等待后续",
         "recognition": "Or",
-        "any_of": ["Global_QuickCart_MenuReset_Ocr"],
+        "any_of": [
+            "Global_QuickCart_MenuReset_Ocr"
+        ],
         "next": [
             "Collect_Loc_OutToSwip_Hub_Egress"
         ],
@@ -2844,7 +2871,9 @@
             0,
             0
         ],
-        "anchor": {"ExplorationBoard_Arrived": ""},
+        "anchor": {
+            "ExplorationBoard_Arrived": ""
+        },
         "post_delay": 5000,
         "next": [
             "[JumpBack]Global_WaitingForLoading",

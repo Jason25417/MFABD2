@@ -1,6 +1,7 @@
 {
     "Mail_HomePage": {
         "next": [
+            "Env_AgentLost_Stop",
             "Mail_GoinMail",
             "[JumpBack]Global_ToHomePage"
         ]
@@ -27,7 +28,9 @@
     "Mail_NewRed": {
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             1003,
             14,
@@ -105,7 +108,9 @@
     "Mail_GetAllBack": {
         "desc": "领取reward确认和消除",
         "recognition": "And",
-        "all_of": ["Rec_Reward_Ocr"],
+        "all_of": [
+            "Rec_Reward_Ocr"
+        ],
         "action": "Click",
         "post_delay": 1000,
         "next": [
@@ -119,7 +124,9 @@
         "desc": "切换to月卡信箱",
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             184,
             146,
@@ -142,7 +149,9 @@
     "Mail_GetBusAll": {
         "desc": "商品右键全部领取",
         "recognition": "And",
-        "all_of": ["Mail_GetAll"],
+        "all_of": [
+            "Mail_GetAll"
+        ],
         "action": "Click",
         "post_delay": 2000,
         "next": [

@@ -122,7 +122,7 @@
         "post_delay": 4000
     },
     "Collect_OperationsMain_ToAreaMap": {
-        "desc": "普通卡带确认移动魔法阵面板后，从最左页进入通用采集。异教塔由具名卡入口的 Pack_Bypass 整卡接管；C3 战斗1接续仍在 Collect_OperationsMain_OperationsEnd 处理。",
+        "desc": "普通卡带确认移动魔法阵面板后，从最左页进入通用采集。异教塔由具名卡入口的 Pack_Bypass 整卡接管；美丽无望的禁闭室在第3页由 Collect_C3_Jail 接走。",
         "recognition": "OCR",
         "roi": [
             128,
@@ -330,7 +330,7 @@
         "focus": "确认区域地图tp2"
     },
     "Collect_TargetMap3": {
-        "desc": "详细地图确定位置3★2026-10-01 本地:next 首位挂 [Anchor]C3_Battle2_Trip —— 角色卡3 的名条命中'战斗II'(=禁闭室)时**先接管**:战斗2 没有魔法阵、传送不了,必须'开导航地图→点禁闭室→自动寻路(到达后游戏自动切图)'。别的卡带没有这个锚,自动跳过。 | S18名条为第四记忆空间时转入暗黑神殿补采，该页只作入口。",
+        "desc": "详细地图确定位置3 | S18名条为第四记忆空间时转入暗黑神殿补采，该页只作入口；美丽无望名条为战斗Ⅱ禁闭室且本轮未采时转去禁闭室采集。",
         "recognition": "OCR",
         "roi": [
             408,
@@ -347,6 +347,7 @@
             "剑之神殿右侧回廊",
             "雷瓦汀据点",
             "第四[记記][忆憶]空[间間]",
+            "禁闭室",
             "战斗II",
             "战斗Ⅱ",
             "战斗 II",
@@ -383,9 +384,9 @@
         "post_delay": 200,
         "timeout": 3000,
         "next": [
-            "[Anchor]C3_Battle2_Trip",
             "Collect_TargetMap_Special_M14",
             "Collect_TargetMap_Special_S18",
+            "Collect_C3_Jail",
             "Collect_TargetMap4",
             "[JumpBack]Collect_TargetMap_Special_ClickTpCircleIco",
             "Collect_QuickCart_TargetMapEnd",
@@ -438,281 +439,8 @@
         ],
         "focus": "确认区域地图tp4"
     },
-    "Collect_C3_Battle1_Done": {
-        "desc": "[C3·入口]按序采集用:战斗1 采完之后接续战斗2(本卡能采的图按序各走一遍)。判据=And[区域地图名条=战斗I, CheckTag(C3_Battle2,max=1)]:采完战斗1 切图时、名条还是'战斗I' ⇒ 人就在战斗1(本卡的战斗已采完)且本轮还没走过战斗2 ⇒ 立刻接管,直接寻路去战斗2,不再右翻页找战斗II 页。挂在 `Collect_OperationsMain_OperationsEnd.next` **首位**(排在 Collect_MapRight / 所有 Collect_TargetMap* 之前)。其余卡带没有 C3_Battle1_Done 锚点 ⇒ 本节点不会解析,自动跳过。★2026-10-02 修复:此节点原挂 `Collect_OperationsMain_ToAreaMap.next` 首位(面板刚打开),但「面板刚打开、名条=战斗I」分不清「战斗1已采(续跑)」和「角色初始就停在战斗1、战斗1还没采」,后者会抢跑跳过地图1(用户实测);改挂 OperationsEnd(采完战斗1 切图)后,名条=战斗I 才可靠。tag-only 的 Collect_C3_Trip 保留在 Collect_TargetMap3.next 与 Collect_QuickCart_TargetMapEnd.next 两处兜底。",
-        "max_hit": 1,
-        "recognition": "And",
-        "all_of": [
-            {
-                "recognition": "OCR",
-                "roi": [
-                    408,
-                    622,
-                    466,
-                    47
-                ],
-                "expected": [
-                    "战斗I",
-                    "战斗 I",
-                    "战斗\\s*[1IⅠ!！](?!I)(?!Ⅰ)(?!！)(?!!)",
-                    "战斗[1IⅠ](?!I)(?!Ⅰ)"
-                ]
-            },
-            {
-                "recognition": "Custom",
-                "custom_recognition": "CheckTag",
-                "custom_recognition_param": {
-                    "tag": "C3_Battle2",
-                    "max": 1
-                }
-            }
-        ],
-        "action": "DoNothing",
-        "post_delay": 0,
-        "next": [
-            "Collect_C3_S1_Close"
-        ],
-        "focus": "C3.按序:战斗1已完成-接着去战斗2(禁闭室)"
-    },
-    "Collect_C3_Trip": {
-        "desc": "[角色卡3=Character_3_美丽无望]战斗2(=禁闭室)这张图的**按序采集**入口。★口径(2026-10-02 用户):本卡能采的图 = 地图1 / 战斗1 / 战斗2,一律\"按序各走一遍\";前两张走通用流程(名条认页→点页内传送阵→采集),战斗2 走到这里接续,不是额外\"补采\"。★完整顺序(用户 2026-10-02 口径):进卡带 → 复位 → 采集地图1 → **传送**战斗1 → 采集战斗1 → 寻路去战斗2 → 采集战斗2 → 置位 C3_Battle2 → 退卡带 —— 地图1/战斗1 走通用流程(面板页+页内传送阵);战斗2 面板里没有传送阵,只能开导航地图→点禁闭室→自动寻路(到达自动切图)。识别面只有一个 per-run tag `C3_Battle2`(max=1)=本轮还没走过;而它能被触发,是因为它被挂在共享节点 `Collect_QuickCart_TargetMapEnd.next` 首位的 `[Anchor]C3_Battle2_Trip`,该锚只由 `Collect_Pack_Character_3.anchor` 声明 ⇒ **只有点开角色卡3 时才解析**,别的卡带自动跳过。背景:上游把'禁闭室'写进了 `Cpt_Collect_TargetMapEnd_Ocr` 的'卡带该结束'白名单,所以采完战斗1、面板切到禁闭室页时,流程直接判卡带结束退卡带 ⇒ 战斗2 永远不采(用户 2026-10-01 报的问题)。",
-        "max_hit": 2,
-        "recognition": "Custom",
-        "custom_recognition": "CheckTag",
-        "custom_recognition_param": {
-            "tag": "C3_Battle2",
-            "max": 1
-        },
-        "action": "DoNothing",
-        "post_delay": 0,
-        "next": [
-            "Collect_C3_S1_Close"
-        ],
-        "focus": "C3.按序采集:下一张=战斗2(禁闭室)-寻路过去"
-    },
-    "Collect_C3_S1_Close": {
-        "desc": "[C3·第1步]先关掉区域地图(点左上通用返回)回到战斗1的箱庭——导航地图要从场景HUD的小地图打开。",
-        "max_hit": 3,
-        "recognition": "Or",
-        "any_of": [
-            "Global_BackPageHub_Once"
-        ],
-        "action": "Click",
-        "target": "Global_BackPageHub_Once",
-        "post_delay": 2000,
-        "next": [
-            "Collect_C3_S2_Open_NviMap"
-        ],
-        "focus": "C3.关面板回战斗1"
-    },
-    "Collect_C3_S2_Open_NviMap": {
-        "desc": "[C3·第2步]点左上小地图打开导航地图(固定点击位 148,119,34,38,同项目自带写法)。",
-        "max_hit": 4,
-        "recognition": "Or",
-        "any_of": [
-            "Rec_SandBox_Pin_Tpl",
-            "Rec_SandBox_Run_Tpl",
-            "Collect_TeleporCircle_OnFoot_NviMap"
-        ],
-        "action": "Click",
-        "target": [
-            148,
-            119,
-            34,
-            38
-        ],
-        "post_delay": 2500,
-        "next": [
-            "Collect_C3_S3_ClickBlock",
-            "Collect_C3_S2_Open_NviMap"
-        ],
-        "on_error": [
-            "Collect_C3_S_Abort",
-            "Global_Null"
-        ],
-        "focus": "C3.打开导航地图"
-    },
-    "Collect_C3_S3_ClickBlock": {
-        "desc": "[C3·第3步]**点导航地图上的'禁闭室'(它就是战斗2)**(OCR 认标签 roi 465,175,85,32,实测 1280 系标签中心≈(500,193)),`target_offset:[0,18,0,0]` 下移 18px 落在它正下方的图标上(深色圆+红色交叉双剑)。点下去会**自动寻路过去**,到达后**游戏自动切换地图**(用户口径)。",
-        "max_hit": 3,
-        "recognition": "OCR",
-        "roi": [
-            465,
-            175,
-            85,
-            32
-        ],
-        "expected": [
-            "禁闭室"
-        ],
-        "action": "Click",
-        "target_offset": [
-            0,
-            18,
-            0,
-            0
-        ],
-        "post_delay": 3000,
-        "next": [
-            "Collect_C3_S4_Walk"
-        ],
-        "on_error": [
-            "Collect_C3_S_Abort"
-        ],
-        "focus": "C3.点'禁闭室'-自动寻路(到达后自动切图)"
-    },
-    "Collect_C3_S4_Walk": {
-        "desc": "[C3·第4步]等自动寻路 + 自动切图结束(到达后就是战斗2/禁闭室)。★2026-10-10 对齐 M14 公共件:原先只靠『画面连续静止 1.5s』单一判据;现 next 前两位照抄已实机跑通的 Collect_S06_OnFoot_WaitArrive —— [JumpBack]Collect_IM_OnFoot_Moveing(自动寻路中) 与 [JumpBack]Global_WaitingForLoading(切图/载入中),任一命中即回本节点继续等,都不命中才落 Collect_C3_S5_Verify。★同时删掉原 max_hit:3:MaaFW 中 [JumpBack] 回到本节点会计入 max_hit(Collect_WayPoint_Entry 那次实测已证实),保留会在人还在走时就把 3 次额度耗光而抢跑到下一步;循环上限改由 timeout 180000 兜。",
-        "recognition": "DirectHit",
-        "action": "DoNothing",
-        "post_wait_freezes": 1500,
-        "post_delay": 1000,
-        "timeout": 180000,
-        "next": [
-            "[JumpBack]Collect_IM_OnFoot_Moveing",
-            "[JumpBack]Global_WaitingForLoading",
-            "Collect_C3_S5_Verify"
-        ],
-        "on_error": [
-            "Collect_C3_S_Abort"
-        ],
-        "focus": "C3.等待到达战斗2"
-    },
-    "Collect_C3_S5_Verify": {
-        "desc": "[C3·第5步a]复核'真的换到战斗2那张图了':点小地图开导航地图。",
-        "max_hit": 4,
-        "recognition": "Or",
-        "any_of": [
-            "Rec_SandBox_Pin_Tpl",
-            "Rec_SandBox_Run_Tpl",
-            "Collect_TeleporCircle_OnFoot_NviMap"
-        ],
-        "action": "Click",
-        "target": [
-            148,
-            119,
-            34,
-            38
-        ],
-        "post_delay": 2500,
-        "next": [
-            "Collect_C3_S5_Verify_Ck",
-            "Collect_C3_S5_Verify"
-        ],
-        "on_error": [
-            "Collect_C3_S_Abort",
-            "Global_Null"
-        ],
-        "focus": "C3.打开导航地图复核战斗2"
-    },
-    "Collect_C3_S5_Verify_Ck": {
-        "desc": "[C3·第5步b]导航地图标题含'战斗II/战斗Ⅱ'**或'禁闭室'** ⇒ 人已在战斗2(用户口径:**禁闭室就是战斗2**,到达后游戏会自动切到这张图,标题可能写成'战斗 II 禁闭室'这类格式)。确认后点左上返回关掉地图,进采集。",
-        "max_hit": 3,
-        "recognition": "OCR",
-        "roi": [
-            171,
-            15,
-            555,
-            48
-        ],
-        "expected": [
-            "战斗II",
-            "战斗Ⅱ",
-            "战斗 II",
-            "战斗 Ⅱ",
-            "战斗\\s*([1Il|Ⅰ!！][1Il|Ⅰ!！]|Ⅱ|II)(?!\\d)(?![a-zA-Z])",
-            "战斗([1Il|Ⅰ!！][1Il|Ⅰ!！]|Ⅱ|II)(?!\\d)(?![a-zA-Z])",
-            "禁闭室"
-        ],
-        "action": "Click",
-        "target": [
-            111,
-            41
-        ],
-        "post_delay": 1200,
-        "next": [
-            "Collect_C3_S6_Skill"
-        ],
-        "on_error": [
-            "Collect_C3_S_Abort"
-        ],
-        "focus": "C3.[校验]已到战斗2"
-    },
-    "Collect_C3_S6_Skill": {
-        "desc": "[C3·第6步]战斗2(=禁闭室)采集:调上游技能模块 Collect_Skill_Start,出口锚 QuickSkill_Egress → Collect_C3_S6_Done(先补施)。",
-        "max_hit": 2,
-        "recognition": "Or",
-        "any_of": [
-            "Rec_SandBox_Pin_Tpl",
-            "Rec_SandBox_Run_Tpl"
-        ],
-        "action": "DoNothing",
-        "anchor": {
-            "QuickSkill_Egress": "Collect_C3_S6_Done"
-        },
-        "next": [
-            "[JumpBack]Global_WaitingForLoading",
-            "Collect_Skill_Start",
-            "[JumpBack]Global_ToSandBox"
-        ],
-        "on_error": [
-            "Collect_C3_S_Abort"
-        ],
-        "focus": "C3.战斗2采集"
-    },
-    "Collect_C3_S6_Done": {
-        "desc": "[C3·第6步b]战斗2(=禁闭室)技能模块正常出口:复用异教塔那套'哪格亮就点哪格'的补施 Collect_S06_Extra_Skills(召集/压制),补完由锚 S06_Done_Ck 回到 Collect_C3_S7_Tag。",
-        "max_hit": 2,
-        "recognition": "DirectHit",
-        "action": "DoNothing",
-        "anchor": {
-            "S06_Done_Ck": "Collect_C3_S7_Tag"
-        },
-        "next": [
-            "Collect_S06_Extra_Skills"
-        ],
-        "focus": "C3.战斗2采集收尾(先补施)"
-    },
-    "Collect_C3_S7_Tag": {
-        "desc": "[C3·第7步]置位 C3_Battle2=1(本卡这一轮不再重复走),然后退卡带——按用户口径,战斗2(=禁闭室)是本卡带最后一个采集地图,采完本卡带即算完成。",
-        "max_hit": 2,
-        "recognition": "DirectHit",
-        "action": "Custom",
-        "custom_action": "UpdateTag",
-        "custom_action_param": {
-            "tag": "C3_Battle2",
-            "value": 1
-        },
-        "post_delay": 0,
-        "next": [
-            "Collect_C3_S8_Finish"
-        ],
-        "focus": "C3.战斗2已采完-本卡带完成"
-    },
-    "Collect_C3_S8_Finish": {
-        "desc": "C3战斗2采集正常结束，交公共成功收尾 | 保留本卡一次收尾限制，列表恢复与完成写入由公共出口处理。",
-        "max_hit": 1,
-        "recognition": "DirectHit",
-        "action": "DoNothing",
-        "post_delay": 500,
-        "next": [
-            "Collect_PackFinish"
-        ],
-        "focus": "C3.采集完成-退出卡带"
-    },
-    "Collect_C3_S_Abort": {
-        "desc": "C3战斗2采集失败，交公共失败收尾 | 保留本卡一次收尾限制，不写完成记录。",
-        "max_hit": 1,
-        "recognition": "DirectHit",
-        "action": "DoNothing",
-        "post_delay": 0,
-        "next": [
-            "Collect_PackAbort"
-        ],
-        "focus": "C3.[WRN]战斗2采集失败-结束卡带"
-    },
     "Collect_RunTags_Reset": {
-        "desc": "每轮任务开始清零采集阶段标签 | 保留S06分层、C3战斗2和IM技能阶段的本轮记录；不影响其他业务标签。",
+        "desc": "每轮任务开始清零采集阶段标签 | 保留S06分层、C3禁闭室和IM技能阶段的本轮记录；不影响其他业务标签。",
         "max_hit": 1,
         "recognition": "DirectHit",
         "action": "Custom",
@@ -723,7 +451,7 @@
                 "S06_F2",
                 "S06_F5",
                 "S06_F6",
-                "C3_Battle2",
+                "C3_Jail",
                 "IM_Skill_1",
                 "IM_Skill_End"
             ]
@@ -1364,14 +1092,13 @@
         "focus": "CM.N.区域地图.tp1.已正确"
     },
     "Collect_OperationsMain_OperationsEnd": {
-        "desc": "[区域地图-收尾/切图入口]识别到区域地图面板(标题=移动魔法阵) ⇒ 准备翻页/切图。★2026-10-02 本地:next 首位挂 [Anchor]C3_Battle1_Done —— 角色卡3 战斗1 采集完后,通用流程会先用场景里的地面传送阵把区域地图面板打开、走到本节点;此刻名条=人物真实所在图(战斗Ⅰ) ⇒ 立刻被 C3 钩子接管去寻路战斗2,**不必再右翻页翻到战斗II 那页**(实测省 ≈6s:原先要 MapRight→TargetMap2→TargetMap3 三轮识别才轮到钩子)。该锚只由 Collect_Pack_Character_3 声明,别的卡带自动跳过。",
+        "desc": "确认区域地图，准备切图",
         "recognition": "Or",
         "any_of": [
             "Collect_OperationsMain_ToAreaMap"
         ],
         "timeout": 3000,
         "next": [
-            "[Anchor]C3_Battle1_Done",
             "Collect_MapRight",
             "Collect_OperationsEnd_NORight",
             "[JumpBack]Collect_FindTeleporCircle"
@@ -1528,13 +1255,12 @@
         "focus": "CM.卡带内流程结束-执行完成打标记"
     },
     "Collect_QuickCart_TargetMapEnd": {
-        "desc": "通用卡带结束判定 | 先完成当前卡声明的C3续采，再恢复列表并进入统一成功收尾。",
+        "desc": "通用卡带结束判定 | 恢复列表并进入统一成功收尾。",
         "recognition": "Or",
         "any_of": [
             "Cpt_Collect_TargetMapEnd_Ocr"
         ],
         "next": [
-            "[Anchor]C3_Battle2_Trip",
             "Collect_PackFinish"
         ],
         "focus": "CCB.快速卡带-卡带内流程进入END环节"
@@ -1605,7 +1331,7 @@
         "green_mask": true
     },
     "Cpt_Collect_TargetMapEnd_Ocr": {
-        "desc": "[判定]识别区域地图名称,卡带应该结束。★2026-10-10 本地追加 `^战斗Ⅲ被遗忘的神殿`(卡带19=被遗忘的战争的第4张图):用户口径该卡带按通用序列只采 3 张(地图1=安全 / 战斗1 / 战斗2),采完第3张『战斗Ⅱ通往神殿之路』后翻页看到的就是这张图,应判卡带结束、不再往后采。★为什么用带前缀的锚定正则而不是裸的『被遗忘的神殿』:END 白名单对所有卡带生效,裸串会误伤任何名字含该词的图(全库里『神殿』系图名很多:洞穴神殿/剑之神殿左右回廊/隐藏神殿/科库托斯暗黑神殿…);带 `^战斗Ⅲ` 前缀只匹配 19 这一张(实测 OCR 输出正是『战斗Ⅲ被遗忘的神殿』)。★降级行为:若 OCR 没认出前缀导致本项不命中,会回退到原来的行为(Collect_TargetMap4 白名单仍含『被遗忘的神殿』⇒ 多采一张),属『宁可多采不可漏采』,可接受。",
+        "desc": "[判定]识别区域地图名称,卡带应该结束。★2026-10-10 本地追加 `^战斗Ⅲ被遗忘的神殿`(卡带19=被遗忘的战争的第4张图):用户口径该卡带按通用序列只采 3 张(地图1=安全 / 战斗1 / 战斗2),采完第3张『战斗Ⅱ通往神殿之路』后翻页看到的就是这张图,应判卡带结束、不再往后采。★为什么用带前缀的锚定正则而不是裸的『被遗忘的神殿』:END 白名单对所有卡带生效,裸串会误伤任何名字含该词的图(全库里『神殿』系图名很多:洞穴神殿/剑之神殿左右回廊/隐藏神殿/科库托斯暗黑神殿…);带 `^战斗Ⅲ` 前缀只匹配 19 这一张(实测 OCR 输出正是『战斗Ⅲ被遗忘的神殿』)。★降级行为:若 OCR 没认出前缀导致本项不命中,会回退到原来的行为(Collect_TargetMap4 白名单仍含『被遗忘的神殿』⇒ 多采一张),属『宁可多采不可漏采』,可接受。★2026-10-15『禁闭室』去掉 ^：美丽无望第3页名条实测为『战斗Ⅱ禁闭室』，先命中 Collect_TargetMap3；本轮禁闭室已采时要靠本项在 TargetMap3.next 里收尾。",
         "recognition": "OCR",
         "roi": [
             408,
@@ -1621,7 +1347,7 @@
             "封印指定室",
             "夜世界入口",
             "学校操场",
-            "^禁闭室",
+            "禁闭室",
             "旅馆$",
             "安全",
             "^战斗Ⅲ被遗忘的神殿"

@@ -1650,8 +1650,6 @@
             "value": 1
         },
         "anchor": {
-            "C3_Battle1_Done": "",
-            "C3_Battle2_Trip": "",
             "Pack_Bypass": ""
         },
         "post_delay": 0,
@@ -2427,10 +2425,9 @@
         },
         "anchor": {
             "Pack_Click": "Collect_Pack_Character_3",
-            "C3_Battle2_Trip": "Collect_C3_Trip",
-            "C3_Battle1_Done": "Collect_C3_Battle1_Done",
             "CurrentCollectPack": "Collect_Pack_Character_3",
-            "PackScan_Return": "Collect_PackScan_Prepare"
+            "PackScan_Return": "Collect_PackScan_Prepare",
+            "Pack_Bypass": "Collect_C3_Entry"
         },
         "post_delay": 0,
         "next": [

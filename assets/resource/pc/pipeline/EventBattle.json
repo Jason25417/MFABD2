@@ -344,6 +344,29 @@
             33
         ]
     },
+    "SeasonEvent_MamonoFollow_ChallengePassed": {
+        "roi": [
+            681,
+            168,
+            175,
+            37
+        ],
+        "expected": [
+            "完成讨伐",
+            "完成討伐"
+        ]
+    },
+    "SeasonEvent_MamonoFollow_UnChallenged": {
+        "roi": [
+            681,
+            168,
+            175,
+            37
+        ],
+        "expected": [
+            "\\d[\\d,]*$"
+        ]
+    },
     "Even_MamonoFollowUp_lvdown": {
         "target": [
             619,
@@ -403,10 +426,10 @@
     },
     "SeasonEvent_MamonoFollow_NormalBattle": {
         "roi": [
-            1041,
-            646,
-            80,
-            30
+            950,
+            637,
+            159,
+            43
         ],
         "expected": [
             "去战斗",
@@ -418,7 +441,7 @@
             502,
             219,
             102,
-            54
+            88
         ]
     },
     "SeasonEvent_MamonoFollow_Team_Edit": {

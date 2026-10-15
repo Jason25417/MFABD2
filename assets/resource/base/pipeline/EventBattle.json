@@ -81,9 +81,35 @@
         "focus": "赛季活动-15战模块"
     },
     "Event_Mamono_Hub": {
-        "desc": "赛季魔兽讨伐jb1入口。enabled是interface的抓手;有意不加存档闸——收尾链(Even_MamonoFollowUp_onSubMain)与SeasonEvent_ReMamono_Hub完全共用,打标区分不开是谁做完的",
+        "desc": "赛季魔兽讨伐jb1入口。enabled是interface的抓手,判据在Event_Mamono_Switch。timeout必写——next只剩这一项,闸不命中时不写就会空转到默认20秒才退栈",
         "enabled": true,
         "max_hit": 1,
+        "timeout": 1,
+        "next": [
+            "Event_Mamono_Switch"
+        ]
+    },
+    "Event_Mamono_Switch": {
+        "desc": "魔兽讨伐存档闸:本周期挑战过则不命中,退栈换下一个子模块。命中后清共用链的计数,并把打标锚点MamonoCycle_Mark指向本入口——共用链与回归魔兽共用,靠锚点区分存档名",
+        "recognition": "Custom",
+        "custom_recognition": "CheckCoolDown",
+        "custom_recognition_param": {
+            "card_name": "Event_Mamono",
+            "cycle_type": "mamono_weekly"
+        },
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ClearNodeHitCount",
+        "custom_action_param": {
+            "node_name": [
+                "SeasonEvent_MamonoFollow_UnChallenged",
+                "SeasonEvent_MamonoFollow_ChallengePassed"
+            ]
+        },
+        "anchor": {
+            "MamonoCycle_Mark": "SeasonEvent_Mamono_CycleMark"
+        },
+        "post_delay": 0,
         "next": [
             "SeasonEvent_Mamono_Start",
             "[JumpBack]Event_GoinEvent",
@@ -117,9 +143,35 @@
         ]
     },
     "SeasonEvent_ReMamono_Hub": {
-        "desc": "检测回归魔兽,在mini后运行,前者天然地回到了主页面。enabled是interface的抓手;有意不加存档闸——收尾链与Event_Mamono_Hub共用",
+        "desc": "检测回归魔兽,在mini后运行,前者天然地回到了主页面。enabled是interface的抓手,判据在SeasonEvent_ReMamono_Switch。timeout必写——next只剩这一项",
         "enabled": true,
         "max_hit": 1,
+        "timeout": 1,
+        "next": [
+            "SeasonEvent_ReMamono_Switch"
+        ]
+    },
+    "SeasonEvent_ReMamono_Switch": {
+        "desc": "回归魔兽存档闸:与魔兽讨伐分开记录,本周期挑战过则不命中。命中后清共用链的计数(同一task里魔兽讨伐可能已用掉),并把打标锚点MamonoCycle_Mark指向本入口",
+        "recognition": "Custom",
+        "custom_recognition": "CheckCoolDown",
+        "custom_recognition_param": {
+            "card_name": "Event_ReMamono",
+            "cycle_type": "mamono_weekly"
+        },
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ClearNodeHitCount",
+        "custom_action_param": {
+            "node_name": [
+                "SeasonEvent_MamonoFollow_UnChallenged",
+                "SeasonEvent_MamonoFollow_ChallengePassed"
+            ]
+        },
+        "anchor": {
+            "MamonoCycle_Mark": "SeasonEvent_ReMamono_CycleMark"
+        },
+        "post_delay": 0,
         "next": [
             "SeasonEvent_ReMamono_Start",
             "[JumpBack]Global_WaitingForLoading",
@@ -1220,14 +1272,51 @@
         "post_wait_freezes": 3000,
         "post_delay": 1000,
         "next": [
-            "SeasonEvent_MamonoFollow_HP_Hunting",
-            "[JumpBack]SeasonEvent_MamonoFollow_HP_Hunted",
-            "[JumpBack]SeasonEvent_MamonoFollow_HP_NoMeetHunt"
+            "[JumpBack]SeasonEvent_MamonoFollow_UnChallenged",
+            "[JumpBack]SeasonEvent_MamonoFollow_ChallengePassed",
+            "SeasonEvent_MamonoFollow_cyclegone"
         ],
         "focus": "E.从EASY开始逐级讨伐"
     },
+    "SeasonEvent_MamonoFollow_cyclegone": {
+        "desc": "执行过魔兽了(打过一场,或逐档都已完成讨伐),按入口打本周期的存档。去向由锚点MamonoCycle_Mark决定,两个入口的Switch各自设置;未设置时直接退栈,不打标",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "[Anchor]MamonoCycle_Mark"
+        ]
+    },
+    "SeasonEvent_Mamono_CycleMark": {
+        "desc": "魔兽讨伐打标:本周期不再进入。随后回到赛季主页,同旧收尾链Even_MamonoFollowUp_onSubMain的出口",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MarkComplete",
+        "custom_action_param": {
+            "card_name": "Event_Mamono",
+            "cycle_type": "mamono_weekly"
+        },
+        "post_delay": 0,
+        "next": [
+            "SeasonEvent_Main_Return",
+            "[JumpBack]Global_BackPageHub_Once"
+        ],
+        "focus": "EM.魔兽讨伐本周期已挑战,已记录"
+    },
+    "SeasonEvent_ReMamono_CycleMark": {
+        "desc": "回归魔兽打标:本周期不再进入。不写next直接退栈,由Event_Event_Main末尾的回主页项收尾",
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "MarkComplete",
+        "custom_action_param": {
+            "card_name": "Event_ReMamono",
+            "cycle_type": "mamono_weekly"
+        },
+        "post_delay": 0,
+        "focus": "EM.回归魔兽本周期已挑战,已记录"
+    },
     "SeasonEvent_MamonoFollow_HP_Hunting": {
         "desc": "魔兽血条=Ab,正在讨伐中",
+        "enabled": false,
         "recognition": "Or",
         "any_of": [
             "Rec_Mamono_HP_Hunting_Ocr"
@@ -1237,6 +1326,23 @@
             "SeasonEvent_MamonoFollow_QuickBattle_Unable"
         ],
         "focus": "E. HP=Ab.此Lv魔兽讨伐中途状态..."
+    },
+    "SeasonEvent_MamonoFollow_ChallengePassed": {
+        "max_hit": 5,
+        "recognition": "OCR",
+        "roi": [
+            869,
+            189,
+            94,
+            37
+        ],
+        "expected": [
+            "完成讨伐"
+        ],
+        "next": [
+            "Even_MamonoFollowUp_MmnHpUp"
+        ],
+        "focus": "E.难度魔兽状态-讨伐完毕"
     },
     "SeasonEvent_MamonoFollow_HP_Hunted": {
         "desc": "魔兽血条=ab,已讨伐完毕",
@@ -1249,6 +1355,22 @@
             "Even_MamonoFollowUp_MmnHpUp"
         ],
         "focus": "E. HP=ab.此Lv魔兽已讨伐完毕..."
+    },
+    "SeasonEvent_MamonoFollow_UnChallenged": {
+        "desc": "非讨伐完成状态",
+        "max_hit": 1,
+        "recognition": "OCR",
+        "roi": [
+            869,
+            189,
+            94,
+            37
+        ],
+        "expected": "^[^A-Za-z\\x{4E00}-\\x{9FFF}]+$",
+        "next": [
+            "SeasonEvent_MamonoFollow_NormalBattle"
+        ],
+        "focus": "E.难度魔兽状态-未讨伐完毕"
     },
     "SeasonEvent_MamonoFollow_HP_NoMeetHunt": {
         "desc": "魔兽血条=AB,完全未讨伐过",
@@ -1352,10 +1474,10 @@
         "desc": "普通战斗按钮识别与点击",
         "recognition": "OCR",
         "roi": [
-            1044,
-            631,
-            74,
-            35
+            962,
+            622,
+            143,
+            49
         ],
         "expected": [
             "去战斗"
@@ -1399,10 +1521,10 @@
         "desc": "有队伍漏配",
         "recognition": "OCR",
         "roi": [
-            608,
+            609,
             240,
-            100,
-            43
+            112,
+            68
         ],
         "expected": "[//?]",
         "replace": [
@@ -1411,7 +1533,6 @@
                 "?"
             ]
         ],
-        "only_rec": true,
         "next": [
             "SeasonEvent_MamonoFollow_Team_Edit"
         ],

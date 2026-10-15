@@ -150,6 +150,7 @@
             ],
             "default_check": true,
             "option": [
+                "白嫖抽卡-强制重跑",
                 "一键速抽"
             ],
             "description": "<b>白嫖抽卡：</b>每日免费一次的`角色`、`专属装备`抽取。<br><br>关闭`一键速抽`后，可启用保底留存、90钻付费抽等高级功能。<br><br><font color=\"Crimson\"><b>付费钻是危险功能</b><br>务必仔细确认，平时常闭。脚本协议不承担其使用责任！<br>打开此`总开关`，则是你知晓并自行承担相关风险的意思表示！</font><br><br>![](resource/image/GUI/CHAGA_Doc.png)"
@@ -687,6 +688,25 @@
                     "name": "Yes",
                     "pipeline_override": {
                         "Equip_Daily_Switch": {
+                            "recognition": "DirectHit"
+                        }
+                    }
+                }
+            ]
+        },
+        "白嫖抽卡-强制重跑": {
+            "type": "switch",
+            "default_case": "No",
+            "description": "关：当前存档本游戏日已完成抽卡时直接跳过。<br>开：忽略完成记录，重新检查并尝试抽卡；首页无红点时仍会结束本轮。<br>只有正常收尾后确认主界面抽卡入口亮起且无红点才记录完成；完成记录按游戏日刷新（北京时间每日 08:00）。",
+            "cases": [
+                {
+                    "name": "No",
+                    "pipeline_override": {}
+                },
+                {
+                    "name": "Yes",
+                    "pipeline_override": {
+                        "GachaADV_Daily_Switch": {
                             "recognition": "DirectHit"
                         }
                     }

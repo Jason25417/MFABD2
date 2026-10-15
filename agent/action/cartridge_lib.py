@@ -237,6 +237,15 @@ CYCLE_STRATEGIES = {
         "timezone": 8,
         "reset_weekday": 3,     # 周四 0 点(即原意的"周三 24:00")
         "blackout_minutes": 540  # 结算540分钟，防止刚好卡点进不去
+    },
+    # 【BD2】国际服-魔兽讨伐重试周期 (每周四 08:00)
+    # 难度梯度机制下,同一队伍输过一次再打大概率还是输,本周期内不再进入。时间点暂定
+    "mamono_weekly": {
+        "type": "weekly",
+        "reset_time": "08:00",
+        "timezone": 8,
+        "reset_weekday": 3,     # 周四
+        "blackout_minutes": 540
     }
     # # 【BD2】国际服-救赎之塔 (半月常, 1号/16号刷新)时间不确定，暂时不写
     # "g_abyss": {

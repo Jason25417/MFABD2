@@ -1372,12 +1372,12 @@
         "max_hit": 1,
         "recognition": "OCR",
         "roi": [
-            869,
+            814,
             189,
-            94,
+            149,
             37
         ],
-        "expected": "^[^A-Za-z\\x{4E00}-\\x{9FFF}]+$",
+        "expected": "\\d[\\d,]*$",
         "next": [
             "SeasonEvent_MamonoFollow_NormalBattle"
         ],

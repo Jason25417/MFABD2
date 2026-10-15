@@ -101,6 +101,7 @@
             ],
             "default_check": true,
             "option": [
+                "快速狩猎日常-强制重跑",
                 "冒险航线",
                 "狩猎场",
                 "圣石洞穴属性"
@@ -711,6 +712,25 @@
                 }
             ]
         },
+        "快速狩猎日常-强制重跑": {
+            "type": "switch",
+            "default_case": "No",
+            "description": "关：当前存档本游戏日已确认免费米饭与火把都用完时直接跳过。<br>开：忽略完成记录，每次运行都完整执行一遍。<br>完成记录按游戏日刷新（北京时间每日 08:00）；只有读到两种免费次数都为 0 才记为完成，中途失败不会记录。",
+            "cases": [
+                {
+                    "name": "No",
+                    "pipeline_override": {}
+                },
+                {
+                    "name": "Yes",
+                    "pipeline_override": {
+                        "QuickHunt_Daily_Switch": {
+                            "recognition": "DirectHit"
+                        }
+                    }
+                }
+            ]
+        },
         "前置助手": {
             "type": "select",
             "description": "自动配置工具所需的前置设置（主设置、装备管理、快捷技能）。<br>初次使用或清档重下后，建议先选<b>强制启用</b>一次，再切回<b>按需</b>。",
@@ -1015,7 +1035,9 @@
                                 "[JumpBack]QuickHunt_AdventureRoute",
                                 "[JumpBack]QuickHunt_HuntingGrounds",
                                 "[JumpBack]QuickHunt_RiceRecheck",
-                                "[JumpBack]QuickHunt_CrystalCave"
+                                "[JumpBack]QuickHunt_RiceZero_Ck",
+                                "[JumpBack]QuickHunt_CrystalCave",
+                                "[JumpBack]QuickHunt_Daily_Ck"
                             ]
                         }
                     }

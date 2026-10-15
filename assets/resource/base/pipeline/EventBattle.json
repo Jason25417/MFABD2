@@ -1280,6 +1280,17 @@
     },
     "SeasonEvent_MamonoFollow_cyclegone": {
         "desc": "执行过魔兽了(打过一场,或逐档都已完成讨伐),按入口打本周期的存档。去向由锚点MamonoCycle_Mark决定,两个入口的Switch各自设置;未设置时直接退栈,不打标",
+        "recognition": "And",
+        "all_of": [
+            "Even_MamonoFollowUp_MamonoEnter",
+            {
+                "recognition": "Or",
+                "any_of": [
+                    "SeasonEvent_MamonoFollow_UnChallenged",
+                    "SeasonEvent_MamonoFollow_ChallengePassed"
+                ]
+            }
+        ],
         "pre_delay": 0,
         "post_delay": 0,
         "next": [

@@ -2265,7 +2265,8 @@
         "anchor": {
             "Pack_Click": "Collect_Pack_Story_18",
             "CurrentCollectPack": "Collect_Pack_Story_18",
-            "PackScan_Return": "Collect_PackScan_Prepare"
+            "PackScan_Return": "Collect_PackScan_Prepare",
+            "Pack_Bypass": "Collect_S18_Entry"
         },
         "post_delay": 0,
         "next": [

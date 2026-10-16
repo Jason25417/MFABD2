@@ -330,7 +330,7 @@
         "focus": "确认区域地图tp2"
     },
     "Collect_TargetMap3": {
-        "desc": "详细地图确定位置3 | S18名条为第四记忆空间时转入暗黑神殿补采，该页只作入口；美丽无望名条为战斗Ⅱ禁闭室且本轮未采时转去禁闭室采集。",
+        "desc": "详细地图确定位置3 | S18名条为第四记忆空间且本轮未采暗黑神殿时转去艾琳补采，该页只作入口；美丽无望名条为战斗Ⅱ禁闭室且本轮未采时转去禁闭室采集。两者已采时都由结束名单收尾。",
         "recognition": "OCR",
         "roi": [
             408,
@@ -439,7 +439,7 @@
         "focus": "确认区域地图tp4"
     },
     "Collect_RunTags_Reset": {
-        "desc": "每轮任务开始清零采集阶段标签 | 保留S06分层、C3禁闭室和IM技能阶段的本轮记录；不影响其他业务标签。",
+        "desc": "每轮任务开始清零采集阶段标签 | 保留S06分层、C3禁闭室、S18暗黑神殿和IM技能阶段的本轮记录；不影响其他业务标签。",
         "max_hit": 1,
         "recognition": "DirectHit",
         "action": "Custom",
@@ -451,6 +451,7 @@
                 "S06_F5",
                 "S06_F6",
                 "C3_Jail",
+                "S18_Temple",
                 "IM_Skill_1",
                 "IM_Skill_End"
             ]
@@ -458,29 +459,36 @@
         "focus": "每轮开始-清零卡带标签"
     },
     "Collect_TargetMap_Special_S18": {
-        "desc": "第四记忆空间触发S18暗黑神殿补采 | 此页只作入口，不传送进去；本次设置快速移动参数，并清理专用返程调用次数。",
-        "recognition": "OCR",
-        "roi": [
-            408,
-            622,
-            466,
-            47
-        ],
-        "expected": [
-            "第四[记記][忆憶]空[间間]"
+        "desc": "第四记忆空间触发S18暗黑神殿补采 | 名条为第四记忆空间且本轮未采暗黑神殿才命中：设好快速移动去艾琳与技能出口，此页只作入口，不传送进去。 | 进卡时已当场采过则不命中，由同一列表后面的 Collect_QuickCart_TargetMapEnd 收尾。",
+        "recognition": "And",
+        "all_of": [
+            {
+                "recognition": "OCR",
+                "roi": [
+                    408,
+                    622,
+                    466,
+                    47
+                ],
+                "expected": [
+                    "第四[记記][忆憶]空[间間]"
+                ]
+            },
+            {
+                "recognition": "Custom",
+                "custom_recognition": "CheckTag",
+                "custom_recognition_param": {
+                    "tag": "S18_Temple",
+                    "max": 1
+                }
+            }
         ],
         "pre_delay": 0,
-        "action": "Custom",
-        "custom_action": "ClearNodeHitCount",
-        "custom_action_param": {
-            "node_name": [
-                "Collect_S18_ReturnOnce"
-            ]
-        },
         "anchor": {
             "QuickMove_Target": "Collect_QuickMove_ToEileen",
             "QuickMove_Success": "Collect_S18_Skill",
-            "QuickMove_Failure": "Collect_S18_Abort"
+            "QuickMove_Failure": "Collect_S18_Abort",
+            "QuickSkill_Egress": "Collect_S18_End_Done"
         },
         "post_delay": 0,
         "next": [
@@ -489,15 +497,20 @@
         "focus": "S18.常规地图采集结束，快速移动到艾琳补采"
     },
     "Collect_S18_Skill": {
-        "desc": "快速移动到艾琳成功后调用正常采集技能 | 仅技能正常出口进入本卡返程，不再调用S06补技能。",
-        "recognition": "Or",
-        "any_of": [
-            "Rec_QuickMove_Ready"
+        "desc": "暗黑神殿采集，进卡当场采与末尾去艾琳采共用 | 本轮未采且在箱庭时调用技能模块，技能出口由 InTemple / Special_S18 预先设好。 | 不在箱庭时先 [JumpBack]Global_ToSandBox 复位再认；超时交 S18_Abort 回列表，不写完成。",
+        "recognition": "And",
+        "all_of": [
+            "Global_ToSandBox_Enter",
+            {
+                "recognition": "Custom",
+                "custom_recognition": "CheckTag",
+                "custom_recognition_param": {
+                    "tag": "S18_Temple",
+                    "max": 1
+                }
+            }
         ],
         "pre_delay": 0,
-        "anchor": {
-            "QuickSkill_Egress": "Collect_S18_Egress"
-        },
         "post_delay": 0,
         "timeout": 5000,
         "next": [
@@ -508,33 +521,136 @@
             "Collect_S18_Abort",
             "Global_Null"
         ],
-        "focus": "S18.暗黑神殿补采"
+        "focus": "S18.暗黑神殿采集"
     },
-    "Collect_S18_Egress": {
-        "desc": "S18技能正常出口，调用公共返程后检查传送阵站位 | 返程仅调用一次，普通退栈不能直接写完成。",
+    "Collect_S18_End_Done": {
+        "desc": "末尾去艾琳采完暗黑神殿 | 置位 S18_Temple、清快速移动返回锚与技能出口，不回传送阵，直接交公共成功收尾。 | 人留在暗黑神殿，下次进卡由 Collect_S18_Entry 当场采集。",
+        "recognition": "DirectHit",
+        "action": "Custom",
+        "custom_action": "UpdateTag",
+        "custom_action_param": {
+            "tag": "S18_Temple",
+            "value": 1
+        },
+        "anchor": {
+            "QuickMove_Success": "",
+            "QuickMove_Failure": "",
+            "QuickSkill_Egress": ""
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_PackFinish"
+        ],
+        "focus": "S18.暗黑神殿已采完"
+    },
+    "Collect_S18_Entry": {
+        "desc": "救赎进卡入口 | 确认箱庭后清零本模块带 max_hit 的节点，再开导航地图看人在不在暗黑神殿。 | 由 Collect_Pack_Story_18 的 Pack_Bypass 进入；同轮补采再次进卡时清零后从首次状态开始。本模块新增带 max_hit 的节点时要补进这份清单。",
         "recognition": "Or",
         "any_of": [
             "Global_ToSandBox_Enter"
         ],
         "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ClearNodeHitCount",
+        "custom_action_param": {
+            "node_name": [
+                "Collect_S18_Locate",
+                "Collect_S18_ReturnOnce"
+            ]
+        },
+        "post_delay": 0,
+        "next": [
+            "Collect_S18_Locate"
+        ],
+        "focus": "S18.进卡-查看是否在暗黑神殿"
+    },
+    "Collect_S18_Locate": {
+        "desc": "打开导航地图看当前位置 | 在箱庭或地图已开时都点左上小地图，标题含暗黑神殿交 InTemple，是别处交 NotTemple，没打开重点自身。 | 开图点击位与判据同 Collect_C3_Locate。max_hit 3 用完或超时都不命中即退栈。",
+        "max_hit": 3,
+        "recognition": "Or",
+        "any_of": [
+            "Rec_SandBox_Pin_Tpl",
+            "Rec_SandBox_Run_Tpl",
+            "Collect_TeleporCircle_OnFoot_NviMap"
+        ],
+        "action": "Click",
+        "target": [
+            148,
+            119,
+            34,
+            38
+        ],
+        "post_delay": 2000,
+        "next": [
+            "Collect_S18_InTemple",
+            "Collect_S18_NotTemple",
+            "Collect_S18_Locate"
+        ]
+    },
+    "Collect_S18_InTemple": {
+        "desc": "进卡时人在暗黑神殿 | 关地图并把技能出口设为 Entry_Done，本轮未采先当场采集，已采直接回传送阵。 | 导航地图标题是「名条+说明」（C3 实测为「战斗Ⅱ禁闭室出现火属性怪物」），所以只认子串。",
+        "recognition": "OCR",
+        "roi": [
+            171,
+            15,
+            555,
+            48
+        ],
+        "expected": [
+            "暗黑神殿"
+        ],
+        "action": "Click",
+        "target": [
+            120,
+            35
+        ],
+        "anchor": {
+            "QuickSkill_Egress": "Collect_S18_Entry_Done"
+        },
+        "post_delay": 1500,
+        "next": [
+            "Collect_S18_Skill",
+            "[JumpBack]Collect_S18_ReturnOnce",
+            "Collect_S18_Rehome_Ck"
+        ],
+        "focus": "S18.人在暗黑神殿"
+    },
+    "Collect_S18_NotTemple": {
+        "desc": "进卡时人不在暗黑神殿 | 关地图后交通用箱庭入口，暗黑神殿留到第四记忆空间页再去艾琳补采。",
+        "recognition": "Or",
+        "any_of": [
+            "Collect_TeleporCircle_OnFoot_NviMap"
+        ],
+        "action": "Click",
+        "target": [
+            120,
+            30
+        ],
+        "post_delay": 1500,
+        "next": [
+            "Collect_OperationsMain_Sandplay"
+        ]
+    },
+    "Collect_S18_Entry_Done": {
+        "desc": "进卡当场采完暗黑神殿 | 置位 S18_Temple、清技能出口，然后回传送阵交通用流程。",
+        "recognition": "DirectHit",
+        "action": "Custom",
+        "custom_action": "UpdateTag",
+        "custom_action_param": {
+            "tag": "S18_Temple",
+            "value": 1
+        },
         "anchor": {
             "QuickSkill_Egress": ""
         },
         "post_delay": 0,
-        "timeout": 10000,
         "next": [
             "[JumpBack]Collect_S18_ReturnOnce",
-            "Collect_S18_VerifyCircle",
-            "[JumpBack]Global_ToSandBox"
-        ],
-        "on_error": [
-            "Collect_S18_Abort",
-            "Global_Null"
-        ],
-        "focus": "S18.补采结束，调用公共返程"
+            "Collect_S18_Rehome_Ck"
+        ]
     },
     "Collect_S18_ReturnOnce": {
-        "desc": "S18本次补采后的公共返程调用入口 | 本次限一次，不限制公共链内部重试；次数由特殊入口清理。",
+        "desc": "从暗黑神殿回到传送阵，每次进卡只调用一次 | 调用 Collect_TeleporCircle_OnFoot_Entry，寻路列表额度用完时由它退到纯步行。 | 本节点 max_hit 1 由 Collect_S18_Entry 清零。",
         "max_hit": 1,
         "recognition": "Or",
         "any_of": [
@@ -544,57 +660,23 @@
         "post_delay": 0,
         "next": [
             "Collect_TeleporCircle_OnFoot_Entry"
-        ]
+        ],
+        "focus": "S18.回到传送阵"
     },
-    "Collect_S18_VerifyCircle": {
-        "desc": "返程后点击传送阵手标核验站位 | 后继必须确认移动魔法阵面板已打开，才进入成功收尾。",
+    "Collect_S18_Rehome_Ck": {
+        "desc": "确认已站上传送阵再交通用流程 | 看得到传送阵手标才进通用箱庭入口；复位没成功时不命中，调用方超时退栈，本卡不写完成。",
         "recognition": "Or",
         "any_of": [
             "Collect_TeleporCircle_Ico_Enter"
         ],
-        "action": "Click",
-        "post_delay": 1000,
-        "timeout": 5000,
+        "action": "DoNothing",
+        "post_delay": 0,
         "next": [
-            "Collect_S18_Finish"
-        ],
-        "on_error": [
-            "Collect_S18_Abort",
-            "Global_Null"
+            "Collect_OperationsMain_Sandplay"
         ]
     },
-    "Collect_S18_Finish": {
-        "desc": "S18补采与返程站位确认后恢复列表并统一打标 | 仅由手标交互后的面板确认进入，不再返回TargetMap3或地图结束判定。",
-        "recognition": "Or",
-        "any_of": [
-            "Collect_OperationsMain_ToAreaMap"
-        ],
-        "pre_delay": 0,
-        "anchor": {
-            "QuickMove_Target": "",
-            "QuickMove_Success": "",
-            "QuickMove_Failure": "",
-            "QuickMove_Exit_Result": "",
-            "QuickMove_Exit_Process": "",
-            "QuickSkill_Egress": "",
-            "IntSubMenu_ErrReturn": "",
-            "OnFoot_SkillCircle_Try": "",
-            "Skill_Overpower": "",
-            "ExplorationBoard_Arrived": ""
-        },
-        "post_delay": 0,
-        "timeout": 10000,
-        "next": [
-            "Collect_PackFinish"
-        ],
-        "on_error": [
-            "Collect_S18_Abort",
-            "Global_Null"
-        ],
-        "focus": "S18.补采与返程已确认，结束本卡"
-    },
     "Collect_S18_Abort": {
-        "desc": "S18补采或返程未确认成功时返回卡带列表 | 不写完成记录；清理本次快速移动和技能出口参数。",
+        "desc": "S18暗黑神殿采集未确认成功时返回卡带列表 | 快速移动失败或技能调用超时走这里；不写完成记录，清理本次快速移动和技能出口参数。",
         "pre_delay": 0,
         "anchor": {
             "QuickMove_Target": "",
@@ -1330,7 +1412,7 @@
         "green_mask": true
     },
     "Cpt_Collect_TargetMapEnd_Ocr": {
-        "desc": "[判定]识别区域地图名称,卡带应该结束。★2026-10-10 本地追加 `^战斗Ⅲ被遗忘的神殿`(卡带19=被遗忘的战争的第4张图):用户口径该卡带按通用序列只采 3 张(地图1=安全 / 战斗1 / 战斗2),采完第3张『战斗Ⅱ通往神殿之路』后翻页看到的就是这张图,应判卡带结束、不再往后采。★为什么用带前缀的锚定正则而不是裸的『被遗忘的神殿』:END 白名单对所有卡带生效,裸串会误伤任何名字含该词的图(全库里『神殿』系图名很多:洞穴神殿/剑之神殿左右回廊/隐藏神殿/科库托斯暗黑神殿…);带 `^战斗Ⅲ` 前缀只匹配 19 这一张(实测 OCR 输出正是『战斗Ⅲ被遗忘的神殿』)。★降级行为:若 OCR 没认出前缀导致本项不命中,会回退到原来的行为(Collect_TargetMap4 白名单仍含『被遗忘的神殿』⇒ 多采一张),属『宁可多采不可漏采』,可接受。★2026-10-15『禁闭室』去掉 ^：美丽无望第3页名条实测为『战斗Ⅱ禁闭室』，先命中 Collect_TargetMap3；本轮禁闭室已采时要靠本项在 TargetMap3.next 里收尾。",
+        "desc": "[判定]识别区域地图名称,卡带应该结束。★2026-10-10 本地追加 `^战斗Ⅲ被遗忘的神殿`(卡带19=被遗忘的战争的第4张图):用户口径该卡带按通用序列只采 3 张(地图1=安全 / 战斗1 / 战斗2),采完第3张『战斗Ⅱ通往神殿之路』后翻页看到的就是这张图,应判卡带结束、不再往后采。★为什么用带前缀的锚定正则而不是裸的『被遗忘的神殿』:END 白名单对所有卡带生效,裸串会误伤任何名字含该词的图(全库里『神殿』系图名很多:洞穴神殿/剑之神殿左右回廊/隐藏神殿/科库托斯暗黑神殿…);带 `^战斗Ⅲ` 前缀只匹配 19 这一张(实测 OCR 输出正是『战斗Ⅲ被遗忘的神殿』)。★降级行为:若 OCR 没认出前缀导致本项不命中,会回退到原来的行为(Collect_TargetMap4 白名单仍含『被遗忘的神殿』⇒ 多采一张),属『宁可多采不可漏采』,可接受。★2026-10-15『禁闭室』去掉 ^：美丽无望第3页名条实测为『战斗Ⅱ禁闭室』，先命中 Collect_TargetMap3；本轮禁闭室已采时要靠本项在 TargetMap3.next 里收尾。★2026-10-16 加『第四记忆空间』：S18 进卡当场采过暗黑神殿时 Collect_TargetMap_Special_S18 不命中，同样靠本项收尾，不传送进第四记忆空间。",
         "recognition": "OCR",
         "roi": [
             408,
@@ -1347,6 +1429,7 @@
             "被遗忘的神殿",
             "学校操场",
             "禁闭室",
+            "第四[记記][忆憶]空[间間]",
             "旅馆$",
             "安全"
         ],

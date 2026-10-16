@@ -168,14 +168,6 @@
         "recognition": "And",
         "all_of": [
             {
-                "recognition": "Custom",
-                "custom_recognition": "CheckTag",
-                "custom_recognition_param": {
-                    "tag": "C3_Jail",
-                    "max": 1
-                }
-            },
-            {
                 "recognition": "OCR",
                 "roi": [
                     408,
@@ -186,6 +178,14 @@
                 "expected": [
                     "禁闭室"
                 ]
+            },
+            {
+                "recognition": "Custom",
+                "custom_recognition": "CheckTag",
+                "custom_recognition_param": {
+                    "tag": "C3_Jail",
+                    "max": 1
+                }
             }
         ],
         "action": "DoNothing",

@@ -692,7 +692,7 @@
         ]
     },
     "Collect_TargetMap4_Special": {
-        "desc": "[维护点C??]当能吸的图超过4个时候,在4→End之间插入特殊路由，让状态机返回4开头。无需操作，只改状态机。这里是定向识别,需要持续维护!★2026-10-10 补 timeout 3000:它是**定向识别的纯路由节点**(只改状态机、next 仅指向 Collect_TargetMap3),识别失败本就该立刻跳过让后续候选(Collect_QuickCart_TargetMapEnd / Collect_MapRight_NoFind 等)接手收尾;原先没写 timeout ⇒ 不命中时吃满框架默认的 20 秒 reco_timeout,整条 next 链被拖到超时后退栈 —— 实测卡带19(2026-10-10 16:08:08→16:08:28 正好 20 秒)因此退栈到定位链 Collect_LocatePackFrame_Loc8,而那时**区域地图还开着**,定位链第一候选 SmartSwipe 就在区域地图上滑动、画面静止 4 次判『触底』,用户看到的就是『打开了地图却在翻卡带』。取值 3000 与上游 Collect_TargetMap_Special_M14 同款。",
+        "desc": "[维护点C??]当能吸的图超过4个时候,在4→End之间插入特殊路由，让状态机返回4开头。无需操作，只改状态机。这里是定向识别,需要持续维护!★2026-10-10 补 timeout 3000:它是**定向识别的纯路由节点**(只改状态机、next 仅指向 Collect_TargetMap3)。timeout 限的是本节点命中后等 Collect_TargetMap3 的时长;本节点不命中时等多久归父节点 Collect_TargetMap4(其自身 timeout 3000)。原先没写 ⇒ 命中后 TargetMap3 迟迟不出现时吃满框架默认 20 秒才退栈 —— 实测卡带19(2026-10-10 16:08:08→16:08:28 正好 20 秒)因此退栈到定位链 Collect_LocatePackFrame_Loc8,而那时**区域地图还开着**,定位链第一候选 SmartSwipe 就在区域地图上滑动、画面静止 4 次判『触底』,用户看到的就是『打开了地图却在翻卡带』。取值 3000 与上游 Collect_TargetMap_Special_M14 同款。",
         "recognition": "OCR",
         "roi": [
             408,

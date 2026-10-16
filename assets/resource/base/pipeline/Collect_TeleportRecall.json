@@ -981,7 +981,7 @@
         ]
     },
     "Collect_IM_OnFoot_NviMap_E03_A2_Move_Sub": {
-        "desc": "确认弹窗「选哪个战斗区」（上下两个选项）。★2026-10-03 澄清：这一步不是点地图文字标签，而是处理标记点击后的选择弹窗——OCR「战斗区」兼做'弹窗已开'判据（timeout 8s 内等弹窗出现；roi 里上下两个选项都会被 OCR 到，取分高的＝下方选项）；点击用固定 target＝**下方选项** (405,495)（用户实测 1920 系 (608,743)，＝要去的地图2 战斗1）。post_delay 3000：点完选项导航地图收起+起步有 ~1-2s 空窗，先等过去再判 Moveing，避免在弹窗/收起动画帧上空判、被 2_Move_End 误收。",
+        "desc": "确认弹窗「选哪个战斗区」（上下两个选项）。★2026-10-03 澄清：这一步不是点地图文字标签，而是处理标记点击后的选择弹窗——OCR「战斗区」兼做'弹窗已开'判据（弹窗未出现时由父节点 E03_A2_Move 自重试再点标记；roi 里上下两个选项都会被 OCR 到，取分高的＝下方选项）；点击用固定 target＝**下方选项** (405,495)（用户实测 1920 系 (608,743)，＝要去的地图2 战斗1）。post_delay 3000：点完选项导航地图收起+起步有 ~1-2s 空窗，先等过去再判 Moveing，避免在弹窗/收起动画帧上空判、被 2_Move_End 误收。timeout 8000 限的是点完选项后等 next（移动中/到达/载入）的窗口，不是等弹窗。",
         "recognition": "OCR",
         "roi": [
             347,
@@ -1962,7 +1962,7 @@
         ]
     },
     "Collect_WayPoint_Entry": {
-        "desc": "从任意采集箱庭打开左上寻路列表并返回探索告示板；目标项由文字定位，不依赖列表长度。★max_hit:4=重入封顶(2026-10-07):识别面是'左上寻路按钮'(Open_Tpl/Csm)，**在箱庭里恒命中**，而它的 next 里 `[JumpBack]Open_Tpl/Csm/QuickHunt_MIniMap_locErr` 都是子调用，子链(回告示板→Arrived→Verify→Succeed→Global_ToSandBox→Enter)跑完后回溯会**重新评估本节点并再次命中** ⇒ 整条'回告示板'链无限重跑(2026-10-07 10:07~10:09 实测:每 ~21s 一轮,复位成功又回到 CTB.回到探索告示板)。加上限后到限即被跳过(框架日志 `max_hit reached`)，回溯得以继续外退。★值取 4:与下游 Board(max_hit 4)/Arrived(max_hit 3,本次加)同一量级；本节点只服务'特殊地图收尾回主城'(普通卡带走 TargetMapEnd→FastUI→PackEnd_Ck，不经这里)，正常一次就够；到限后由 `Collect_TeleporCircle_OnFoot_Entry.next` 的第二候选 `Collect_TeleporCircle_OnlyFoot_Entry`(纯步行返回传送阵)兜底，不会无路可走。",
+        "desc": "从任意采集箱庭打开左上寻路列表，按狩猎场、探索告示板、旅馆的顺序选先认出的一项返回；目标项由文字定位，不依赖列表长度。★max_hit:4=重入封顶(2026-10-07):识别面是'左上寻路按钮'(Open_Tpl/Csm)，**在箱庭里恒命中**，而它的 next 里 `[JumpBack]Open_Tpl/Csm/QuickHunt_MIniMap_locErr` 都是子调用，子链(回告示板→Arrived→Verify→Succeed→Global_ToSandBox→Enter)跑完后回溯会**重新评估本节点并再次命中** ⇒ 整条'回告示板'链无限重跑(2026-10-07 10:07~10:09 实测:每 ~21s 一轮,复位成功又回到 CTB.回到探索告示板)。加上限后到限即被跳过(框架日志 `max_hit reached`)，回溯得以继续外退。★值取 4:与下游 Board(max_hit 4)/Arrived(max_hit 3,本次加)同一量级；调用方是 `Collect_TeleporCircle_OnFoot_Entry`(S18/M14 的 ReturnOnce 进来)、`Collect_TeleporCircle_OnFoot_Sandbox` 与 C3 的 `Collect_C3_Rehome`(进来前先清本节点及 Board/Arrived 的命中计数)；普通卡带走 TargetMapEnd→PackFinish，不经这里。正常一次就够；前两个调用方到限后由各自 next 的第二候选 `Collect_TeleporCircle_OnlyFoot_Entry`(纯步行返回传送阵)兜底。",
         "max_hit": 4,
         "recognition": "Or",
         "any_of": [
@@ -2247,7 +2247,7 @@
         "focus": "CTOB.确认导航地图界面打开"
     },
     "Collect_WayPoint_Arrived_SkillReset": {
-        "desc": "【到达告示板/旅馆后的复位·2026-10-07】Board/Inn 的 anchor ExplorationBoard_Arrived 指向本节点。判据照抄 Collect_OnFoot_Skill3_4(Skill3-1.png + 亮色核,灰态不命中),**只有出口不同**:本节点用于'已到达静止'的上下文,传送技能放出来、移动魔法阵面板打开后直接交给本地 Collect_ForceTelepor_MapCk(翻最左页→点面板传送阵→传地图1)。★为什么不能直接用 Collect_OnFoot_Skill3_4:它的 desc 是'跑路过程中'用,next 唯一项是 Collect_ForceTelepor_IsEffect→IsEffect_ResetFoot(判据=自动寻路中图标 AutoNvi_ico);到达后人是静止的,该图标永远不会出现 ⇒ 空等默认 20s 超时 ⇒ 落到 [JumpBack]Global_BackPageHub_Once 点返回把刚开的面板关掉 ⇒ 回到 Collect_WayPoint_Arrived 无限循环(2026-10-07 09:15~09:22 实测,每轮 26s)。★为什么不用 Collect_Skill3_4:它没有亮/灰色核判据(灰态也命中→空点),且 next 第三项是自引用且无 max_hit。本节点不动任何上游节点。★next 第三项 2026-10-07 由 Collect_TeleporCircle_OnFoot_Start 改为 Collect_ForceTeleporCircle_No(灰态色核判据):OnFoot_Start 是 DirectHit **恒命中**,复位成功(MapCk 链走完)后退栈继续评估后续候选时会命中它、重入整条步行兜底链(实测 10:16 卡死的相关一环);改用灰态判据后,只有技能真的灰着不可用才进步行兜底,成功路径在列表耗尽后干净退栈。",
+        "desc": "【到达告示板后的复位·2026-10-07】Board 的 anchor ExplorationBoard_Arrived 指向本节点（Inn 的同名锚点指向 Collect_WayPoint_ExplorationBoard_Arrived）。判据照抄 Collect_OnFoot_Skill3_4(Skill3-1.png + 亮色核,灰态不命中),**只有出口不同**:本节点用于'已到达静止'的上下文,传送技能放出来、移动魔法阵面板打开后直接交给本地 Collect_ForceTelepor_MapCk(翻最左页→点面板传送阵→传地图1)。★为什么不能直接用 Collect_OnFoot_Skill3_4:它的 desc 是'跑路过程中'用,next 唯一项是 Collect_ForceTelepor_IsEffect→IsEffect_ResetFoot(判据=自动寻路中图标 AutoNvi_ico);到达后人是静止的,该图标永远不会出现 ⇒ 空等默认 20s 超时 ⇒ 落到 [JumpBack]Global_BackPageHub_Once 点返回把刚开的面板关掉 ⇒ 回到 Collect_WayPoint_Arrived 无限循环(2026-10-07 09:15~09:22 实测,每轮 26s)。★为什么不用 Collect_Skill3_4:它没有亮/灰色核判据(灰态也命中→空点),且 next 第三项是自引用且无 max_hit。本节点不动任何上游节点。★next 第三项 2026-10-07 由 Collect_TeleporCircle_OnFoot_Start 改为 Collect_ForceTeleporCircle_No(灰态色核判据):OnFoot_Start 是 DirectHit **恒命中**,复位成功(MapCk 链走完)后退栈继续评估后续候选时会命中它、重入整条步行兜底链(实测 10:16 卡死的相关一环);改用灰态判据后,只有技能真的灰着不可用才进步行兜底,成功路径在列表耗尽后干净退栈。",
         "recognition": "And",
         "all_of": [
             {

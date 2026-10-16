@@ -417,7 +417,7 @@
         "focus": "S06.第5层已采完-收尾退卡带"
     },
     "Collect_S06_1F_Skill": {
-        "desc": "第1层采集 | 设技能模块出口 QuickSkill_Egress=ExtraEntry_F1 后调用技能模块，正常出口经补放与完成置位后去第2层。 | 不在箱庭时先 [JumpBack]Global_ToSandBox 复位再认。",
+        "desc": "第1层采集 | 设技能模块出口 QuickSkill_Egress=ExtraEntry_F1 后调用技能模块，正常出口经补放与完成置位后去第2层。 | 本节点先认出箱庭才命中，进场时不在箱庭由调用方处理；命中后到开技能前箱庭判据消失，才由 [JumpBack]Global_ToSandBox 复位再认。",
         "max_hit": 2,
         "recognition": "Or",
         "any_of": [
@@ -484,7 +484,7 @@
         "focus": "S06.第1层→第2层-点楼梯"
     },
     "Collect_S06_2F_Skill": {
-        "desc": "第2层采集 | 设技能模块出口 QuickSkill_Egress=ExtraEntry_F2 后调用技能模块，正常出口经补放与完成置位后快速移动回狩猎场。 | 不在箱庭时先 [JumpBack]Global_ToSandBox 复位再认。",
+        "desc": "第2层采集 | 设技能模块出口 QuickSkill_Egress=ExtraEntry_F2 后调用技能模块，正常出口经补放与完成置位后快速移动回狩猎场。 | 本节点先认出箱庭才命中，进场时不在箱庭由调用方处理；命中后到开技能前箱庭判据消失，才由 [JumpBack]Global_ToSandBox 复位再认。",
         "max_hit": 2,
         "recognition": "Or",
         "any_of": [
@@ -726,7 +726,7 @@
         "focus": "S06.传送第6层-等到达"
     },
     "Collect_S06_6F_Skill": {
-        "desc": "第6层采集 | 设技能模块出口 QuickSkill_Egress=ExtraEntry_F6 后调用技能模块，正常出口经补放与完成置位后下第5层。 | 不在箱庭时先 [JumpBack]Global_ToSandBox 复位再认。",
+        "desc": "第6层采集 | 设技能模块出口 QuickSkill_Egress=ExtraEntry_F6 后调用技能模块，正常出口经补放与完成置位后下第5层。 | 本节点先认出箱庭才命中，进场时不在箱庭由调用方处理；命中后到开技能前箱庭判据消失，才由 [JumpBack]Global_ToSandBox 复位再认。",
         "max_hit": 2,
         "recognition": "Or",
         "any_of": [
@@ -843,7 +843,7 @@
         "focus": "S06.[WRN]红标模板未匹配-按固定坐标点"
     },
     "Collect_S06_5F_Skill": {
-        "desc": "第5层采集 | 设技能模块出口 QuickSkill_Egress=ExtraEntry_F5 后调用技能模块，正常出口经补放与完成置位后整卡收尾。 | 不在箱庭时先 [JumpBack]Global_ToSandBox 复位再认。",
+        "desc": "第5层采集 | 设技能模块出口 QuickSkill_Egress=ExtraEntry_F5 后调用技能模块，正常出口经补放与完成置位后整卡收尾。 | 本节点先认出箱庭才命中，进场时不在箱庭由调用方处理；命中后到开技能前箱庭判据消失，才由 [JumpBack]Global_ToSandBox 复位再认。",
         "max_hit": 2,
         "recognition": "Or",
         "any_of": [

@@ -153,11 +153,19 @@
         "focus": "CFB.传送技能亮-尝试"
     },
     "Collect_ForceTelepor_MapCk": {
-        "desc": "放传送技能后移动魔法阵面板已打开。★2026-10-02 修复(用户报:复位时传送技能没尝试传地图1、直接传了当前地图的传送阵):先翻到最左页(地图1)再点传送阵——传送技能满级时可一步传地图1。没满级时地图1传送阵图标灰/点了不弹「生成」→ next 全失败 → on_error 退回步行兜底(步行会开导航地图认标题翻图去主城)。",
+        "desc": "传送技能打开移动魔法阵面板后，清零本轮补传送及左翻次数，再尝试翻到最左页选择传送阵。传说技能可选择卡带内所有地图，默认显示当前地图，当前图不保证有传送阵；非传说满级技能会自动切到安全图。本节点等不到翻页或传送阵候选时转步行兜底；点阵后等不到「生成」由后续节点按自身失败路径处理。",
         "recognition": "Or",
         "any_of": [
             "Collect_OperationsMain_ToAreaMap"
         ],
+        "action": "Custom",
+        "custom_action": "ClearNodeHitCount",
+        "custom_action_param": {
+            "node_name": [
+                "Collect_ForceTelepor_ToMap1_LiftOnlyOnce",
+                "Collect_ForceTelepor_ToMap1"
+            ]
+        },
         "next": [
             "[JumpBack]Collect_MapLift",
             "Collect_ForceTeleporCircle_Ico"
@@ -223,7 +231,7 @@
         "focus": "CTB.通过传送阵归位结束"
     },
     "Collect_ForceTelepor_CheckMap1": {
-        "desc": "检查传送后是否已在地图1:点手标(站在传送阵上才出现)开区域地图读名条。名条=安全→复位成功;名条≠安全→翻到最左页点传送阵传地图1(传送技能没满级只能传当前地图,满级传地图1,所以传送后再统一检查)",
+        "desc": "传送后点击传送阵手标打开区域地图，核对是否已到地图1。传说技能默认显示当前图，非传说满级技能自动切到安全图，不能仅凭回到箱庭就认定已到地图1。命中安全区名条才关闭面板并进入成功出口；名条未命中且补传送次数未耗尽时尝试补传送，后继候选均无法命中而超时则走默认退栈，不进入成功出口。",
         "recognition": "Or",
         "any_of": [
             "Collect_TeleporCircle_Ico_Enter"
@@ -233,9 +241,6 @@
         "next": [
             "Collect_ForceTelepor_CheckMap1_Name",
             "Collect_ForceTelepor_ToMap1"
-        ],
-        "on_error": [
-            "Collect_ForceTeleporCircle_Succeed"
         ],
         "focus": "CTB.检查是否已在地图1"
     },
@@ -267,13 +272,25 @@
         "max_hit": 2,
         "recognition": "DirectHit",
         "next": [
-            "[JumpBack]Collect_MapLift",
+            "[JumpBack]Collect_ForceTelepor_ToMap1_LiftOnlyOnce",
             "Collect_ForceTeleporCircle_Ico"
         ],
         "on_error": [
-            "Collect_ForceTeleporCircle_Succeed"
+            "[JumpBack]Collect_MapRight",
+            "Global_Null"
         ],
         "focus": "CTB.不在地图1-翻页点传送阵传地图1"
+    },
+    "Collect_ForceTelepor_ToMap1_LiftOnlyOnce": {
+        "max_hit": 1,
+        "recognition": "Or",
+        "any_of": [
+            "Collect_MapLift"
+        ],
+        "timeout": 2000,
+        "next": [
+            "Collect_MapLift"
+        ]
     },
     "Collect_ForceTeleporCircle_No": {
         "recognition": "ColorMatch",

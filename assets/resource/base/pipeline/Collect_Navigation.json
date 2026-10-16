@@ -1535,6 +1535,13 @@
     "Collect_PackFinish": {
         "desc": "整卡已确认完成的公共收尾 | 先确认快速卡带列表，否则调出列表或复位箱庭；只有列表确认后才写完成并禁用当前卡，等待失败交失败收尾。",
         "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ResetTag",
+        "custom_action_param": {
+            "tags": [
+                "LocPage_SmartSwip"
+            ]
+        },
         "post_delay": 0,
         "timeout": 20000,
         "next": [
@@ -1549,6 +1556,13 @@
     "Collect_PackAbort": {
         "desc": "整卡失败或未确认完成的公共收尾 | 尝试恢复快速卡带列表后交失败出口；不写完成记录、不禁用当前卡，复位本身也失败则按默认规则退栈。",
         "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "ResetTag",
+        "custom_action_param": {
+            "tags": [
+                "LocPage_SmartSwip"
+            ]
+        },
         "post_delay": 0,
         "next": [
             "Collect_QuickCart_FastUI",

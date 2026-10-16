@@ -5,7 +5,8 @@ Agent 启动处在客户端的连接计时里（VS Code 插件按设置项 maa.a
 所以拆成两半：
   · ensure_venv()：毫秒级、不联网。比对 requirements 指纹与 maafw 版本，目标版本取客户端
     按 PI V2 注入的 PI_CLIENT_MAAFW_VERSION（客户端已加载原生库的 MaaVersion()）。
-    不一致就在新窗口拉起同步，自己立即退出，同步完再启动。
+    不一致就在新窗口拉起同步，等它完成后接着启动。客户端先等不及结束了 Agent 也无妨：
+    同步在独立进程里不受牵连，窗口关闭后重新启动即可。
   · sync()：本文件作为脚本运行，建 venv、装依赖，全程持锁。首次搭环境也用它：
         py -3.10 agent/utils/venv_ops.py
 发布包没有 requirements.txt，不走这里；用户侧从不当场下载。
@@ -115,6 +116,14 @@ def sync_running(venv_path: Path) -> bool:
         _unlock(handle)
         return False
 
+def wait_sync(venv_path: Path, timeout: int = 900):
+    deadline = time.monotonic() + timeout
+    while sync_running(venv_path):
+        if time.monotonic() > deadline:
+            _abort([f"等了 {timeout // 60} 分钟同步仍未结束，本次不启动；窗口结束后重新启动。"])
+        time.sleep(0.5)
+    importlib.invalidate_caches()  # 随后要读新的 dist-info、导入刚装的包
+
 # ---------------------------------------------------------
 # Agent 侧：启动时检查（runtime_environment.prepare 调用）
 # ---------------------------------------------------------
@@ -191,7 +200,11 @@ def _abort(lines):
     for line in lines:
         mfaalog.error(f"[venv] {line}")
     mfaalog.error("=" * 64)
-    raise SystemExit(1)
+    # 不用 SystemExit：调试器 debugpy 默认把非零 SystemExit 当未捕获异常停下，
+    # 进程不退出，客户端只能干等到连接超时。此时还没导入 maa，没有要收尾的资源。
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(1)
 
 def ensure_venv(project_root: Path):
     venv_path = get_venv_path(project_root)
@@ -218,26 +231,34 @@ def ensure_venv(project_root: Path):
         _abort(lines)
 
     if sync_running(venv_path):
-        _abort([f"开发环境正在同步（见「{SYNC_WINDOW_TITLE}」窗口），结束后再启动。"])
+        mfaalog.info(f"「{SYNC_WINDOW_TITLE}」窗口正在同步，等它完成后继续启动…")
+        wait_sync(venv_path)
 
     target = client_maafw_version()
     pending = pending_changes(project_root, venv_path, target)
+    failed_before = _read(venv_path / FAILED_NAME) == wanted_state(project_root, target)
+    if pending and not failed_before:
+        command = sync_command(project_root, target)
+        if not launch_sync(project_root, target):
+            _abort([f"开发环境需要同步：{'；'.join(pending)}", f"请运行 {command}，完成后重新启动。"])
+        mfaalog.info(f"开发环境需要同步：{'；'.join(pending)}。已在「{SYNC_WINDOW_TITLE}」窗口中进行，"
+                     f"完成后自动继续启动；客户端若先报连接失败（VS Code 插件按 maa.agentTimeout 计时），"
+                     f"等窗口关闭后重新启动即可。")
+        wait_sync(venv_path)
+        pending = pending_changes(project_root, venv_path, target)
+        failed_before = _read(venv_path / FAILED_NAME) == wanted_state(project_root, target)
+        if pending and not failed_before:
+            # 同步进程没留下结果就没了（被结束等），不再自动重拉，免得反复启动反复失败
+            _abort([f"同步没有完成：{'；'.join(pending)}", f"请运行 {command}，完成后重新启动。"])
+        if not pending:
+            mfaalog.info("✅ 开发环境已同步，继续启动")
+            return
+
     if not pending:
         mfaalog.debug("开发环境与客户端一致")
         return
-
-    summary = "；".join(pending)
-    if _read(venv_path / FAILED_NAME) == wanted_state(project_root, target):
-        mfaalog.warning(f"开发环境未同步：{summary}。上次同步失败，本次沿用现有环境；"
-                        f"处理后运行 {sync_command(project_root, target)} 重试。")
-        return
-
-    lines = [f"开发环境需要同步：{summary}"]
-    if launch_sync(project_root, target):
-        lines.append(f"已在「{SYNC_WINDOW_TITLE}」窗口中进行，窗口关闭后重新启动。")
-    else:
-        lines.append(f"请运行 {sync_command(project_root, target)}，完成后重新启动。")
-    _abort(lines)
+    mfaalog.warning(f"开发环境未同步：{'；'.join(pending)}。上次同步失败，本次沿用现有环境；"
+                    f"处理后运行 {sync_command(project_root, target)} 重试。")
 
 # ---------------------------------------------------------
 # 同步侧：作为脚本运行，只用标准库

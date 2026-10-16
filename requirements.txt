@@ -21,6 +21,6 @@ Pillow>=9.0.0
 #
 # 2. maafw 不在本文件钉版本：
 #    发布包由 CI 从上方 Tag 的 MFAAvalonia 探测内核版本后安装；
-#    开发侧 .venv 由 agent 启动时跟随客户端注入的 PI_CLIENT_MAAFW_VERSION 自动对齐
-#    (见 agent/utils/venv_ops.py)
+#    开发侧 .venv 跟随客户端注入的 PI_CLIENT_MAAFW_VERSION：agent 启动时核对，
+#    不一致就拉起独立的同步窗口 (见 agent/utils/venv_ops.py)
 # -------------------------------------------------------

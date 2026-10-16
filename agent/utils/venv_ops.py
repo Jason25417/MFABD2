@@ -1,24 +1,27 @@
 import os
+import re
 import sys
 import subprocess
 import site
 import shutil
 import hashlib
+import importlib.metadata
 from pathlib import Path
 from . import mfaalog  # 日志工具
 
 # =========================================================
 # [配置区] 环境与依赖设定
 # =========================================================
-# MAAFW的py库版本需要手动指定,与C++库版号一致。
-# 这是全仓唯一还靠手写的框架版号：CI 侧一律从 MFAAvalonia 二进制探测（见
-# scripts/detect_maa_version.py），dev 环境没有那份二进制可探，只能手工对齐到
-# requirements.txt 里 MFAA_TAG 那个版本自带的内核版本。
-DEV_MAAFW_VERSION = "5.12.2"
-# 精确安装失败时的回退范围。更新上方版本时，请务必同步更新此处！
+# maafw 的 py 库版本不再手写，跟随拉起本进程的客户端（C 侧）。
+# PI V2 协议要求客户端启动 agent 时注入 PI_CLIENT_MAAFW_VERSION，值是客户端实际加载的
+# MaaFramework 原生库的 MaaVersion()；VS Code 插件（maa-support）与 MFAAvalonia 都会注入。
+# 发布包不走这里：CI 从 MFAAvalonia 二进制探测版本（scripts/detect_maa_version.py）。
+CLIENT_MAAFW_ENV = "PI_CLIENT_MAAFW_VERSION"
+# 客户端没报版本、环境里也还没装 maafw 时，按此范围安装。
 FALLBACK_MAAFW_SPEC = ">=5.11,<6.1"
 VENV_NAME = ".venv"
 PREFERRED_PYTHON_VERSION = "3.10"
+PIP_INDEX = "https://pypi.tuna.tsinghua.edu.cn/simple"
 # =========================================================
 
 def get_venv_path(project_root: Path) -> Path:
@@ -26,6 +29,12 @@ def get_venv_path(project_root: Path) -> Path:
 
 def is_running_in_venv() -> bool:
     return sys.prefix != sys.base_prefix
+
+def is_running_in(venv_path: Path) -> bool:
+    try:
+        return os.path.samefile(sys.prefix, venv_path)
+    except OSError:
+        return False
 
 def get_venv_executable(venv_path: Path) -> Path:
     if sys.platform == "win32":
@@ -92,76 +101,93 @@ def create_venv(venv_path: Path):
         mfaalog.error(f"❌ 创建失败: {e}")
         raise
 
-def get_deps_hash(project_root: Path) -> str:
-    """[新增] 计算依赖项的 MD5 指纹"""
-    req_file = project_root / "requirements.txt"
-    # 将框架版本和 requirements 的内容拼接在一起计算
-    content = f"MAAFW:{DEV_MAAFW_VERSION}\n"
-    if req_file.exists():
-        content += req_file.read_text(encoding='utf-8')
-    return hashlib.md5(content.encode('utf-8')).hexdigest()
+def client_maafw_version():
+    """客户端报来的框架版本，转成 PyPI 写法（v5.12.2 → 5.12.2）。
 
-def install_deps(venv_python: Path, project_root: Path, venv_path: Path):
-    """安装依赖 (带指纹缓存与核心库完整性双重校验)"""
-    marker_file = venv_path / ".deps_marker"
-    current_hash = get_deps_hash(project_root)
+    没报、或报的值在 PyPI 上不会有对应正式版（预发布等）时返回 None，调用方保持现状。
+    """
+    raw = os.environ.get(CLIENT_MAAFW_ENV, "").strip()
+    if not raw:
+        return None
+    version = raw[1:] if raw[0] in "vV" else raw
+    if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+        mfaalog.warning(f"客户端报告的框架版本 {raw!r} 对不上 PyPI 的 maafw 正式版，保持现有版本。")
+        return None
+    return version
 
-    # --- 1. 检查缓存，如果一致就跳出 (极速启动的核心) ---
-    if marker_file.exists():
-        if marker_file.read_text(encoding='utf-8').strip() == current_hash:
-            try:
-                # 仅做毫秒级探测，绝不执行 pip install
-                subprocess.check_call( # nosec
-                    [str(venv_python), "-c", "import maa"], 
-                    stdout=subprocess.DEVNULL, 
-                    stderr=subprocess.DEVNULL
-                )
-                mfaalog.info("⚡ 依赖库指纹一致且核心库完整，跳过 pip 安装步骤。")
-                return  # 👈 必须有这个 return，程序才会在这里完美刹车！
-            except subprocess.CalledProcessError:
-                mfaalog.warning("⚠️ 发现缓存指纹匹配，但核心库 (maa) 丢失！准备重新安装...")
-
-    # --- 2. 如果没有缓存，或者核心库损坏，开始拉取依赖 ---
-    mfaalog.info("📦 依赖配置有更新或未安装，开始拉取依赖...")
-    
-    req_file = project_root / "requirements.txt"
-    if req_file.exists():
-        subprocess.check_call([ # nosec
-            str(venv_python), "-m", "pip", "install", 
-            "-i", "https://pypi.tuna.tsinghua.edu.cn/simple", 
-            "-r", str(req_file)
-        ])
-    
-    # --- 3. 安装框架，完美引用顶部的变量 ---
+def installed_maafw_version():
+    """当前解释器里装的 maafw 版本；只读 dist-info，不加载原生库（加载会锁住 DLL，pip 就换不掉了）。"""
     try:
-        subprocess.check_call([ # nosec
-            str(venv_python), "-m", "pip", "install",
-            "-i", "https://pypi.tuna.tsinghua.edu.cn/simple",
-            f"maafw=={DEV_MAAFW_VERSION}"
-        ])
-    except subprocess.CalledProcessError as e:
-        mfaalog.warning(f"指定版本 {DEV_MAAFW_VERSION} 安装失败: {e}，将使用备用范围 ({FALLBACK_MAAFW_SPEC}) 尝试重新安装...")
-        subprocess.check_call([ # nosec
-            str(venv_python), "-m", "pip", "install",
-            "-i", "https://pypi.tuna.tsinghua.edu.cn/simple",
-            f"maafw{FALLBACK_MAAFW_SPEC}"
-        ])
-    
-    # --- 4. 全部安装成功后，写入新缓存 ---
-    marker_file.write_text(current_hash, encoding='utf-8')
-    mfaalog.info("✅ 依赖安装完成并已更新指纹缓存。")
+        return importlib.metadata.version("maafw")
+    except importlib.metadata.PackageNotFoundError:
+        return None
 
-def ensure_venv(project_root: Path):
-    if is_running_in_venv():
-        mfaalog.debug("当前已在虚拟环境中运行")
+def pip_install(*args: str) -> bool:
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-i", PIP_INDEX, *args]) # nosec
+        importlib.invalidate_caches()  # 本进程随后就要 import 刚装的包
+        return True
+    except subprocess.CalledProcessError as e:
+        mfaalog.warning(f"pip install {' '.join(args)} 失败（退出码 {e.returncode}）")
+    except OSError as e:
+        mfaalog.warning(f"pip install {' '.join(args)} 无法启动: {e}")
+    return False
+
+def sync_requirements(project_root: Path, venv_path: Path):
+    """requirements.txt 变了才重装，指纹记在 venv 的 .deps_marker 里。"""
+    req_file = project_root / "requirements.txt"
+    marker_file = venv_path / ".deps_marker"
+    current_hash = hashlib.sha256(req_file.read_bytes()).hexdigest()
+    try:
+        recorded = marker_file.read_text(encoding='utf-8').strip()
+    except OSError:
+        recorded = ""
+    if recorded == current_hash:
+        mfaalog.debug("requirements.txt 指纹一致，跳过安装。")
         return
 
-    venv_path = get_venv_path(project_root)
-    venv_python = get_venv_executable(venv_path)
+    mfaalog.info("📦 requirements.txt 有更新或未安装，开始拉取依赖...")
+    if pip_install("-r", str(req_file)):
+        marker_file.write_text(current_hash, encoding='utf-8')
 
+def sync_maafw():
+    """maafw 跟随客户端版本。装不上就沿用现有版本，不记任何缓存，下次启动重试。"""
+    target = client_maafw_version()
+    current = installed_maafw_version()
+    if target is None:
+        if current is None:
+            mfaalog.info(f"没有可跟随的客户端版本，按兼容范围安装 maafw{FALLBACK_MAAFW_SPEC} ...")
+            pip_install(f"maafw{FALLBACK_MAAFW_SPEC}")
+        else:
+            mfaalog.debug(f"没有可跟随的客户端版本，保持 maafw {current}")
+        return
+    if current == target:
+        mfaalog.debug(f"maafw {current} 与客户端一致")
+        return
+
+    mfaalog.info(f"🔄 maafw {current or '未安装'} → {target}（跟随客户端）")
+    if pip_install(f"maafw=={target}"):
+        mfaalog.info(f"✅ maafw 已对齐到 {target}")
+    elif current is None:
+        pip_install(f"maafw{FALLBACK_MAAFW_SPEC}")
+    else:
+        mfaalog.warning(f"maafw 未能切换到 {target}，本次沿用 {current}，下次启动重试。")
+
+def ensure_venv(project_root: Path):
+    venv_path = get_venv_path(project_root)
+    if is_running_in_venv():
+        if not is_running_in(venv_path):
+            mfaalog.info(f"当前在外部虚拟环境中运行（{sys.prefix}），依赖由使用者自行管理。")
+            return
+        # 解释器已经对了，只是不用再建环境、切进程；依赖照查。
+        # interface.json 的 child_exec 直接指向 .venv，常态启动走的就是这里。
+        sync_requirements(project_root, venv_path)
+        sync_maafw()
+        return
+
+    venv_python = get_venv_executable(venv_path)
     create_venv(venv_path)
-    # [修改] 传入 venv_path 以便读写 marker 文件
-    install_deps(venv_python, project_root, venv_path)
+    # 依赖由切换到 venv 后的进程自己装，走上面那条路径。
 
     if sys.platform == "win32":
         # Windows 没有 exec 语义。原先用 subprocess.run + sys.exit(0) 重启，会留下
@@ -169,12 +195,12 @@ def ensure_venv(project_root: Path):
         #   · 两者在任务管理器里同名，kill 哪个都不确定；
         #   · 杀 A 则 B 变孤儿，继续持有 AgentServer 的 socket 不放手。
         # 故此处不再自动重启，改为硬失败并给出可直接粘贴的配置。
-        # 环境本身已在上面备妥，开发者改一次启动配置即可，不需要每次重配。
+        # 环境已在上面建好（依赖在首次用它启动时补装），开发者改一次启动配置即可。
         # 对照上游 M9A agent/bootstrap.py:56-57，其 relaunch 同样只在 Linux 生效。
         main_py = (project_root / "agent" / "main.py").as_posix()
         mfaalog.error("=" * 64)
         mfaalog.error("[venv] Agent 需要用虚拟环境的解释器启动，当前用的是宿主解释器。")
-        mfaalog.error(f"[venv] 虚拟环境已就绪: {venv_python}")
+        mfaalog.error(f"[venv] 虚拟环境已创建: {venv_python}")
         mfaalog.error("[venv] 请把 interface.json 的 agent 段改为:")
         mfaalog.error(f'[venv]     "child_exec": "{venv_python.as_posix()}",')
         mfaalog.error(f'[venv]     "child_args": ["-u", "-X", "utf8=1", "{main_py}"]')

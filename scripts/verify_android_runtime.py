@@ -164,9 +164,15 @@ class AndroidRuntimeTests(unittest.TestCase):
         venv.assert_called_once_with(self.root)
         disabled = runtime.RuntimeConfig.detect(self.root, enable_venv_auto_check=False)
         self.assertFalse(disabled.manage_venv)
-        with patch.object(runtime.platform, "system", return_value="Windows"), patch.object(sys, "executable", str(self.root / "python" / "python.exe")):
+        base = str(self.root / "python")
+        with patch.object(runtime.platform, "system", return_value="Windows"), patch.object(sys, "executable", str(self.root / "python" / "python.exe")), patch.object(sys, "prefix", base), patch.object(sys, "base_prefix", base):
             embedded = runtime.RuntimeConfig.detect(self.root)
         self.assertFalse(embedded.manage_venv)
+        # The project's own .venv also sits under the root, but must stay managed.
+        venv = str(self.root / ".venv")
+        with patch.object(runtime.platform, "system", return_value="Windows"), patch.object(sys, "executable", str(self.root / ".venv" / "Scripts" / "python.exe")), patch.object(sys, "prefix", venv), patch.object(sys, "base_prefix", base):
+            project_venv = runtime.RuntimeConfig.detect(self.root)
+        self.assertTrue(project_venv.manage_venv)
 
     def test_desktop_save_locations(self):
         os.environ["APPDATA"] = str(self.root / "roaming")

@@ -41,6 +41,7 @@ runtime.prepare()
 
 from maa.agent.agent_server import AgentServer
 from maa.toolkit import Toolkit
+runtime.check_core_version()
 
 # 如果你有自定义动作/识别，在这里导入
 from utils.persistent_store import PersistentStore

@@ -415,15 +415,14 @@
             47
         ],
         "expected": [
-            "被遗忘的神殿",
             "商场1楼",
             "妖怪镇"
         ],
         "timeout": 3000,
         "next": [
             "[JumpBack]Collect_TargetMap_Special_ClickTpCircleIco",
-            "Collect_QuickCart_TargetMapEnd",
             "Collect_TargetMap4_Special",
+            "Collect_QuickCart_TargetMapEnd",
             "Collect_QuickCart_FastUI",
             "Collect_Architecture_Underlying_Logic_Protection",
             "[JumpBack]Collect_ClickTelepor_ButNotActive",
@@ -1345,12 +1344,11 @@
             "拉勒凯旅馆",
             "罗戴夫旅馆",
             "封印指定室",
-            "夜世界入口",
+            "被遗忘的神殿",
             "学校操场",
             "禁闭室",
             "旅馆$",
-            "安全",
-            "^战斗Ⅲ被遗忘的神殿"
+            "安全"
         ],
         "focus": "CM.N.卡带内流程进入END环节"
     },

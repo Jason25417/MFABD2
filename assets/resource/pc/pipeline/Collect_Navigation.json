@@ -213,6 +213,48 @@
             "妖怪小鎮"
         ]
     },
+    "Collect_TargetMap_Special_S18": {
+        "all_of": [
+            {
+                "sub_name": "OCR",
+                "recognition": "OCR",
+                "roi": [
+                    452,
+                    638,
+                    378,
+                    40
+                ],
+                "expected": [
+                    "第四[记記][忆憶]空[间間]"
+                ]
+            },
+            {
+                "sub_name": "Custom",
+                "recognition": "Custom",
+                "custom_recognition": "CheckTag",
+                "custom_recognition_param": {
+                    "max": 1,
+                    "tag": "S18_Temple"
+                }
+            }
+        ]
+    },
+    "Collect_S18_Locate": {
+        "target": [
+            128,
+            104,
+            19,
+            23
+        ]
+    },
+    "Collect_S18_InTemple": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ]
+    },
     "Collect_TargetMap1_Special_PerRight": {
         "roi": [
             452,
@@ -293,9 +335,12 @@
         ],
         "expected": [
             "达雷普旅馆",
+            "達雷普旅館",
             "雷瓦汀基地救护站",
+            "雷瓦汀基地救護站",
             "拉勒凯旅馆",
             "罗戴夫旅馆",
+            "羅戴夫旅館",
             "施塔因之塔宿舍",
             "旅馆",
             "旅館",
@@ -392,9 +437,11 @@
         ],
         "expected": [
             "达雷普镇",
+            "達雷普鎮",
             "雷瓦汀基地",
             "拉勒凯镇",
             "罗戴夫镇",
+            "羅戴夫鎮",
             "安全"
         ],
         "target": [
@@ -510,6 +557,7 @@
             "学校操场",
             "學校操場",
             "禁闭室",
+            "禁閉室",
             "旅馆$",
             "旅館$",
             "安全"

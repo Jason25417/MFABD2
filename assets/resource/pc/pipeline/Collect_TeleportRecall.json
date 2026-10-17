@@ -33,6 +33,25 @@
             "創建"
         ]
     },
+    "Collect_ForceTelepor_CheckMap1_Name": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "达普雷镇",
+            "達雷普鎮",
+            "雷瓦汀基地",
+            "拉勒凯镇",
+            "罗戴夫镇",
+            "羅戴夫鎮",
+            "科库托斯圣域",
+            "科庫托斯聖域",
+            "安全"
+        ]
+    },
     "Collect_ForceTeleporCircle_No": {
         "roi": [
             1117,
@@ -82,6 +101,25 @@
             "在場域中查看",
             "任務",
             "世界地圖"
+        ]
+    },
+    "Collect_TeleporCircle_OnlyFoot_Entry": {
+        "any_of": [
+            {
+                "sub_name": "OCR",
+                "recognition": "OCR",
+                "roi": [
+                    305,
+                    146,
+                    85,
+                    74
+                ],
+                "expected": [
+                    "自动狩猎",
+                    "离开",
+                    "離開"
+                ]
+            }
         ]
     },
     "Collect_TeleporCircle_OnFoot_ToNavMap": {
@@ -227,6 +265,12 @@
         "expected": [
             "战斗区",
             "戰鬥區域"
+        ],
+        "target": [
+            336,
+            457,
+            5,
+            5
         ]
     },
     "Collect_IM_OnFoot_NviMap_E03_B2_Move": {
@@ -354,7 +398,8 @@
             "羅戴夫旅館",
             "旅馆",
             "旅館",
-            "救护站"
+            "救护站",
+            "救護站"
         ]
     },
     "Collect_TeleporCircle_OnFoot_NviMap_IsSafeArea": {
@@ -366,6 +411,7 @@
         ],
         "expected": [
             "达普雷镇",
+            "達雷普鎮",
             "雷瓦汀基地",
             "拉勒凯镇",
             "罗戴夫镇",
@@ -384,6 +430,7 @@
         ],
         "expected": [
             "达普雷镇",
+            "達雷普鎮",
             "雷瓦汀基地",
             "拉勒凯镇",
             "罗戴夫镇",
@@ -638,6 +685,144 @@
             103,
             10,
             10
+        ]
+    },
+    "Collect_WayPoint_Arrived_SkillReset": {
+        "all_of": [
+            {
+                "sub_name": "TemplateMatch",
+                "recognition": "TemplateMatch",
+                "roi": [
+                    1091,
+                    457,
+                    64,
+                    65
+                ],
+                "template": [
+                    "Skill3-4GE.png"
+                ],
+                "green_mask": true
+            },
+            {
+                "sub_name": "ColorMatch",
+                "recognition": "ColorMatch",
+                "roi": [
+                    1117,
+                    476,
+                    11,
+                    3
+                ],
+                "method": 40,
+                "lower": [
+                    [
+                        0,
+                        0,
+                        200
+                    ]
+                ],
+                "upper": [
+                    [
+                        180,
+                        20,
+                        255
+                    ]
+                ],
+                "count": 10
+            }
+        ],
+        "target": [
+            1121,
+            490,
+            2,
+            2
+        ]
+    },
+    "Rec_QuickMove_Menu": {
+        "roi": [
+            210,
+            49,
+            171,
+            300
+        ]
+    },
+    "Collect_QuickMove_ToEileen": {
+        "roi": [
+            210,
+            49,
+            171,
+            300
+        ]
+    },
+    "Collect_QuickMove_ToTavern": {
+        "roi": [
+            210,
+            49,
+            171,
+            300
+        ]
+    },
+    "Collect_QuickMove_AtTavern": {
+        "all_of": [
+            "Rec_QuickMove_Ready",
+            {
+                "sub_name": "Or",
+                "recognition": "Or",
+                "any_of": [
+                    {
+                        "sub_name": "OCR",
+                        "recognition": "OCR",
+                        "expected": [
+                            "酒[馆館]"
+                        ]
+                    },
+                    {
+                        "sub_name": "OCR",
+                        "recognition": "OCR",
+                        "roi": [
+                            497,
+                            153,
+                            420,
+                            237
+                        ],
+                        "expected": [
+                            "[疗療][师師]",
+                            "主人"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Collect_QuickMove_ToInn": {
+        "roi": [
+            210,
+            49,
+            171,
+            300
+        ]
+    },
+    "Collect_QuickMove_ToBoard": {
+        "roi": [
+            210,
+            49,
+            171,
+            300
+        ]
+    },
+    "Collect_QuickMove_ToHunt": {
+        "roi": [
+            210,
+            49,
+            171,
+            300
+        ]
+    },
+    "Rec_Ico_ReClock": {
+        "roi": [
+            906,
+            557,
+            78,
+            78
         ]
     },
     "Collect_TeleporCircle_OnFoot_TPIcoCk": {},

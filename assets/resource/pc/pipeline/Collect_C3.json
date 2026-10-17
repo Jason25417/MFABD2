@@ -1,0 +1,118 @@
+{
+    "Collect_C3_Locate": {
+        "target": [
+            128,
+            104,
+            17,
+            22
+        ]
+    },
+    "Collect_C3_Jail": {
+        "all_of": [
+            {
+                "sub_name": "OCR",
+                "recognition": "OCR",
+                "roi": [
+                    452,
+                    638,
+                    378,
+                    40
+                ],
+                "expected": [
+                    "禁闭室",
+                    "禁閉室"
+                ]
+            },
+            {
+                "sub_name": "Custom",
+                "recognition": "Custom",
+                "custom_recognition": "CheckTag",
+                "custom_recognition_param": {
+                    "max": 1,
+                    "tag": "C3_Jail"
+                }
+            }
+        ]
+    },
+    "Collect_C3_Jail_Open": {
+        "target": [
+            128,
+            104,
+            17,
+            22
+        ]
+    },
+    "Collect_C3_Jail_Walk": {
+        "desc": "点导航地图上的禁闭室开始自动寻路 | 字认不清,相比base换了识别逻辑。地图还开着、标签还在就重点（计入三次）。 | 被巡逻怪送回固定位置后，导航地图上同一处仍能点到禁闭室；max_hit 3 即最多走三次，由 Entry 清零。",
+        "recognition": "And",
+        "all_of": [
+            {
+                "sub_name": "ColorMatch",
+                "recognition": "ColorMatch",
+                "roi": [
+                    401,
+                    216,
+                    40,
+                    30
+                ],
+                "method": 40,
+                "lower": [
+                    [
+                        169,
+                        130,
+                        123
+                    ],
+                    [
+                        0,
+                        130,
+                        123
+                    ]
+                ],
+                "upper": [
+                    [
+                        179,
+                        189,
+                        255
+                    ],
+                    [
+                        10,
+                        189,
+                        255
+                    ]
+                ]
+            },
+            {
+                "sub_name": "OCR",
+                "recognition": "OCR",
+                "roi": [
+                    149,
+                    10,
+                    372,
+                    53
+                ],
+                "expected": [
+                    "地下秘密拍卖场",
+                    "地下祕密拍賣場"
+                ]
+            }
+        ],
+        "target_offset": [
+            0,
+            0,
+            0,
+            0
+        ]
+    },
+    "Rec_Collect_C3_Jail_Ocr": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ],
+        "expected": [
+            "禁闭室",
+            "禁閉室"
+        ]
+    }
+}

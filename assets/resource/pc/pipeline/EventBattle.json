@@ -362,9 +362,6 @@
             168,
             175,
             37
-        ],
-        "expected": [
-            "\\d[\\d,]*$"
         ]
     },
     "Even_MamonoFollowUp_lvdown": {

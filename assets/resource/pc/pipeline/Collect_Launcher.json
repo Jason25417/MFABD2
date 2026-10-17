@@ -509,6 +509,256 @@
             1
         ]
     },
+    "Collect_Pack_Story_1": {
+        "template": [
+            "Cartridges/Q_sp1_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_2": {
+        "template": [
+            "Cartridges/Q_sp2_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_3": {
+        "template": [
+            "Cartridges/Q_sp3_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_4": {
+        "template": [
+            "Cartridges/Q_sp4_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_5": {
+        "template": [
+            "Cartridges/Q_sp5_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_6": {
+        "template": [
+            "Cartridges/Q_sp6_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_7": {
+        "template": [
+            "Cartridges/Q_sp7_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_8": {
+        "template": [
+            "Cartridges/Q_sp8_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_9": {
+        "template": [
+            "Cartridges/Q_sp9_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_10": {
+        "template": [
+            "Cartridges/Q_sp10_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_11": {
+        "template": [
+            "Cartridges/Q_sp11_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_12": {
+        "template": [
+            "Cartridges/Q_sp12_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_13": {
+        "template": [
+            "Cartridges/Q_sp13_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_14": {
+        "template": [
+            "Cartridges/Q_sp14_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_15": {
+        "template": [
+            "Cartridges/Q_sp15_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_16": {
+        "template": [
+            "Cartridges/Q_sp16_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_17": {
+        "template": [
+            "Cartridges/Q_sp17_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_18": {
+        "template": [
+            "Cartridges/Q_sp18_PC.png"
+        ]
+    },
+    "Collect_Pack_Story_19": {
+        "template": [
+            "Cartridges/Q_sp19_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_20": {
+        "template": [
+            "Cartridges/Q_sp20_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Character_1": {
+        "template": [
+            "Cartridges/Q_cp1_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Character_2": {
+        "template": [
+            "Cartridges/Q_cp2_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Character_3": {
+        "template": [
+            "Cartridges/Q_cp3_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Character_4": {
+        "template": [
+            "Cartridges/Q_cp4_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Character_5": {
+        "template": [
+            "Cartridges/Q_cp5_PC.png"
+        ]
+    },
+    "Collect_Pack_Character_6": {
+        "template": [
+            "Cartridges/Q_cp6_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Character_7": {
+        "template": [
+            "Cartridges/Q_cp7_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Event_1": {
+        "template": [
+            "Cartridges/Q_vp1_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Event_2": {
+        "template": [
+            "Cartridges/Q_vp2_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Event_3": {
+        "template": [
+            "Cartridges/Q_vp3_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Event_4": {
+        "template": [
+            "Cartridges/Q_vp4_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Event_5": {
+        "template": [
+            "Cartridges/Q_vp5_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
     "Collect_FirstPack": {
         "desc": "事件图可能会有新卡带||全是猜的",
         "roi": [

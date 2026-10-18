@@ -103,7 +103,8 @@
         "custom_action_param": {
             "node_name": [
                 "SeasonEvent_MamonoFollow_UnChallenged",
-                "SeasonEvent_MamonoFollow_ChallengePassed"
+                "SeasonEvent_MamonoFollow_ChallengePassed",
+                "Even_MamonoFollowUp_lvdown"
             ]
         },
         "anchor": {

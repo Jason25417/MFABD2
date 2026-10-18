@@ -43,7 +43,10 @@ class RuntimeConfig:
             arch = "arm64" if platform.machine().lower() in {"arm64", "aarch64"} else "x64"
             library_dir = root / "runtimes" / f"{os_name}-{arch}" / "native"
 
-        embedded = system == "windows" and root in Path(sys.executable).resolve().parents
+        # A bundled Python inside the project must not be managed. The project's own
+        # .venv also lives there, but a venv has sys.prefix != sys.base_prefix.
+        embedded = (system == "windows" and sys.prefix == sys.base_prefix
+                    and root in Path(sys.executable).resolve().parents)
         return cls(
             project_root=root,
             mode=mode,
@@ -74,6 +77,29 @@ class RuntimeConfig:
             mfaalog.info(f"运行模式: {self.mode} | 内核库: {self.library_dir}")
         else:
             mfaalog.info("开发模式: 使用 Python 环境自带内核库")
+
+    def check_core_version(self) -> None:
+        """Dev only: the pip-managed binding can drift from the client's native core.
+
+        Call after importing maa.agent; an earlier Library.version() pins the
+        binding to non-agent mode.
+        """
+        if self.mode != "dev":
+            return
+        from maa.library import Library
+        from . import mfaalog
+        from .venv_ops import CLIENT_MAAFW_ENV
+
+        client = os.environ.get(CLIENT_MAAFW_ENV, "").strip()
+        try:
+            agent = Library.version()
+        except Exception as error:
+            mfaalog.debug(f"读取 Agent 内核版本失败: {error}")
+            return
+        if client and client.lstrip("vV") != agent.lstrip("vV"):
+            mfaalog.warning(f"内核版本不一致：客户端 {client}，Agent {agent}。调用行为可能悄悄变了，检查 .venv 里的 maafw。")
+        else:
+            mfaalog.debug(f"内核版本: Agent {agent}，客户端 {client or '未报告'}")
 
 
 def _is_android(system: str) -> bool:

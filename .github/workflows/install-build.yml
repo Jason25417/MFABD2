@@ -7,6 +7,10 @@ on:
         description: "Resolved by install.yml: ci, beta, alpha, or release"
         type: string
         required: true
+      mfaa_commit:
+        description: "Optional six-character commit from sunyink/MFAAvalonia:mfabd2"
+        type: string
+        default: ""
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -65,16 +69,31 @@ jobs:
         id: parse_config
         run: python3 scripts/detect_maa_version.py parse
 
-      # [修改] 下载资源 (改用 steps.parse_config.outputs.mfaa_tag)
+      - name: Resolve optional MFAA fork build
+        id: mfaa_source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_TAG: ${{ steps.parse_config.outputs.mfaa_tag }}
+          FORK_COMMIT: ${{ inputs.mfaa_commit }}
+        run: python3 scripts/mfaa_source.py resolve --tag "$UPSTREAM_TAG" --commit "$FORK_COMMIT"
+
+      # 探测与最终打包必须使用同一来源；留空覆盖输入时沿用 requirements.txt。
       - name: Download MFAA for Detection
         uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1
         with:
-          repository: MaaXYZ/MFAAvalonia
+          repository: ${{ steps.mfaa_source.outputs.repository }}
           latest: false
-          tag: ${{ steps.parse_config.outputs.mfaa_tag }}
+          tag: ${{ steps.mfaa_source.outputs.tag }}
           fileName: "MFAAvalonia-*-linux-x64*"
           out-file-path: "temp_detect"
           extract: true
+
+      - name: Verify selected fork build for detection
+        if: steps.mfaa_source.outputs.commit != ''
+        env:
+          MFAA_TAG: ${{ steps.mfaa_source.outputs.tag }}
+          MFAA_COMMIT: ${{ steps.mfaa_source.outputs.commit }}
+        run: python3 scripts/mfaa_source.py verify --root temp_detect --tag "$MFAA_TAG" --commit "$MFAA_COMMIT" --rid linux-x64
 
       # [急救] 下载覆盖内核（仅作拷贝源，随后原地覆盖 MFAA 自带内核）
       - name: Download Override Core for Detection
@@ -101,7 +120,9 @@ jobs:
       is_dev_version: ${{ steps.set_tag.outputs.is_dev_version }}
       version_type: ${{ steps.set_tag.outputs.version_type }}
       maa_version: ${{ steps.detect_maa.outputs.version }}
-      mfaa_tag: ${{ steps.parse_config.outputs.mfaa_tag }}
+      mfaa_tag: ${{ steps.mfaa_source.outputs.tag }}
+      mfaa_repository: ${{ steps.mfaa_source.outputs.repository }}
+      mfaa_commit: ${{ steps.mfaa_source.outputs.commit }}
       mfa_core_tag: ${{ steps.parse_config.outputs.mfa_core_tag }}
 
   android_check:
@@ -130,9 +151,9 @@ jobs:
         env:
           TARGET_VERSION: ${{ needs.meta.outputs.maa_version }}
         run: |
-            python -m pip install --upgrade pip
-            echo "📦 Installing maafw==$TARGET_VERSION (Linux)..."
-            python -m pip install maafw=="$TARGET_VERSION" json-with-comments
+          python -m pip install --upgrade pip
+          echo "📦 Installing maafw==$TARGET_VERSION (Linux)..."
+          python -m pip install maafw=="$TARGET_VERSION" json-with-comments
 
       - name: Restore Assets (Clone from Resource Repo)
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
@@ -141,7 +162,7 @@ jobs:
           ref: master
           path: temp_assets
           fetch-depth: 1
-      
+
       - name: Merge Assets
         shell: bash
         run: |
@@ -151,9 +172,9 @@ jobs:
 
       - name: Check Resource
         run: |
-            # 赋予执行权限，防止 Linux 下报错
-            chmod +x ./check_resource.py
-            python ./check_resource.py ./assets/
+          # 赋予执行权限，防止 Linux 下报错
+          chmod +x ./check_resource.py
+          python ./check_resource.py ./assets/
 
       # install / android 两条构建链都 needs 本 job，所以图标脚本只在这里验一次。
       - name: Check application icon preparation
@@ -168,6 +189,8 @@ jobs:
     env:
       MAA_VERSION: ${{ needs.meta.outputs.maa_version }}
       MFAA_TAG: ${{ needs.meta.outputs.mfaa_tag }}
+      MFAA_REPOSITORY: ${{ needs.meta.outputs.mfaa_repository }}
+      MFAA_COMMIT: ${{ needs.meta.outputs.mfaa_commit }}
       MFA_CORE_TAG: ${{ needs.meta.outputs.mfa_core_tag }}
 
       # 解决 Windows 乱码问题
@@ -190,9 +213,9 @@ jobs:
             mfa_arch: "x64"
             # Windows 专用配置
             embed_version: "3.10.11" # Python 嵌入包版本
-            py_ver_short: "3.10"     # 用于 pip 参数
-            py_arch: "amd64"         # Python 官网文件名后缀
-            pip_plat: "win_amd64"    # pip 平台标签
+            py_ver_short: "3.10" # 用于 pip 参数
+            py_arch: "amd64" # Python 官网文件名后缀
+            pip_plat: "win_amd64" # pip 平台标签
             numpy_req: "numpy<2"
 
           # -------------------------------------------------------------------
@@ -265,7 +288,7 @@ jobs:
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: "3.10"
-          cache: ""  # 禁用缓存，避免 macOS 上反序列化失败警告
+          cache: "" # 禁用缓存，避免 macOS 上反序列化失败警告
 
       # 显式指定 bash，确保在 Windows 上也能用 cp/rm/mkdir 等命令
       - name: Install Build Dependencies
@@ -288,13 +311,18 @@ jobs:
       - name: Download MFAAvalonia
         uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1
         with:
-          repository: MaaXYZ/MFAAvalonia
+          repository: ${{ env.MFAA_REPOSITORY }}
           latest: false
           tag: ${{ env.MFAA_TAG }}
           # 直接使用 Matrix 里的变量，无需复杂判断
           fileName: "MFAAvalonia-*-${{ matrix.mfa_os }}-${{ matrix.mfa_arch }}*"
           out-file-path: "MFA"
           extract: true
+
+      - name: Verify selected MFAA fork package
+        if: env.MFAA_COMMIT != ''
+        shell: bash
+        run: python scripts/mfaa_source.py verify --root MFA --tag "$MFAA_TAG" --commit "$MFAA_COMMIT" --rid "${{ matrix.mfa_os }}-${{ matrix.mfa_arch }}"
 
       - name: Restore Assets (Clone from Resource Repo)
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
@@ -322,14 +350,14 @@ jobs:
         shell: bash
         run: |
           echo "⬇️ Downloading Python Embed ${{ matrix.embed_version }} for ${{ matrix.py_arch }}..."
-          
+
           # 1. 下载：利用 Matrix 变量 (支持 3.10 和 3.11)
           curl -L -o python_embed.zip "https://www.python.org/ftp/python/${{ matrix.embed_version }}/python-${{ matrix.embed_version }}-embed-${{ matrix.py_arch }}.zip"
 
           # 2. 解压 (Windows Runner 自带 7z)
           mkdir -p install/python
           7z x python_embed.zip -oinstall/python
-          
+
           # 开启 site 支持
           python3 -c "import pathlib; p = next(pathlib.Path('install/python').glob('*._pth')); p.write_text(p.read_text().replace('#import site', 'import site'))"
 
@@ -345,10 +373,10 @@ jobs:
           "
 
           echo "📦 Installing Dependencies for ${{ matrix.pip_plat }} (Python ${{ matrix.py_ver_short }})..."
-          
+
           # 4. 重点：安装依赖
           # 使用 --only-binary=:all: 强制下载 Wheel 包 (这对 Pillow/Numpy 在 Windows 上至关重要)
-          
+
           # 使用 Python 精准剔除 numpy，防止误伤注释或其他包
           python3 -c "
           import re
@@ -384,7 +412,7 @@ jobs:
           # 失败重试和SHA校验
           curl -fL --retry 3 --retry-delay 2 -o python_mac.tar.gz "${{ matrix.standalone_url }}"
           echo "${{ matrix.standalone_sha256 }}  python_mac.tar.gz" | shasum -a 256 -c -
-          
+
           # 解压 (standalone 包结构通常是 python/install/...)
           mkdir -p temp_python
           tar -xzf python_mac.tar.gz -C temp_python
@@ -392,7 +420,7 @@ jobs:
           # 💡 调试输出一下目录结构，防止以后包结构又变
           echo "📂 预计解压后的目录结构如下："
           ls -la temp_python/python/
-          
+
           # 移动到 install/python
           mkdir -p install/python
           cp -r temp_python/python/* install/python/
@@ -400,10 +428,10 @@ jobs:
 
           # 设置权限 (非常重要)
           chmod +x install/python/bin/python3
-          
+
           echo "📦 Installing Dependencies (macOS)..."
           PY_EXEC="install/python/bin/python3"
-          
+
           # 剔除 numpy
           "$PY_EXEC" -c "
           import re
@@ -412,11 +440,11 @@ jobs:
                   if not re.match(r'^\s*numpy\s*([<>=!~;]|$)', line, re.IGNORECASE):
                       f_out.write(line)
           "
-          
+
           # 安装依赖到便携版环境
           "$PY_EXEC" -m pip install --upgrade pip
           "$PY_EXEC" -m pip install "${{ matrix.numpy_req }}" -r requirements_no_numpy.txt maafw==$MAA_VERSION
-          
+
           # 清理缓存
           "$PY_EXEC" -m pip cache purge
           find install/python -name "__pycache__" -type d -exec rm -rf {} +
@@ -514,7 +542,7 @@ jobs:
                           os.chmod(dst / os.path.basename(n), 0o755)
                           print(f'    ✅ {os.path.basename(n)}')
           print('✅ Dylib repair complete')
-          " 
+          "
       # ----------------------------------------------------------------
       # 🏗️ 构建与组装
       # ----------------------------------------------------------------
@@ -626,7 +654,7 @@ jobs:
           target_arch = '${{ matrix.mfa_arch }}'  # x64, arm64
 
           print(f'🎯 Target Runtime: {target_os}-{target_arch}')
-          
+
           # 定义需要保留的关键词
           keep_keywords = []
           keep_keywords.append(target_os)

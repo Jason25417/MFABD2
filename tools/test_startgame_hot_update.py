@@ -17,11 +17,21 @@ class HotUpdateTransitions(unittest.TestCase):
             self.assertLess(following.index(node), following.index('Global_Null'))
 
     def test_launch_entries_can_resume_hot_update(self):
-        # PlayCover/PC 上 StartupCheckApp 恒为 False，启动流程只经过 RunApp 入口
+        # 共享 base 启动入口需要接回更新流程；NT PC 的独立入口另行检查。
         for entry in ('StartGame_RunApp', 'StartGame_RunApp_Shell'):
             following = self.nodes[entry]['next']
             for node in ('StartGame_Update_Data', 'StartGame_Update_Data_DownLoading', 'StartGame_Loading'):
                 self.assertLess(following.index(node), following.index('StartGame_Logo'), entry)
+
+    def test_nt_pc_window_entry_can_resume_hot_update(self):
+        # NT PC 使用独立的窗口检查入口，不经过 base 的 RunApp 分支。
+        path = Path(__file__).resolve().parents[1] / 'assets/resource/pc/pipeline/StartGame.json'
+        nodes = json.loads(path.read_text(encoding='utf-8'))
+        self.assertIn('StartGame_Check_Win32_SetSize', nodes['StartGame_Start']['next'])
+        following = nodes['StartGame_Check_Win32_SetSize']['next']
+        for node in ('StartGame_Update_Data', 'StartGame_Update_Data_DownLoading', 'StartGame_Loading'):
+            self.assertIn(node, following)
+            self.assertLess(following.index(node), following.index('StartGame_Logo'))
 
     def test_download_can_finish_at_loading_screen(self):
         for node in ('StartGame_Update_Data_Click', 'StartGame_Update_Data_DownLoading'):
@@ -44,6 +54,15 @@ class HotUpdateTransitions(unittest.TestCase):
         matches = lambda text: any(re.search(pattern, text) for pattern in expected)
         self.assertFalse(matches('正在确认下载容量100%'))
         self.assertTrue(matches('确认'))
+
+    def test_nt_pc_pvp_interrupt_ignores_download_dialog(self):
+        path = Path(__file__).resolve().parents[1] / 'assets/resource/pc/pipeline/PVP.json'
+        expected = json.loads(path.read_text(encoding='utf-8'))['PVP_PVPMes']['expected']
+        matches = lambda text: any(re.search(pattern, text) for pattern in expected)
+        for text in ('正在确认下载容量100%', '正在確認下載容量100%'):
+            self.assertFalse(matches(text), text)
+        for text in ('确认', '確認'):
+            self.assertTrue(matches(text), text)
 
 
 if __name__ == '__main__':

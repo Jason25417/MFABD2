@@ -30,14 +30,18 @@ class AndroidRuntimeTests(unittest.TestCase):
         self.root = Path(temporary.name).resolve()
         self.enterContext(patch.dict(os.environ, {}, clear=True))
         self.enterContext(patch.object(runtime.platform, "system", return_value="Linux"))
-        self.store = type("IsolatedStore", (PersistentStore,), {
+        self.store = self.isolated_store()
+        for method in ("info", "warning", "error"):
+            self.enterContext(patch(f"utils.persistent_store.logger.{method}"))
+
+    @staticmethod
+    def isolated_store():
+        return type("IsolatedStore", (PersistentStore,), {
             "_initialized": False, "_storage_policy": None, "_directory_initialized": False,
             "_account_ready": False, "_bound_task_key": None, "_mounted_account_id": None,
             "_current_account_id": None, "_sanitized_account_id": None,
             "CONFIG_DIR": None, "FILE_PATH": None, "BACKUP_PATH": None,
         })
-        for method in ("info", "warning", "error"):
-            self.enterContext(patch(f"utils.persistent_store.logger.{method}"))
 
     def android_config(self):
         if "MFA_ANDROID_OUTPUT_BRIDGED" not in os.environ:
@@ -193,7 +197,7 @@ class AndroidRuntimeTests(unittest.TestCase):
                 portable.mkdir()
                 archive = portable / filename
                 archive.write_text('{"market":42}', encoding="utf-8")
-                store = type("IsolatedStore", (PersistentStore,), {"_initialized": False, "_storage_policy": None})
+                store = self.isolated_store()
                 store.configure_storage(runtime.StoragePolicy(self.root / "global", portable))
                 self.assertFalse(store.set("account", 1))
                 store.switch_account("0")

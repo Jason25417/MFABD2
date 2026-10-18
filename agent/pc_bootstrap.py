@@ -1,6 +1,8 @@
 """PI pretask entry. No AgentServer, resource loading or controller connection.
 
 职责只有两件：游戏没在跑就拉起官方启动器，然后等到主窗口出现并确认它存在。
+唯一顺手做的窗口改动是清除上次会话遗留的透明与点击穿透，它必须赶在控制器连接前
+（见 startup.pc.clear_residue）。
 窗口分辨率与最小化一律交给 agent 在任务首节点（startup.sink）处理——那时控制器
 已经连上，改窗口既不会干扰连接，也不必猜上层软件的时序。
 

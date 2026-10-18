@@ -1,0 +1,843 @@
+{
+    "Rec_<Collect_TeleportRecall_Skill>_Tpl": {
+        "roi": [
+            1091,
+            459,
+            64,
+            65
+        ]
+    },
+    "Collect_ForceTeleporCircle": {
+        "roi": [
+            1117,
+            476,
+            11,
+            3
+        ]
+    },
+    "Collect_ForceTeleporCircle_Ico": {
+        "recognition": "Or",
+        "any_of": [
+            "Collect_ClickTeleporCircleIco"
+        ]
+    },
+    "Collect_ForceTeleporCircle_ClickMSB": {
+        "roi": [
+            672,
+            389,
+            61,
+            64
+        ],
+        "expected": [
+            "生成",
+            "創建"
+        ]
+    },
+    "Collect_ForceTelepor_CheckMap1_Name": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "达普雷镇",
+            "達雷普鎮",
+            "雷瓦汀基地",
+            "拉勒凯镇",
+            "罗戴夫镇",
+            "羅戴夫鎮",
+            "科库托斯圣域",
+            "科庫托斯聖域",
+            "安全"
+        ]
+    },
+    "Collect_ForceTeleporCircle_No": {
+        "roi": [
+            1117,
+            476,
+            11,
+            3
+        ]
+    },
+    "Collect_Skill3_4": {
+        "roi": [
+            1086,
+            455,
+            72,
+            68
+        ],
+        "template": [
+            "Skill3.png"
+        ]
+    },
+    "Collect_Skill3_1_ERR_TooClose": {
+        "expected": [
+            "^(?=.*[无法在])(?=.*[魔法阵附近])(?=.*[天赋技能]).{8,}$",
+            "^(?=.*[无法在])(?=.*[该地点])(?=.*[天赋技能]).{8,}$",
+            "^(?=.*[無法在])(?=.*[魔法陣附近])(?=.*[天賦技能]).{8,}$",
+            "^(?=.*[此地點])(?=.*[無法使用])(?=.*[天賦技能]).{8,}$"
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_GoinNviMap": {
+        "target": [
+            132,
+            103,
+            10,
+            10
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_NviMap": {
+        "roi": [
+            467,
+            600,
+            727,
+            105
+        ],
+        "expected": [
+            "在战场中查看",
+            "探索",
+            "世界地图",
+            "在場域中查看",
+            "任務",
+            "世界地圖"
+        ]
+    },
+    "Collect_TeleporCircle_OnlyFoot_Entry": {
+        "any_of": [
+            {
+                "sub_name": "OCR",
+                "recognition": "OCR",
+                "roi": [
+                    305,
+                    146,
+                    85,
+                    74
+                ],
+                "expected": [
+                    "自动狩猎",
+                    "离开",
+                    "離開"
+                ]
+            }
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_ToNavMap": {
+        "target": [
+            132,
+            103,
+            10,
+            10
+        ]
+    },
+    "Collect_InitiatingManual_Onfoot_Start": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ],
+        "expected": [
+            "剑之神殿右侧回廊",
+            "劍之神殿右側迴廊",
+            "泳池派对场",
+            "泳池派對",
+            "派对会场角落",
+            "派對會場角落",
+            "海岸沙滩",
+            "濱海沙灘",
+            "海岸椰林",
+            "海岸椰子樹林",
+            "底层居住区",
+            "底層階級居住區",
+            "第4区",
+            "第4區",
+            "水上乐园室内泳池",
+            "水上樂園室內泳池",
+            "泼水音乐节活动",
+            "潑水音樂節活動會場"
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E01_A1": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ],
+        "expected": [
+            "泳池派对场",
+            "泳池派對"
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E01_B1": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ],
+        "expected": [
+            "派对会场角落",
+            "派對會場角落"
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E01_A2_Move": {
+        "target": [
+            465,
+            248,
+            3,
+            5
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E01_A2_Move_Sub": {
+        "roi": [
+            276,
+            247,
+            110,
+            124
+        ],
+        "expected": [
+            "戰鬥區域"
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E01_B2_Move": {
+        "target": [
+            318,
+            508,
+            3,
+            4
+        ]
+    },
+    "Collect_IM_Move_MGS": {
+        "expected": [
+            "确认",
+            "確認"
+        ]
+    },
+    "Collect_IM_GoinNviMap": {
+        "target": [
+            132,
+            103,
+            10,
+            10
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E03_A1": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ],
+        "expected": [
+            "海岸沙滩",
+            "濱海沙灘"
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E03_B1": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ],
+        "expected": [
+            "海岸椰林",
+            "海岸椰子樹林"
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E03_A2_Move": {
+        "target": [
+            471,
+            494,
+            3,
+            4
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E03_A2_Move_Sub": {
+        "roi": [
+            303,
+            395,
+            103,
+            88
+        ],
+        "expected": [
+            "战斗区",
+            "戰鬥區域"
+        ],
+        "target": [
+            336,
+            457,
+            5,
+            5
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E03_B2_Move": {
+        "target": [
+            199,
+            268,
+            3,
+            3
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E04_A1": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ],
+        "expected": [
+            "底层居住区",
+            "底層階級居住區"
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E04_B1": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ],
+        "expected": [
+            "第4区",
+            "第4區"
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E04_A2_Move": {
+        "target": [
+            325,
+            171,
+            3,
+            2
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E04_B2_Move": {
+        "target": [
+            242,
+            380,
+            3,
+            3
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E05_A1": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ],
+        "expected": [
+            "水上乐园室内泳池",
+            "水上樂園室內泳池"
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E05_B1": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ],
+        "expected": [
+            "泼水音乐节活动",
+            "潑水音樂節活動會場"
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_M14": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ],
+        "expected": [
+            "剑之神殿右侧回廊",
+            "劍之神殿右側迴廊"
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_M14_A1_Move": {
+        "target": [
+            183,
+            464,
+            2,
+            2
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E05_A2_Move": {
+        "target": [
+            504,
+            394,
+            5,
+            4
+        ]
+    },
+    "Collect_IM_OnFoot_NviMap_E05_B2_Move": {
+        "target": [
+            258,
+            249,
+            2,
+            2
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_NviMap_GoHotel": {
+        "roi": [
+            151,
+            15,
+            575,
+            48
+        ],
+        "expected": [
+            "达雷普旅馆",
+            "達雷普旅館",
+            "雷瓦汀基地救护站",
+            "雷瓦汀基地救護站",
+            "拉勒凯旅馆",
+            "罗戴夫旅馆",
+            "羅戴夫旅館",
+            "旅馆",
+            "旅館",
+            "救护站",
+            "救護站"
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_NviMap_IsSafeArea": {
+        "roi": [
+            151,
+            15,
+            575,
+            48
+        ],
+        "expected": [
+            "达普雷镇",
+            "達雷普鎮",
+            "雷瓦汀基地",
+            "拉勒凯镇",
+            "罗戴夫镇",
+            "羅戴夫鎮",
+            "科库托斯圣域",
+            "科庫托斯聖域",
+            "安全"
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_NviMap_IsSafeArea_NotHotel": {
+        "roi": [
+            151,
+            15,
+            575,
+            48
+        ],
+        "expected": [
+            "达普雷镇",
+            "達雷普鎮",
+            "雷瓦汀基地",
+            "拉勒凯镇",
+            "罗戴夫镇",
+            "羅戴夫鎮",
+            "科库托斯圣域",
+            "科庫托斯聖域",
+            "安全"
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_NviMap_IsBattleArea": {
+        "roi": [
+            151,
+            15,
+            575,
+            48
+        ],
+        "expected": [
+            "^战斗",
+            "^戰鬥"
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_NviMap_IsBattleArea_FakeSecurity": {
+        "roi": [
+            151,
+            15,
+            575,
+            48
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_TPIco": {
+        "roi": [
+            128,
+            76,
+            484,
+            535
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_TPIcoCk_IntSubMenu": {
+        "roi": [
+            134,
+            88,
+            437,
+            494
+        ],
+        "expected": [
+            "魔法阵",
+            "魔法陣"
+        ]
+    },
+    "Collect_OnFoot_Skill3_4": {
+        "all_of": [
+            {
+                "sub_name": "TemplateMatch",
+                "recognition": "TemplateMatch",
+                "roi": [
+                    1086,
+                    455,
+                    72,
+                    68
+                ],
+                "template": [
+                    "Skill3.png"
+                ]
+            },
+            {
+                "sub_name": "ColorMatch",
+                "recognition": "ColorMatch",
+                "roi": [
+                    1117,
+                    476,
+                    11,
+                    3
+                ],
+                "method": 40,
+                "lower": [
+                    [
+                        0,
+                        0,
+                        200
+                    ]
+                ],
+                "upper": [
+                    [
+                        180,
+                        20,
+                        255
+                    ]
+                ],
+                "count": 10
+            }
+        ],
+        "target": [
+            1119,
+            488,
+            1,
+            1
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_LoopFoot": {
+        "roi": [
+            619,
+            636,
+            42,
+            42
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_Skirmish": {
+        "roi": [
+            144,
+            69,
+            51,
+            307
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_Skirmish_Tpause": {
+        "target": [
+            1189,
+            29,
+            11,
+            11
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_Skirmish_TRun": {
+        "roi": [
+            488,
+            654,
+            86,
+            33
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_Skirmish_TRun_Ty2": {
+        "roi": [
+            665,
+            419,
+            82,
+            32
+        ]
+    },
+    "Collect_ForceTelepor_IsEffect": {
+        "any_of": [
+            "Collect_ForceTelepor_MapCk"
+        ]
+    },
+    "Rec_NavMap_Lift": {
+        "roi": [
+            123,
+            323,
+            63,
+            58
+        ]
+    },
+    "Rec_NavMap_Right": {
+        "roi": [
+            523,
+            325,
+            58,
+            54
+        ]
+    },
+    "Rec_SandBox_Moveing_Tpl": {
+        "roi": [
+            618,
+            634,
+            42,
+            42
+        ]
+    },
+    "Rec_SandBox_Moveing_Ocr": {
+        "roi": [
+            552,
+            581,
+            185,
+            50
+        ],
+        "expected": [
+            "自动移动中",
+            "自動移動中"
+        ]
+    },
+    "Rec_<WayPoint_Csm>_Tpl": {
+        "roi": [
+            165,
+            50,
+            160,
+            45
+        ]
+    },
+    "Collect_WayPoint_Open_Tpl": {
+        "desc": "[PC] 小地图旁的寻路按钮。roi 与 base 逐字相同(端间通用,取自 #466 已删的 PC 实测值),仅换 PC 素材。",
+        "roi": [
+            165,
+            50,
+            160,
+            45
+        ],
+        "template": [
+            "Nvi_SandGuideButt_PC.png"
+        ],
+        "green_mask": true
+    },
+    "Collect_WayPoint_Hunt": {
+        "desc": "[PC] 同 Collect_WayPoint_Board 的下拉列表,base 三者共用同一 roi。",
+        "roi": [
+            205,
+            25,
+            180,
+            600
+        ]
+    },
+    "Collect_WayPoint_Board": {
+        "desc": "[PC] 寻路下拉列表在 PC 上更长且更靠上。roi 取自 #466 已删节点的 PC 实测值。",
+        "roi": [
+            205,
+            25,
+            180,
+            600
+        ],
+        "expected": [
+            "探索告示板",
+            "任務布告欄"
+        ]
+    },
+    "Collect_WayPoint_Inn": {
+        "desc": "[PC] 同 Collect_WayPoint_Board 的下拉列表,base 三者共用同一 roi。",
+        "roi": [
+            205,
+            25,
+            180,
+            600
+        ]
+    },
+    "Collect_WayPoint_Arrived_Verify": {
+        "custom_action_param": {
+            "detect_roi": [
+                907,
+                561,
+                70,
+                63
+            ],
+            "loop_exhausted": "error",
+            "loop_limit": 5,
+            "on_changed": "next",
+            "on_unchanged": "loop",
+            "proxy_node": "Collect_TeleporCircle_Ico_Enter",
+            "settle_delay": 1500,
+            "threshold": 3.0
+        }
+    },
+    "Collect_WayPoint_ExplorationBoard_Arrived": {
+        "target": [
+            132,
+            103,
+            10,
+            10
+        ]
+    },
+    "Collect_WayPoint_Arrived_SkillReset": {
+        "all_of": [
+            {
+                "sub_name": "TemplateMatch",
+                "recognition": "TemplateMatch",
+                "roi": [
+                    1091,
+                    457,
+                    64,
+                    65
+                ],
+                "template": [
+                    "Skill3-4GE.png"
+                ],
+                "green_mask": true
+            },
+            {
+                "sub_name": "ColorMatch",
+                "recognition": "ColorMatch",
+                "roi": [
+                    1117,
+                    476,
+                    11,
+                    3
+                ],
+                "method": 40,
+                "lower": [
+                    [
+                        0,
+                        0,
+                        200
+                    ]
+                ],
+                "upper": [
+                    [
+                        180,
+                        20,
+                        255
+                    ]
+                ],
+                "count": 10
+            }
+        ],
+        "target": [
+            1121,
+            490,
+            2,
+            2
+        ]
+    },
+    "Rec_QuickMove_Menu": {
+        "roi": [
+            210,
+            49,
+            171,
+            300
+        ]
+    },
+    "Collect_QuickMove_ToEileen": {
+        "roi": [
+            210,
+            49,
+            171,
+            300
+        ]
+    },
+    "Collect_QuickMove_ToTavern": {
+        "roi": [
+            210,
+            49,
+            171,
+            300
+        ]
+    },
+    "Collect_QuickMove_AtTavern": {
+        "all_of": [
+            "Rec_QuickMove_Ready",
+            {
+                "sub_name": "Or",
+                "recognition": "Or",
+                "any_of": [
+                    {
+                        "sub_name": "OCR",
+                        "recognition": "OCR",
+                        "expected": [
+                            "酒[馆館]"
+                        ]
+                    },
+                    {
+                        "sub_name": "OCR",
+                        "recognition": "OCR",
+                        "roi": [
+                            497,
+                            153,
+                            420,
+                            237
+                        ],
+                        "expected": [
+                            "[疗療][师師]",
+                            "主人"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "Collect_QuickMove_ToInn": {
+        "roi": [
+            210,
+            49,
+            171,
+            300
+        ]
+    },
+    "Collect_QuickMove_ToBoard": {
+        "roi": [
+            210,
+            49,
+            171,
+            300
+        ]
+    },
+    "Collect_QuickMove_ToHunt": {
+        "roi": [
+            210,
+            49,
+            171,
+            300
+        ]
+    },
+    "Rec_Ico_ReClock": {
+        "roi": [
+            906,
+            557,
+            78,
+            78
+        ]
+    },
+    "Collect_TeleporCircle_OnFoot_TPIcoCk": {},
+    "Collect_OnFoot_Skill3_1_Again": {},
+    "Collect_OperationsMain_ToAreaMap": {
+        "desc": "判断在区域地图(移动魔法阵)界面。|[PC覆盖·2026-07-13实录] base roi[183,11,249,53]左缘正好切'移'字左边条,OCR以0.989读成'多动魔法阵'→expected恒miss→传送阵界面死等(23:24实录)。roi左扩[150,11,280,53]罩全标题。注:节点属 Collect_Navigation,跑商链途经(节点命名空间全局合并)。",
+        "roi": [
+            164,
+            11,
+            153,
+            50
+        ],
+        "expected": [
+            "移动魔法阵",
+            "移動魔法陣"
+        ]
+    }
+}

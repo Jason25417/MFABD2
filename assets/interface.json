@@ -16,13 +16,29 @@
             "type": "Win32",
             "win32": {
                 "class_regex": "UnityWndClass",
-                "window_regex": "^BrownDust II$",
+                "window_regex": "BrownDust II",
                 "screencap": "PrintWindow",
                 "mouse": "PostMessageWithWindowPos",
                 "keyboard": "PostMessageWithWindowPos"
             },
             "permission_required": true,
-            "display_short_side": 720
+            "display_short_side": 720,
+            "description": "鼠标不抢,窗口移动,建议最小化"
+        },
+        {
+            "name": "PC客户端(Cursor)",
+            "label": "PC客户端(Cursor)",
+            "type": "Win32",
+            "win32": {
+                "class_regex": "UnityWndClass",
+                "window_regex": "BrownDust II",
+                "screencap": "PrintWindow",
+                "mouse": "SendMessageWithCursorPos",
+                "keyboard": "PostMessageWithCursorPos"
+            },
+            "permission_required": true,
+            "display_short_side": 720,
+            "description": "短暂抢鼠标控制权,窗口不动"
         }
     ],
     "pretask": [
@@ -31,7 +47,8 @@
             "label": "PC游戏启动准备",
             "description": "游戏未运行时自动拉起官方启动器，等到游戏主窗口出现、再多等约 3 秒让它就绪。<br>窗口分辨率与最小化改在任务开始时处理，不在这一步，因此这里不需要任何选项。<br>游戏本来就在运行时，本步骤瞬间完成。",
             "controller": [
-                "PC客户端"
+                "PC客户端",
+                "PC客户端(Cursor)"
             ],
             "exec": "../../../.venv/Scripts/python.exe",
             "args": [
@@ -48,6 +65,10 @@
             "label": "安卓端",
             "path": [
                 "./resource/base"
+            ],
+            "controller": [
+                "Adb",
+                "PlayCover"
             ]
         },
         {
@@ -68,7 +89,8 @@
                 "./resource/pc"
             ],
             "controller": [
-                "PC客户端"
+                "PC客户端",
+                "PC客户端(Cursor)"
             ]
         }
     ],
@@ -90,13 +112,29 @@
             "name": "[全局]启动脚本(置顶)",
             "entry": "StartGame_Start",
             "default_check": true,
-            "description": "<b>最新版探测 &amp; 下载渠道：</b><br>[![正式版](https://img.shields.io/github/v/release/sunyink/MFABD2?label=仓库源·正式版&color=green&logo=github)](https://github.com/sunyink/MFABD2/releases/latest)<br>[![公测版](https://img.shields.io/github/v/release/sunyink/MFABD2?include_prereleases&sort=date&filter=%2Abeta%2A&label=仓库源·公测版&color=blue&logo=github)](https://github.com/sunyink/MFABD2/releases?q=beta)<br>[![Mirror酱](https://img.shields.io/badge/Mirror%E9%85%B1-镜像源·高速下载-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=MFABD2)<br>自动判断游戏运行状态，按需启动；处理更新弹框、支付失败等异常提示；完成后领取<b>主界面</b>奖励并执行<b>宠物派遣</b>。<br><b>注意：</b>网络环境请提前解决，脚本不处理网络问题。<br><b>首次运行前，务必查看 <code>使用帮助</code> 卡片！</b><br><br>PC端控制器（720P窗口化）资源适配尚不完整，仅供探索。"
+            "description": "<b>最新版探测 &amp; 下载渠道：</b><br>[![正式版](https://img.shields.io/github/v/release/sunyink/MFABD2?label=仓库源·正式版&color=green&logo=github)](https://github.com/sunyink/MFABD2/releases/latest)<br>[![公测版](https://img.shields.io/github/v/release/sunyink/MFABD2?include_prereleases&sort=date&filter=%2Abeta%2A&label=仓库源·公测版&color=blue&logo=github)](https://github.com/sunyink/MFABD2/releases?q=beta)<br>[![Mirror酱](https://img.shields.io/badge/Mirror%E9%85%B1-镜像源·高速下载-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=MFABD2)<br>自动判断游戏运行状态，按需启动；处理更新弹框、支付失败等异常提示；完成后领取<b>主界面</b>奖励并执行<b>宠物派遣</b>。<br><b>注意：</b>网络环境请提前解决，脚本不处理网络问题。<br><b>首次运行前，务必查看 <code>使用帮助</code> 卡片！</b>",
+            "controller": [
+                "Adb",
+                "PlayCover"
+            ]
+        },
+        {
+            "name": "[全局]启动脚本(置顶)PC",
+            "entry": "StartGame_Start",
+            "default_check": true,
+            "description": "<b>最新版探测 &amp; 下载渠道：</b><br>[![正式版](https://img.shields.io/github/v/release/sunyink/MFABD2?label=仓库源·正式版&color=green&logo=github)](https://github.com/sunyink/MFABD2/releases/latest)<br>[![公测版](https://img.shields.io/github/v/release/sunyink/MFABD2?include_prereleases&sort=date&filter=%2Abeta%2A&label=仓库源·公测版&color=blue&logo=github)](https://github.com/sunyink/MFABD2/releases?q=beta)<br>[![Mirror酱](https://img.shields.io/badge/Mirror%E9%85%B1-镜像源·高速下载-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=MFABD2)<br>自动判断游戏运行状态，按需启动；处理更新弹框、支付失败等异常提示；完成后领取<b>主界面</b>奖励并执行<b>宠物派遣</b>。<br><b>注意：</b>网络环境请提前解决，脚本不处理网络问题。<br><b>首次运行前，务必查看 <code>使用帮助</code> 卡片！</b><br>",
+            "controller": [
+                "PC客户端",
+                "PC客户端(Cursor)"
+            ]
         },
         {
             "name": "[执行]快速狩猎扫荡",
             "entry": "QuickHunt_Start",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "default_check": true,
@@ -113,6 +151,8 @@
             "entry": "Collect_StartGame_HomePage_OnlyOnce",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "default_check": true,
@@ -129,6 +169,8 @@
             "entry": "Equip_HomePage",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "default_check": true,
@@ -146,6 +188,8 @@
             "entry": "GachaADV_Start",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "default_check": true,
@@ -160,6 +204,8 @@
             "entry": "PVP_TaskStart",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "default_check": true,
@@ -173,6 +219,8 @@
             "entry": "Event_HomePage",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "option": [
@@ -198,6 +246,8 @@
             "entry": "Weekly_Start",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "option": [
@@ -214,6 +264,8 @@
             "entry": "Daily_HomePage",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "option": [
@@ -231,6 +283,8 @@
             "entry": "RewardsDaily_Start",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "description": "领取主界面<code>任务</code>页内的每日与每周任务奖励。"
@@ -241,6 +295,8 @@
             "entry": "Activities_Start",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "option": [
@@ -254,6 +310,8 @@
             "entry": "Pass_HomePage",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "description": "领取主界面<code>通行证</code>页内的可领奖励。"
@@ -264,6 +322,8 @@
             "entry": "Mail_HomePage",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "description": "领取主界面<code>邮件</code>内的全部邮件奖励（含一般与商品类）。<br>无未读红点时自动跳过，不进入邮件页面。"
@@ -274,6 +334,8 @@
             "default_check": true,
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "description": "进入卡带，对含传送阵的地图依次执行探查、吸取、召集。<br><span style=\"background-color:rgba(255,160,0,0.2)\"><b>前提：</b>传送阵须已激活，且周围箱庭迷雾已探明，使区域地图能完整显示传送阵图标。</span><br><b>选卡：</b>按剧情→角色→活动推进。某类允许采集的卡带本周均有完成记录时，跳过整类；进入类别后，普通模式只采集徽章彩色亮起且能识别身份的卡带，未知或未识别卡带跳过。成功采集后记录进度并在本轮跳过该卡；扫描结束不代表整类已采完。",
@@ -290,6 +352,8 @@
             "entry": "Arbitrage_Start",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "description": "<b>低价买进材料，做成料理，等价格涨到峰值再卖出，赚取金币。</b><br>适合每天运行，建议排在<b>地图采集[完整]</b>之后；初次使用保持默认设置即可。<br><br><b>流程：</b>①先卖料理 → ②买材料 → ③做料理 → ④再卖料理 → ⑤卖多余材料（默认关闭）<br>当天未到峰值的料理与材料不会出售，留待下次。<br><br><span style=\"background-color:rgba(255,160,0,0.2)\"><b>⚠️ 运行前须知</b><br>• ①④会卖出背包中已到价的料理，不论是否由本任务制作；想保留料理请关闭①④。<br>• ②会按采购名单调整游戏内的商店收藏，名单外的收藏会被取消（采购名单可在②中自定义）。<br>• ③缺料时会额外补买材料，可在③中设置补买支出上限。</span><br><small>各开关的细则见其说明。</small>",
@@ -318,6 +382,8 @@
             "name": "[全局]结束游戏",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "entry": "Close_HomePage"
@@ -328,7 +394,9 @@
             "entry": "Practise_Start",
             "controller": [
                 "Adb",
-                "PlayCover"
+                "PlayCover",
+                "PC客户端",
+                "PC客户端(Cursor)"
             ],
             "option": [
                 "选择要刷取的技能"
@@ -339,7 +407,9 @@
             "entry": "SemiAuto_HomePage",
             "controller": [
                 "Adb",
-                "PlayCover"
+                "PlayCover",
+                "PC客户端",
+                "PC客户端(Cursor)"
             ],
             "option": [
                 "半自动作业"
@@ -352,7 +422,8 @@
             "type": "select",
             "label": "PC窗口分辨率",
             "controller": [
-                "PC客户端"
+                "PC客户端",
+                "PC客户端(Cursor)"
             ],
             "default_case": "720p",
             "description": "调整游戏窗口内部画面的尺寸：720p 为 1280×720，1080p 为 1920×1080。<br>每个任务开始时自动校正（连接之后、第一次识别之前），无需重新连接。识别坐标仍由框架按短边 720 缩放。<br>若游戏拒绝调整、但窗口长宽比仍是 16:9，识别不受影响，任务会带一条提示继续执行；只有长宽比明显偏离 16:9 才会停止当前任务，下个任务重新检查。",
@@ -1945,17 +2016,7 @@
             "cases": [
                 {
                     "name": "Yes",
-                    "pipeline_override": {
-                        "Daily_Busin_NoGift": {
-                            "next": []
-                        },
-                        "Daily_Busin_Nothing_Binary": {
-                            "next": []
-                        },
-                        "Daily_Busin_DecorCoin_IsFull_Binary": {
-                            "next": []
-                        }
-                    }
+                    "pipeline_override": {}
                 },
                 {
                     "name": "No",
@@ -8045,6 +8106,10 @@
                     "enabled": true
                 },
                 {
+                    "name": "[全局]启动脚本(置顶)PC",
+                    "enabled": true
+                },
+                {
                     "name": "[执行]快速狩猎扫荡",
                     "enabled": true
                 },
@@ -8128,6 +8193,10 @@
                 },
                 {
                     "name": "[全局]启动脚本(置顶)",
+                    "enabled": true
+                },
+                {
+                    "name": "[全局]启动脚本(置顶)PC",
                     "enabled": true
                 },
                 {

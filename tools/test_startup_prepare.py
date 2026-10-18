@@ -145,6 +145,37 @@ class ContractTest(unittest.TestCase):
 
 
 class BudgetTests(ContractTest):
+    def test_pause_handles_time_advancing_between_clock_reads(self):
+        def advancing_clock():
+            self.clock.now += 0.06
+            return self.clock.now
+
+        budget = Budget(self.messages.append, clock=advancing_clock,
+                        sleep=self.clock.sleep)
+        budget.pause(0.1)
+        self.assertGreaterEqual(self.clock.now, budget.started + 0.1)
+
+    def test_pause_handles_slow_cancellation_poll(self):
+        def cancelled():
+            self.clock.now += 0.15
+            return False
+
+        budget = self.budget(cancelled=cancelled)
+        budget.pause(0.1)
+        self.assertGreaterEqual(self.clock.now, 0.1)
+
+    def test_pause_handles_slow_progress_report(self):
+        def report(message):
+            self.messages.append(message)
+            if "已等待" in message:
+                self.clock.now += 0.2
+
+        budget = self.budget(report=report)
+        self.clock.now = 30
+        budget.pause(0.1)
+        self.assertGreaterEqual(self.clock.now, 30.1)
+        self.assertEqual(sum("已等待" in message for message in self.messages), 1)
+
     def test_success_report_does_not_revoke_readiness_at_deadline(self):
         budget = self.budget()
         self.clock.now = 300.1
@@ -399,6 +430,50 @@ class PCTests(ContractTest):
         self.assertEqual((api.launches, api.resizes, api.handles), (0, 0, []))
         self.assertIn("2 个", self.messages[-1])
 
+    def residue_api(self, frames=None, residue=(7,)):
+        api = NativeAPI(frames)
+        api.residue = set(residue)
+        api.cleared = []
+        api.pseudo_minimized = lambda hwnd: hwnd in api.residue
+        def clear(hwnd):
+            api.cleared.append(hwnd)
+            api.residue.discard(hwnd)
+        api.clear_pseudo_minimize = clear
+        return api
+
+    def test_residue_is_cleared_before_connection(self):
+        api = self.residue_api()
+        self.assertIsNotNone(pc.prepare(api, self.budget()))
+        self.assertEqual((api.cleared, api.launches), ([7], 0))
+        self.assertIn("已在连接前清除", self.messages[-1])
+
+    def test_every_candidate_window_is_checked_for_residue(self):
+        api = self.residue_api([([7, 8], True, [])], residue=(8,))
+        pc.prepare(api, self.budget())
+        self.assertEqual(api.cleared, [8])
+
+    def test_clean_window_is_left_alone(self):
+        api = self.residue_api(residue=())
+        pc.prepare(api, self.budget())
+        self.assertEqual(api.cleared, [])
+        self.assertFalse(any("透明" in text for text in self.messages))
+
+    def test_residue_cleanup_failure_does_not_block_startup(self):
+        api = self.residue_api()
+        def fail(hwnd):
+            raise PreparationError("写入后窗口仍带透明或点击穿透样式")
+        api.clear_pseudo_minimize = fail
+        self.assertIsNotNone(pc.prepare(api, self.budget()))
+        self.assertIn("清除遗留的透明与点击穿透失败", self.messages[-1])
+
+    def test_residue_cleanup_does_not_swallow_cancellation(self):
+        api = self.residue_api()
+        def interrupt(hwnd):
+            raise KeyboardInterrupt
+        api.clear_pseudo_minimize = interrupt
+        with self.assertRaises(KeyboardInterrupt):
+            pc.prepare(api, self.budget())
+
     def test_invalid_bound_handle_never_rebinds(self):
         api = NativeAPI([([8], True, [])], valid=False)
         with self.assertRaises(PreparationError):
@@ -498,6 +573,20 @@ class GuardTests(ContractTest):
         return guard.StartupGuard(self.messages.append, self.errors.append,
                                   budget_factory=self.budget,
                                   adb_prepare=prepare or prepared, pc_prepare=prepare or prepared)
+
+    def test_default_guard_bypasses_adb_without_identity_wait_or_failure_replay(self):
+        gate = guard.StartupGuard(self.messages.append, self.fail, budget_factory=self.budget)
+        controller = Controller(uuid=None)
+        gate.failures[("adb", None)] = "previous failure"
+        context = Context(controller)
+        for task_id in (1, 1, 2):
+            context.task_id = task_id
+            self.assertEqual(gate.ensure(context), Prepared())
+        self.assertEqual(controller.commands, [])
+        self.assertEqual(context.tasker.stops, 0)
+        self.assertEqual(gate.tasks, {})
+        self.assertEqual(self.messages, [])
+        self.assertEqual(self.clock.now, 0)
 
     def test_actual_type_bypasses_even_if_label_says_pc(self):
         gate = self.make_guard()

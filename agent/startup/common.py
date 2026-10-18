@@ -18,7 +18,7 @@ class Prepared:
 
 
 class Budget:
-    # timeout 是浮点秒数：ADB 用默认 300，PC 的 sink 用 5，验证脚本用 0.5。
+    # timeout 是浮点秒数：ADB 默认 300，PC 由窗口准备调用方传入独立预算。
     def __init__(self, report, cancelled=lambda: False, *, timeout: float = 300,
                  clock=time.monotonic, sleep=time.sleep, warn=None):
         self.report = report
@@ -49,16 +49,13 @@ class Budget:
             self.next_progress += (int((now - self.next_progress) // 30) + 1) * 30
 
     def pause(self, seconds):
-        # remaining 必须在 check() 之前取一次并复用：check() 本身要读时钟、判停止，
-        # 若在 sleep 参数里再读一次时钟，余量可能在两次读取之间耗尽变成负值，
-        # time.sleep(负) 会抛 "sleep length must be non-negative"，经 guard 记录成
-        # 会话级失败后整轮任务全灭。多睡一点无害，睡负数直接崩。
         until = min(self.clock() + seconds, self.deadline)
-        while True:
+        while self.clock() < until:
+            self.check()
+            # 取消查询、进度回调或线程调度都可能耗尽本次等待，不能沿用循环入口的判断。
             remaining = until - self.clock()
             if remaining <= 0:
                 break
-            self.check()
             self.sleep(min(0.1, remaining))
         self.check()
 

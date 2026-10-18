@@ -1,0 +1,636 @@
+{
+    "Collect_FindPickupCat": {
+        "roi": [
+            891,
+            546,
+            96,
+            96
+        ]
+    },
+    "Collect_FindPickupCat_LeaveCircle_Ty2": {
+        "roi": [
+            210,
+            37,
+            169,
+            308
+        ],
+        "expected": [
+            "酒馆",
+            "酒館"
+        ]
+    },
+    "Collect_TargetMap1-1": {
+        "roi": [
+            223,
+            319,
+            69,
+            55
+        ],
+        "count": 3700
+    },
+    "Collect_TargetMap1-2": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "达雷普镇",
+            "達雷普鎮",
+            "雷瓦汀基地",
+            "拉勒凯镇",
+            "罗戴夫镇",
+            "羅戴夫鎮",
+            "科库托斯圣域",
+            "科庫托斯聖域",
+            "学校1楼",
+            "學校1樓",
+            "恶梦之城1",
+            "惡夢城市1",
+            "恶梦之城I",
+            "安全"
+        ]
+    },
+    "Collect_ClickTeleporOccupy": {
+        "desc": "区域地图传送阵上站了人,遮蔽了传送图标。第一图判定用。|[PC覆盖·2026-08-13实录] base无界:本分支视同已到达(点90,35退图直采),但next无任何回到MapRight/真传送的推进出口且含自引用——采集空手后FindTeleporCircle0.9重开区域图→再次命中本节点,22.8秒/圈定长死循环4小时08分(21:39:52~01:45:57,命中框[522,352,38,37]逐字节不变;每圈MapRight都点了右箭头(1020,333)但画面零变化,base自述'缺乏验证方法');全程动作success:true、Exception零触发,Panic永不接管,唯一出口=人工杀停。比照同文件Collect_Telepor_Retry_PC先例(07-27同构假成功空转)补max_hit 3有界化:合法边界场景一次命中足够,3圈静默后让位MapRight/NoFind正常路径,多卡带连采时的合法重现留一格余量。另:TeleporZero_PC同屏双命中(0.8559/0.8588)存在误匹配普通图标嫌疑,已报上游复核。",
+        "max_hit": 3,
+        "roi": [
+            331,
+            60,
+            625,
+            556
+        ],
+        "template": [
+            "TeleporZero_PC.png"
+        ],
+        "target": [
+            90,
+            35,
+            1,
+            1
+        ]
+    },
+    "Collect_TargetMap2": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "卢戈森林",
+            "盧戈森林",
+            "封锁矿山",
+            "封閉的礦山",
+            "加尔顿山前段",
+            "加爾頓山前段",
+            "洞穴神殿",
+            "贫民区",
+            "貧民區",
+            "剑之神殿左侧回廊",
+            "劍之神殿左側迴廊",
+            "童话镇旅馆",
+            "第一记忆空间",
+            "第一個記憶空間",
+            "官邸地",
+            "卡勒塔市",
+            "恶梦之城2",
+            "惡夢城市2",
+            "战斗I",
+            "战斗 I",
+            "战斗\\s*[1IⅠ!！](?!I)(?!Ⅰ)(?!！)(?!!)",
+            "战斗[1IⅠ](?!I)(?!Ⅰ)"
+        ],
+        "replace": [
+            [
+                "戰",
+                "战"
+            ],
+            [
+                "鬥",
+                "斗"
+            ],
+            [
+                "1",
+                "I"
+            ],
+            [
+                "T",
+                "I"
+            ],
+            [
+                "í",
+                "I"
+            ],
+            [
+                "!",
+                "I"
+            ],
+            [
+                "\\|",
+                "I"
+            ],
+            [
+                "l",
+                "I"
+            ]
+        ]
+    },
+    "Collect_TargetMap3": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "卢戈森林深处",
+            "盧戈森林深處",
+            "禁地矿山",
+            "禁止的礦山",
+            "加尔顿山后段",
+            "加爾頓山後段",
+            "隐藏神殿",
+            "盗贼据点",
+            "剑之神殿右侧回廊",
+            "劍之神殿右側迴廊",
+            "雷瓦汀据点",
+            "雷瓦汀祕密基地",
+            "战斗II",
+            "战斗Ⅱ",
+            "战斗 II",
+            "战斗 Ⅱ",
+            "战斗\\s*([1Il|Ⅰ!！][1Il|Ⅰ!！]|Ⅱ|II)(?!\\d)(?![a-zA-Z])",
+            "战斗([1Il|Ⅰ!！][1Il|Ⅰ!！]|Ⅱ|II)(?!\\d)(?![a-zA-Z])"
+        ],
+        "replace": [
+            [
+                "戰",
+                "战"
+            ],
+            [
+                "鬥",
+                "斗"
+            ],
+            [
+                "1",
+                "I"
+            ],
+            [
+                "T",
+                "I"
+            ],
+            [
+                "í",
+                "I"
+            ],
+            [
+                "!",
+                "I"
+            ],
+            [
+                "\\|",
+                "I"
+            ],
+            [
+                "l",
+                "I"
+            ]
+        ]
+    },
+    "Collect_TargetMap4": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "商场1楼",
+            "商場1樓",
+            "妖怪镇",
+            "妖怪小鎮"
+        ]
+    },
+    "Collect_TargetMap_Special_S18": {
+        "all_of": [
+            {
+                "sub_name": "OCR",
+                "recognition": "OCR",
+                "roi": [
+                    452,
+                    638,
+                    378,
+                    40
+                ],
+                "expected": [
+                    "第四[记記][忆憶]空[间間]"
+                ]
+            },
+            {
+                "sub_name": "Custom",
+                "recognition": "Custom",
+                "custom_recognition": "CheckTag",
+                "custom_recognition_param": {
+                    "max": 1,
+                    "tag": "S18_Temple"
+                }
+            }
+        ]
+    },
+    "Collect_S18_Locate": {
+        "target": [
+            128,
+            104,
+            19,
+            23
+        ]
+    },
+    "Collect_S18_InTemple": {
+        "roi": [
+            149,
+            10,
+            372,
+            53
+        ]
+    },
+    "Collect_TargetMap1_Special_PerRight": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "科库托斯暗黑神殿",
+            "科庫托斯暗黑神殿",
+            "记忆岔路口",
+            "記憶岔路",
+            "学校2楼",
+            "學校2樓",
+            "学校3楼",
+            "學校3樓"
+        ],
+        "target": [
+            1026,
+            345,
+            3,
+            3
+        ]
+    },
+    "Collect_TargetMap1_Special_Right": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "凯那尔工业2楼",
+            "凱那爾工業2樓",
+            "儿童房",
+            "孩子們的房間"
+        ],
+        "target": [
+            1026,
+            345,
+            3,
+            3
+        ]
+    },
+    "Collect_TargetMap2_Special_Right": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "施塔因之塔第8层",
+            "施塔因之塔第8層",
+            "施塔因之塔宿舍",
+            "儿童房",
+            "孩子們的房間"
+        ],
+        "target": [
+            1026,
+            345,
+            3,
+            3
+        ]
+    },
+    "Collect_TargetMap4_Special": {
+        "expected": [
+            "通往暗夜世界入口之路",
+            "通往夜世界入口的路"
+        ]
+    },
+    "Collect_Architecture_Underlying_Logic_Protection": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "达雷普旅馆",
+            "達雷普旅館",
+            "雷瓦汀基地救护站",
+            "雷瓦汀基地救護站",
+            "拉勒凯旅馆",
+            "罗戴夫旅馆",
+            "羅戴夫旅館",
+            "施塔因之塔宿舍",
+            "旅馆",
+            "旅館",
+            "救护站",
+            "救護站"
+        ]
+    },
+    "Collect_TargetMap_Special_ClickTpCircleIco": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "学校1楼",
+            "學校1樓",
+            "雷瓦汀据点",
+            "雷瓦汀祕密基地"
+        ]
+    },
+    "Collect_Special_QR7-CW": {
+        "desc": "遥测",
+        "roi": [
+            699,
+            168,
+            581,
+            368
+        ],
+        "target": [
+            946,
+            476,
+            11,
+            12
+        ]
+    },
+    "Collect_ClickTeleporCircleIco": {
+        "desc": "[PC覆盖·2026-08-23] next 在 Purple 之后、White 之前插入灰阵门卫 Collect_ClickTelepor_TargetClass_Inactive_PC(模板继承 base 语义:PC 模板 TpCircleMap_PC 对灰色未激活阵亦命中 0.953)。",
+        "template": [
+            "TpCircleMap_PC.png"
+        ],
+        "next": [
+            "Collect_ClickTelepor_TargetClass_Purple",
+            "Collect_ClickTelepor_TargetClass_Inactive_PC",
+            "Collect_ClickTelepor_TargetClass_White"
+        ]
+    },
+    "Collect_ClickTelepor_TargetClass_White": {
+        "desc": "[PC覆盖·2026-08-23] 仅改 next:在自环候选(本节点)之前插入灰阵门卫,技能调用(已传送)仍优先。base 该节点无 max_hit,点灰阵无效时自环无界(08-23 02:46~07:00 实录 2778 圈)。⚠️本覆盖是 base next 的整份快照(规则f),base 改这条链必须同步这里——08-28 技能模块入口化时第2项已由 Collect_Skill_Start 改为 Collect_Skill_Entry。",
+        "next": [
+            "[Anchor]SandBox_Bypass",
+            "Collect_Skill_Entry",
+            "Collect_ClickTelepor_TargetClass_Inactive_PC",
+            "Collect_ClickTelepor_TargetClass_White",
+            "[JumpBack]Global_WaitingForLoading"
+        ]
+    },
+    "Collect_Skill_Egress": {
+        "desc": "[PC覆盖]随base改名自Collect_Skill_End,原覆盖在pc/Collect_skills.json,跟着本体迁到本文件。只改roi。",
+        "roi": [
+            1204,
+            661,
+            25,
+            28
+        ]
+    },
+    "Collect_ClickTelepor_ButNotActive": {
+        "roi": [
+            558,
+            603,
+            160,
+            35
+        ],
+        "expected": [
+            "^(?=.*[没有])(?=.*[已激活的])(?=.*[魔法阵]).{6,}$",
+            "^(?=.*[沒有])(?=.*[已啟用的])(?=.*[魔法陣]).{6,}$"
+        ]
+    },
+    "Collect_ClickTelepor_Abnormal_Overlap": {
+        "desc": "区域地图内点选重叠传送阵。|[PC覆盖·2026-07-27实录] 仅补 on_error,base 的识别/动作/next 全继承。实录(22:14:22~22:19:55,约27s/轮共12轮近6分钟):本节点每轮 Action.Succeeded(点击确实落下),多数轮 next 三候选(Collect_Skill_Start / Collect_ClickTelepor_TargetClass_White / [JumpBack]Global_WaitingForLoading)全 miss,约25s超时后因无自定义 on_error→走 MFA 默认 Global_Null 兜底(恒中且 next 空)→子任务结束→调用方 Collect_TargetMap* 的 next 再次选中本节点;另有3轮命中 Collect_Skill_Start(其中2次完成探查施放)后仍回到同一循环。挂 max_hit 2 的重试垫封顶:两次内先退出区域地图、把判定权交回上层,耗尽后不再命中→on_error 全 miss→流程以 FAILED 终止且 GUI 可见(自定义 on_error 覆盖默认 Null 兜底,MFA #1219 语义)。注:本节点属通用箱庭导航(Collect_TargetMap1-2/2/3/4 共用),故退路只用通用返回键,不写入任何业务链专属节点。",
+        "template": [
+            "map_tcArrowGE_PC.png"
+        ],
+        "on_error": [
+            "Collect_Telepor_Retry_PC"
+        ]
+    },
+    "Collect_ClickBackOnSecureMap": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "达雷普镇",
+            "達雷普鎮",
+            "雷瓦汀基地",
+            "拉勒凯镇",
+            "罗戴夫镇",
+            "羅戴夫鎮",
+            "安全"
+        ],
+        "target": [
+            90,
+            35,
+            1,
+            1
+        ]
+    },
+    "Collect_OperationsEnd_NORight": {
+        "roi": [
+            217,
+            298,
+            847,
+            84
+        ]
+    },
+    "Collect_MapRight": {
+        "custom_action_param": {
+            "detect_roi": [
+                454,
+                175,
+                369,
+                314
+            ],
+            "loop_limit": 4,
+            "on_changed": "next",
+            "on_unchanged": "loop",
+            "proxy_node": "Agt_Proxy_Blank",
+            "proxy_override": {
+                "action": "Click",
+                "post_delay": 500,
+                "target": [
+                    1027,
+                    345,
+                    3,
+                    3
+                ]
+            },
+            "settle_delay": 1000
+        }
+    },
+    "Collect_FindTeleporCircle0.9": {
+        "custom_action_param": {
+            "detect_roi": [
+                111,
+                90,
+                54,
+                48
+            ],
+            "loop_exhausted": "error",
+            "loop_limit": 5,
+            "on_changed": "next",
+            "on_unchanged": "loop",
+            "proxy_node": "Collect_TeleporCircle_Ico_Enter",
+            "settle_delay": 1000,
+            "threshold": 3.0
+        }
+    },
+    "Collect_TeleporCircle_Ico_Enter": {
+        "roi": [
+            904,
+            555,
+            75,
+            74
+        ],
+        "template": [
+            "IcoHand_PC.png",
+            "IcoHand_PC2.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_FindTeleporCircle": {
+        "desc": "箱庭内找传送阵物件(FeatureMatch)。|[PC覆盖·2026-07-13实录] base count:9在PC时够时不够:23:24一轮命中,23:34同位置圈只匹到4个特征点(box(250,318)定位正确,受相机角度/特效遮挡影响)→filtered空→找商人五路全灭静默。count降3留余量;ratio沿base 0.5。若后续出现误匹再从MFA帧重裁PC特征模板。",
+        "count": 7
+    },
+    "Rec_AreaMap_ButtLift_Tmp": {
+        "roi": [
+            223,
+            319,
+            69,
+            55
+        ]
+    },
+    "Rec_AreaMap_ButtRight_Tmp": {
+        "roi": [
+            990,
+            313,
+            68,
+            73
+        ]
+    },
+    "Cpt_Collect_TargetMapEnd_Ocr": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "达雷普旅馆",
+            "達雷普旅館",
+            "雷瓦汀基地救护站",
+            "雷瓦汀基地救護站",
+            "拉勒凯旅馆",
+            "罗戴夫旅馆",
+            "羅戴夫旅館",
+            "封印指定室",
+            "被遗忘的神殿",
+            "被遺忘的神殿",
+            "学校操场",
+            "學校操場",
+            "禁闭室",
+            "禁閉室",
+            "旅馆$",
+            "旅館$",
+            "安全"
+        ]
+    },
+    "Collect_TargetMap_Special_M14": {
+        "roi": [
+            452,
+            638,
+            378,
+            40
+        ],
+        "expected": [
+            "剑之神殿右侧回廊",
+            "劍之神殿右側迴廊"
+        ]
+    },
+    "Collect_Special_M14_NviMap_Open": {
+        "target": [
+            132,
+            103,
+            10,
+            10
+        ]
+    },
+    "Collect_ClickTelepor_TargetClass_Inactive_PC": {
+        "desc": "[PC新增·2026-08-23 v3] 灰阵门卫·第一段(区域图仍开着的前提门):Or 再跑一次 Collect_ClickTeleporCircleIco(模板命中=区域图开着且有图标,同时刷新其 box 供下游按名引用),next 只放取反色核节点;色核不命中(图标为激活阵)→1.5s 超时→on_error 回 White 正常点击。|为什么要两段:v2 单节点取反色核直接挂候选表,07:14:54 Story_15 实录误报——tp2 点击已传送成功、区域图已关,Skill_Start 那一刻没认到图钉,取反色核拿旧框在野外数白像素(count 5)→误判灰阵→提前 OperationsEnd(靠状态机守护兜回)。离线验证(MaaMCP run_pipeline,08-23 07:40):裸取反色核在野外必命中(复现误报);And[模板,取反色核] 不可用——inverse 在 And 子节点内不生效(两个单跑必命中的取反节点组 And 不命中)。",
+        "recognition": "Or",
+        "any_of": [
+            "Collect_ClickTeleporCircleIco"
+        ],
+        "timeout": 1500,
+        "next": [
+            "Collect_ClickTelepor_Inactive_Color_PC"
+        ],
+        "on_error": [
+            "Collect_ClickTelepor_TargetClass_White",
+            "[JumpBack]Global_WaitingForLoading"
+        ],
+        "focus": "CM.N.PC:传送阵图标色核门"
+    },
+    "Collect_ClickTelepor_Inactive_Color_PC": {
+        "desc": "[PC新增·2026-08-23] 灰阵门卫·第二段:对 Collect_ClickTeleporCircleIco 命中框做亮白像素计数取反(激活阵=白符号+黑底+金环,灰阵=暗灰符号),白像素<20 即灰阵→走 ButNotActive 同一出口结束本卡带。离线量化(720 帧 19x20 框 min(R,G,B)>=215)灰 0 / 金 81;实机 maafw ColorMatch 计数灰阵 5。只会在第一段门(模板仍命中)之后被评估。止血性质:同图另有激活未访阵时本卡带会提前结束;根治(跳过灰阵选下一激活阵/White 挂 max_hit)归 base。",
+        "recognition": "ColorMatch",
+        "roi": "Collect_ClickTeleporCircleIco",
+        "lower": [
+            [
+                200,
+                200,
+                200
+            ]
+        ],
+        "upper": [
+            [
+                255,
+                255,
+                255
+            ]
+        ],
+        "count": 20,
+        "inverse": true,
+        "next": [
+            "Collect_OperationsMain_OperationsEnd"
+        ],
+        "focus": "CM.N.[WRN]PC:首选传送阵为灰色未激活阵,结束本卡带"
+    },
+    "Collect_Telepor_Retry_PC": {
+        "desc": "[PC新增·2026-07-27] 区域地图选点空转救援垫。同 Global_ResetChain_Retry_PC / Arbitrage_Chain_Retry_PC 哲学:无自定义 on_error 的节点超时会走 MFA 默认 Global_Null 兜底,表现为无声空转或假成功。本节点 DirectHit 恒中,先点通用返回键退出区域地图,把控制权交回上层链重新判定(跑商侧即可重新评估 Arbitrage_Sandplay_SeeMerchant——'探查'揭示地图后原本没有任何路径回去重评,这正是 07-27 空转 6 分钟的放大器);max_hit 2 耗尽后不再命中→流程以失败终止,绝不再无声空转。",
+        "max_hit": 2,
+        "post_delay": 1000,
+        "next": [
+            "[JumpBack]Global_BackPageHub_Once"
+        ],
+        "focus": "CTB.[WRN]PC.区域地图选点空转,退出重试(上限2次)"
+    }
+}

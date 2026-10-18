@@ -95,11 +95,16 @@
         ]
     },
     "Rec_<Weekly_VisitCabin_GoIn>_Tpl": {
+        "desc": "[识别]主页,我的小屋。|[PC覆盖·2026-10-18] MainHomeRIceGE 两张都列:base 40x40 与 pc 版(改名 MainHomeRIceGE_PC.png,32x32)各认一部分画面(47份PC日志回放,进小屋18次命中里 base 独占4、pc 独占2)。MaaFw 5.14.3 起同名模板只取后加载的包,不改名 pc 版会顶掉 base 版。",
         "roi": [
             16,
             57,
             343,
             242
+        ],
+        "template": [
+            "MainHomeRIceGE.png",
+            "MainHomeRIceGE_PC.png"
         ]
     },
     "Rec_<Weekly_VisitCabin_GoIn>_Ocr": {

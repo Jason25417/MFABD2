@@ -103,7 +103,8 @@
         "custom_action_param": {
             "node_name": [
                 "SeasonEvent_MamonoFollow_UnChallenged",
-                "SeasonEvent_MamonoFollow_ChallengePassed"
+                "SeasonEvent_MamonoFollow_ChallengePassed",
+                "Even_MamonoFollowUp_lvdown"
             ]
         },
         "anchor": {
@@ -1397,6 +1398,8 @@
         "focus": "E. HP=Ab.此Lv魔兽尚未讨伐..."
     },
     "Even_MamonoFollowUp_lvdown": {
+        "desc": "回退到EASY。max_hit兜底:界面再改版导致EASY识别不到时,不再与MamonoEnter无限互跳",
+        "max_hit": 3,
         "recognition": "And",
         "all_of": [
             "Even_MamonoFollowUp_MamonoEnter"

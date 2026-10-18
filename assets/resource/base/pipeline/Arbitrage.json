@@ -2276,7 +2276,7 @@
         "focus": "[WRN]常规购买不能验证"
     },
     "Arbitrage_ShopOut": {
-        "desc": "[复用.末端]从商店退出去",
+        "desc": "[复用.末端]从商店退出去。退不出去（游戏无响应、返回次数用尽）时，调用方会经 [JumpBack] 反复进来；超时次数过多由 Panic 重启游戏并放弃本任务",
         "recognition": "Or",
         "any_of": [
             "Arbitrage_ItemList_Swip"
@@ -2286,6 +2286,10 @@
             "[JumpBack]Global_BackPageHub_Once",
             "[JumpBack]Global_WaitingForLoading",
             "Global_ToSandBox_Enter"
+        ],
+        "on_error": [
+            "Global_Null_Exception",
+            "Global_Null_Panic"
         ]
     },
     "Arbitrage_Select_Swip": {

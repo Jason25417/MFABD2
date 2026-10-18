@@ -156,6 +156,7 @@ jobs:
       - name: Assemble Android Python dependencies
         working-directory: android-upstream
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AGENT_CORE_TAG: ${{ needs.check.outputs.agent_core_tag }}
           MAAFW_TAG: ${{ needs.check.outputs.maafw_tag }}
         run: |

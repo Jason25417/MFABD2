@@ -159,7 +159,8 @@ def verify_stub_contract():
 
 def real_binding(python_version, maafw_version):
     assert platform.python_version() == python_version, (platform.python_version(), python_version)
-    assert version("MaaFw") == maafw_version, (version("MaaFw"), maafw_version)
+    installed_maafw = version("MaaFw").removeprefix("v")
+    assert installed_maafw == maafw_version, (version("MaaFw"), maafw_version)
     settings = json.loads((ROOT / "android/release.json").read_text(encoding="utf-8"))
     for name, constraint in settings["python_requirements"].items():
         assert constraint.startswith("=="), f"Expected exact Android dependency pin: {name}"

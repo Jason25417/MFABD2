@@ -164,7 +164,7 @@
             284
         ],
         "expected": [
-            "确认"
+            "^确认$"
         ],
         "action": "Click",
         "post_delay": 1500,

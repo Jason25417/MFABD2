@@ -69,6 +69,11 @@ def resize(api, hwnd, budget, target=TARGET):
             if original_size is None:
                 original_size = size
             if size == target:
+                # 一开始就是目标尺寸、本轮也没投递过任何窗口操作：没有待落地的请求，
+                # 稳定等待防的东西不存在。任务边界上框架刚用 post_inactive 撤销了伪最小化，
+                # 窗口正亮着，这 0.5 秒就是用户看到窗口弹出来的时间。
+                if not (restore_requested or exit_requested or resize_requested):
+                    return original_size
                 if stable_since is None:
                     stable_since = budget.clock()
                 if budget.clock() - stable_since >= GEOMETRY_STABLE_WINDOW:

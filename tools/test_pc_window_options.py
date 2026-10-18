@@ -419,6 +419,35 @@ class Contracts(unittest.TestCase):
         self.assertIn('精度可能下降', self.warnings[0])
         self.assertNotIn('不影响准确度', self.warnings[0])
 
+    def _record_minimize(self, api):
+        minimized_at = []
+        minimize = api.minimize
+
+        def record(hwnd):
+            minimized_at.append(self.clock.now)
+            minimize(hwnd)
+
+        api.minimize = record
+        return minimized_at
+
+    def test_untouched_target_size_minimizes_without_stability_wait(self):
+        # 任务边界上框架刚撤销伪最小化，窗口正亮着。尺寸本来就对、也没动过窗口时，
+        # 再等 0.5 秒稳定只会让窗口多亮 0.5 秒（2026-10-18 实机日志）。
+        api = FakeAPI(size=(1920, 1080))
+        minimized_at = self._record_minimize(api)
+        self.prepare(api, resolution='1080p', minimize=True)
+        self.assertEqual(minimized_at, [0.0])
+        self.assertFalse(any(c[0] in ('resize', 'restore', 'exit') for c in api.calls))
+
+    def test_restored_window_still_waits_for_stable_geometry(self):
+        # 还原请求是异步投递的，没有等稳定就最小化，残留的还原会把窗口带回前台。
+        api = FakeAPI(size=(1280, 720), minimized=True)
+        minimized_at = self._record_minimize(api)
+        self.prepare(api, minimize=True)
+        self.assertEqual(api.calls.count(('restore',)), 1)
+        self.assertEqual(len(minimized_at), 1)
+        self.assertGreaterEqual(minimized_at[0], pc.GEOMETRY_STABLE_WINDOW)
+
     def test_pseudo_minimized_correct_size_not_minimized_again(self):
         api = FakeAPI(size=(1280, 720), pseudo=True)
         self.prepare(api, minimize=True)

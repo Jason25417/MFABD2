@@ -189,6 +189,10 @@ class PurchaseCycleTests(unittest.TestCase):
                 owner.continued += 1
                 return True
 
+        # The resource is shared by the whole class. MaaFw 5.13+ rejects re-registering
+        # a name instead of replacing it, so drop the previous test's callbacks first.
+        self.resource.clear_custom_action()
+        self.resource.clear_custom_recognition()
         for name, action in (
             ("PatchPipeline", PatchPipeline()), ("ArbitrageBuyListPrepare", buy.ArbitrageBuyListPrepare()),
             ("ArbitrageBuyScanPrepare", buy.ArbitrageBuyScanPrepare()), ("ArbitrageBuyReady", buy.ArbitrageBuyReady()),

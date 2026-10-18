@@ -326,7 +326,10 @@ def install_agent(target_os):
         # 1. Windows: 嵌入式 Python
         if any(target_os.startswith(p) for p in ["win", "windows"]):
             interface["agent"]["child_exec"] = r"{PROJECT_DIR}/python/python.exe"
-            interface["agent"]["child_args"] = ["-u", "-X", "utf8=1", r"{PROJECT_DIR}/agent/main.py"]
+            # -s：嵌入式 Python 的 ._pth 开着 import site，用户目录
+            # %APPDATA%\Python\Python310\site-packages 会排在包内 site-packages 之前。
+            # 用户自己 pip install --user 过 maafw/numpy 时，Agent 会静默用上那一份。
+            interface["agent"]["child_args"] = ["-u", "-s", "-X", "utf8=1", r"{PROJECT_DIR}/agent/main.py"]
             # pretask 的 exec/args 都不做 {PROJECT_DIR} 占位符展开（协议未定义该机制）。
             # 开发时 args 里写的是脚本相对路径；发布时换成 -c 载荷，让脚本自己从
             # sys.executable 反推安装根，不再依赖 CWD。理由见顶部 PRETASK_* 常量。

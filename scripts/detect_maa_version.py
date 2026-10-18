@@ -20,6 +20,8 @@ ROOT = Path(__file__).resolve().parents[1]
 TAG_PATTERNS = {
     "mfaa_tag": re.compile(r"^#\s*MFAA_TAG=(v[\w.\-]+)"),
     "mfa_core_tag": re.compile(r"^#\s*MFA_CORE_TAG=(v[\w.\-]+)"),
+    # 明知安卓停在哪条次版本线还要发版时填，如 5.12；见 agent_core_tag。
+    "android_maafw_line": re.compile(r"^#\s*ANDROID_MAAFW_LINE=(\d+\.\d+)$"),
 }
 # Upstream tags look like `3.13.15-maafw5.12.3` — CPython version, then ours.
 AGENT_CORE_PATTERN = re.compile(r"^(\d+)\.(\d+)\.(\d+)-maafw(.+)$")
@@ -114,7 +116,7 @@ def release_line(version: str) -> tuple[str, str]:
     raise ValueError(f"版本号 {version} 解析不出主次版本")
 
 
-def agent_core_tag(maafw: str, upstream: Path) -> tuple[str, str]:
+def agent_core_tag(maafw: str, upstream: Path, accepted_line: str = "") -> tuple[str, str]:
     """读上游钉住的 agent core，返回 (tag, 该 core 内嵌的框架版本)。
 
     MaaFwApp 的 Kotlin 侧、agent core 里的 CPython、以及 core 内嵌的框架是一个
@@ -123,7 +125,9 @@ def agent_core_tag(maafw: str, upstream: Path) -> tuple[str, str]:
     core 已自带的 maafw，所以 Python 侧版本无论如何都是 core 那个），跨平台的
     补丁差异才是那个已知可接受的口子。
 
-    差一个 minor 或 major 就不再是"口子"而是分叉，直接停。
+    差一个 minor 或 major 就不再是"口子"而是分叉，默认直接停。只有 requirements.txt
+    用 ANDROID_MAAFW_LINE 点名了安卓所在的那条线（accepted_line），才降为警告：
+    桌面为修内核缺陷先走一步、上游还没跟上时，这是有人拍过板的分叉，不是漂过去的。
     """
     source = upstream / "scripts" / "build_agent_bundle.py"
     if not source.is_file():
@@ -136,13 +140,28 @@ def agent_core_tag(maafw: str, upstream: Path) -> tuple[str, str]:
     if not match:
         raise ValueError(f"上游的 CORE_TAG={tag} 不是 <CPython版本>-maafw<框架版本> 格式")
     pinned = match.group(4)
+    pinned_line = ".".join(release_line(pinned))
+    if accepted_line and release_line(pinned) == release_line(maafw):
+        warn(f"安卓与桌面已回到同一条次版本线 {pinned_line}，requirements.txt 的 ANDROID_MAAFW_LINE 可以删了。")
     if pinned != maafw:
+        if release_line(pinned) != release_line(maafw) and accepted_line == pinned_line:
+            warn(
+                f"安卓用 {pinned}、桌面用 {maafw}，不在同一条次版本线上。requirements.txt 的 "
+                f"ANDROID_MAAFW_LINE={accepted_line} 声明过接受这一点；上游 MaaFwApp 跟上后记得删掉。"
+            )
+            return tag, pinned
         if release_line(pinned) != release_line(maafw):
+            if accepted_line:
+                raise ValueError(
+                    f"requirements.txt 的 ANDROID_MAAFW_LINE={accepted_line} 与上游 MaaFwApp 实际钉的 "
+                    f"{tag}（框架 {pinned}）对不上。上游动过了，重新确认后改这一行。"
+                )
             raise ValueError(
                 f"框架版本分叉：上游 MaaFwApp 钉的 agent core 是 {tag}（框架 {pinned}），"
                 f"而 requirements.txt 钉住的桌面内核是 {maafw}，两者不在同一个次版本线上。"
                 f"补丁号之差可以接受，次版本之差不行。要么换一个 MaaFwApp commit，"
-                f"要么调 requirements.txt 的 MFAA_TAG / MFA_CORE_TAG。"
+                f"要么调 requirements.txt 的 MFAA_TAG / MFA_CORE_TAG；确认要带着分叉发版，"
+                f"就在 requirements.txt 写 # ANDROID_MAAFW_LINE={pinned_line}。"
             )
         warn(
             f"安卓用 {pinned}、桌面用 {maafw}，差一个补丁号。这是已知且接受的："
@@ -179,7 +198,8 @@ def main() -> int:
             emit(version=version, tag=f"v{version}")
         else:
             # 安卓侧的构建一律用 maafw_version，不用桌面探测值——APK 内部必须自洽。
-            tag, version = agent_core_tag(args.maafw, args.upstream)
+            accepted = parse_tags(ROOT / "requirements.txt")["android_maafw_line"]
+            tag, version = agent_core_tag(args.maafw, args.upstream, accepted)
             python_version = tag.split("-maafw", 1)[0]
             emit(agent_core_tag=tag, maafw_version=version, maafw_tag=f"v{version}", python_version=python_version)
     except (ValueError, OSError, subprocess.CalledProcessError) as error:

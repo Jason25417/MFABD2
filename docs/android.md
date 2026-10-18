@@ -27,11 +27,16 @@ APK 文件名为 `MFABD2-<项目版本>-android-arm64.apk`，与桌面 ZIP 同�
 - MaaFwApp 固定 commit `f4f6f220e21e3a1b7b0cf5df4bdbe0ec04c668f7`。
 - **MaaFramework 版本没有一处是手写的。** 桌面那个由 `scripts/detect_maa_version.py` 下载根
   `requirements.txt` 钉住的 MFAAvalonia、用 ctypes 调其 `libMaaFramework.so` 的 `MaaVersion()`
-  读出，与 `install-build.yml` 的 meta job 同源；安卓那个由上游 MaaFwApp 的 `CORE_TAG` 决定。
-  **两者当前差一个补丁号（桌面 5.12.2、安卓 5.12.3），这是有意接受的。**
+  读出（`# MFA_CORE_TAG=` 填了就是覆盖后的版本），与 `install-build.yml` 的 meta job 同源；
+  安卓那个由上游 MaaFwApp 的 `CORE_TAG` 决定。
+  **两者当前不在同一条次版本线上（桌面 5.14.3、安卓 5.12.3），这是有意接受的**：桌面为修
+  Agent 通道堵死的内核缺陷先升了，上游还没跟上。
   安卓侧的原生库 tag、pip 版本、`install.py` 参数、APK 校验期望值全部由**上游那个值**派生——
   上游会丢弃我们钉的 maafw 而用 agent core 自带的，跟着桌面走会让 APK 内部自相矛盾。
-  桌面探测值在安卓这边只做一件事：喂给一致性校验。差一个次版本即停止构建。
+  桌面探测值在安卓这边只做一件事：喂给一致性校验。差补丁号只警告；差一个次版本默认停止构建，
+  除非根 `requirements.txt` 用 `# ANDROID_MAAFW_LINE=主.次` 点名了安卓所在的那条线。
+  点名与上游实际不符时照样停，两边回到同一条线后会提示删掉那一行。
+  同一份 `agent/` 代码因此要同时兼容两条线，例如 5.13 起禁止动作与识别重名。
 - Android agent core 的 tag 形如 `<CPython 版本>-maafw<框架版本>`，**由上游自己钉死**在
   `MaaFwApp/scripts/build_agent_bundle.py` 的 `CORE_TAG` 常量里——它的 Kotlin 侧与 core 里
   那份 CPython/框架是一起验过的组合。`agent-core-tag` 子命令只读那个常量，不替上游挑版本。
@@ -156,8 +161,8 @@ python scripts/verify_android_build.py
 python agent/recognition/test_rdd_hsv_rescue.py
 python scripts/verify_android_apk.py path/to/app-release.apk
 
-python scripts/detect_maa_version.py parse                     # 读 requirements.txt 钉住的 tag
-python scripts/detect_maa_version.py agent-core-tag --maafw 5.12.3
+python scripts/detect_maa_version.py parse                     # 读 requirements.txt 钉住的 tag 与安卓线声明
+python scripts/detect_maa_version.py agent-core-tag --maafw 5.14.3
 ```
 
 `detect` 子命令要有解压好的 MFAAvalonia 才能跑，只在 CI 验证。

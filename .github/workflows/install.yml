@@ -36,6 +36,11 @@ on:
       - "requirements.txt"
   workflow_dispatch:
     inputs:
+      mfaa_commit:
+        type: string
+        description: "自家 MFAA 六位提交号（留空使用 requirements.txt 中的上游版本）"
+        required: false
+        default: ""
       deploy_beta:
         type: boolean
         description: "发布公测版"
@@ -73,6 +78,7 @@ jobs:
           python3 scripts/verify_release_channels.py
           python3 scripts/verify_release_guard.py
           python3 scripts/verify_version_rules.py
+          python3 scripts/verify_mfaa_source.py
       - id: channel
         run: python3 scripts/release_channel.py
 
@@ -89,4 +95,5 @@ jobs:
     uses: ./.github/workflows/install-build.yml
     with:
       version_type: ${{ needs.route.outputs.version_type }}
+      mfaa_commit: ${{ github.event_name == 'workflow_dispatch' && inputs.mfaa_commit || '' }}
     secrets: inherit

@@ -18,6 +18,16 @@ _SUBMENU = "Arbitrage_Cooking_SubMenu"
 _UNLIMITED = 2 ** 32 - 1
 
 
+def inline_recognition(child):
+    """And/Or 内联子识别在 get_node_data 里的识别部分。
+
+    MaaFw 5.14 起导出为 {"sub_name": ..., "recognition": {"type", "param"}}，
+    更早的版本把 type/param 与 sub_name 平铺在同一层。两种都认。
+    """
+    inner = child.get("recognition")
+    return inner if isinstance(inner, dict) else child
+
+
 @dataclass(frozen=True)
 class RecipeEntry:
     entry: str
@@ -101,7 +111,7 @@ class _Reader:
                     raise ValueError(f"菜谱识别引用循环: {child}")
                 names.update(self.recipe_names(self.node(child).get("recognition"), (*visiting, child)))
             elif isinstance(child, dict):
-                names.update(self.recipe_names(child, visiting))
+                names.update(self.recipe_names(inline_recognition(child), visiting))
             else:
                 raise ValueError("菜谱子识别不可解析")
         return names

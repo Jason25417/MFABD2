@@ -184,10 +184,21 @@ def copy_resources_for_target(source, destination, target_os):
     )
 
 
+def install_client_config():
+    """Ship first-launch desktop defaults without packaging an active user config."""
+    template = working_dir / "assets" / "config.template.json"
+    if str(target_os).lower().startswith("android") or not template.is_file():
+        return
+    config_dir = install_path / "config"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(template, config_dir / "config.template.json")
+
+
 def install_resource():
     configure_ocr_model()
 
     copy_resources_for_target(working_dir / "assets" / "resource", install_path / "resource", target_os)
+    install_client_config()
     
     # ================= [MFAA布局文件预配置写入开始] =================
     # 单文件适配: 显式复制 assets/mfa_layout.json 到 install/resource/

@@ -220,8 +220,9 @@ def main():
         import maa.agent  # Select server mode before the first Library call.
     from maa.library import Library
 
+    # No pinned version to compare with: the desktop runtime is whatever CI detects
+    # from MFAAvalonia (or MFA_CORE_TAG). Run it with the package you want to check.
     print("MaaFramework:", Library.version(), flush=True)
-    assert Library.version() == "v5.12.2", "Use the project's pinned desktop runtime"
     if args.agent:
         agent(args.agent, args.mode)
     else:

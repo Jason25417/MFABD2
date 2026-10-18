@@ -4390,7 +4390,7 @@
         }
     },
     "Arbitrage_Cooking_Swip_Page2": {
-        "desc": "翻到第二页（五星料理）。ROI是第二行料理",
+        "desc": "翻到第二页（五星料理）。ROI是第二行料理。翻完仍认出第一页特征时，由 Swip_Page2_Stuck 停用本节点",
         "recognition": "TemplateMatch",
         "roi": [
             581,
@@ -4423,7 +4423,29 @@
                 168
             ]
         },
+        "next": [
+            "Arbitrage_Cooking_Swip_Page2_Stuck",
+            "Global_Null"
+        ],
         "focus": "Arb.下滑料理页面"
+    },
+    "Arbitrage_Cooking_Swip_Page2_Stuck": {
+        "desc": "下滑后第一页特征还在：配方只有一页，列表滑不动。本任务内停用 Swip_Page2，调用方改走自己的其余分支，不再反复下滑",
+        "recognition": "Or",
+        "any_of": [
+            "Arbitrage_Cooking_Swip_Page2"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "PatchPipeline",
+        "custom_action_param": {
+            "target": "Arbitrage_Cooking_Swip_Page2",
+            "patch": {
+                "enabled": false
+            }
+        },
+        "post_delay": 0,
+        "focus": "Arb.料理只有一页，停止下滑"
     },
     "Arbitrage_Cooking_B10_Entry": {
         "desc": "「地狱火紫菜包饭」入口。先在当前页试识别，看不到就翻页再试。max_hit保证MenuEnter每轮往下挑一个。",

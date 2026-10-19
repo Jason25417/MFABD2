@@ -141,6 +141,7 @@
         "focus": "小地图发现商人"
     },
     "Arbitrage_NviGuide_Butt": {
+        "desc": "点开寻路列表。按钮是开关，列表打开后本模板认不到；点了列表不出来（游戏不响应点击）时由 Butt_Retry 补点，用完走 Butt_GiveUp 重启游戏",
         "recognition": "TemplateMatch",
         "roi": [
             208,
@@ -156,9 +157,36 @@
         "action": "Click",
         "next": [
             "Arbitrage_NviGuide_Merchant_Ocr",
-            "Arbitrage_NviGuide_Butt"
+            "Arbitrage_NviGuide_Butt_Retry",
+            "Arbitrage_NviGuide_Butt_GiveUp"
         ],
         "focus": "点击小地图导航按钮"
+    },
+    "Arbitrage_NviGuide_Butt_Retry": {
+        "desc": "列表没打开、按钮还在：回 Butt 再点。max_hit 按整个任务计，正常运行每次任务最多用 1 次",
+        "max_hit": 10,
+        "recognition": "Or",
+        "any_of": [
+            "Arbitrage_NviGuide_Butt"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "Arbitrage_NviGuide_Butt"
+        ]
+    },
+    "Arbitrage_NviGuide_Butt_GiveUp": {
+        "desc": "补点用完仍打不开寻路列表，按游戏无响应处理：Panic 重启游戏并放弃本任务",
+        "recognition": "Or",
+        "any_of": [
+            "Arbitrage_NviGuide_Butt"
+        ],
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "Global_Null_Panic"
+        ],
+        "focus": "[WRN]寻路按钮连点 11 次列表仍未打开,重启游戏"
     },
     "Arbitrage_NviGuide_Merchant_Ocr": {
         "recognition": "OCR",

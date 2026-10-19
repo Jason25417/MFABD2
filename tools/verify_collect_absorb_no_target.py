@@ -45,6 +45,7 @@ ENTRY = "Collect_Skill_Tap3_Enable"
 ABSORB = "Collect_Skill3_2"
 USED = "Collect_Skill3_2_Used"
 NO_TARGET = "Collect_Skill3_2_NoTarget"
+RETRY = "Collect_Skill3_2_Retry"
 RETRY_COUNT = "Collect_Skill3_2_Retry_Count"
 GIVE_UP = "Collect_Skill3_2_GiveUp"
 CLICKS_LIMIT = 6  # 1 次 + CheckTag max 5 次补点
@@ -138,7 +139,10 @@ class AbsorbNoTargetTests(unittest.TestCase):
         used_next = skills[USED]["next"]
         self.assertEqual(skills[NO_TARGET]["next"], used_next)
         self.assertEqual(skills[GIVE_UP]["next"], used_next)
+        self.assertEqual(skills[ABSORB]["next"][:2], [NO_TARGET, RETRY])
         patches = launcher["Collect_OnlyOnce_Switch"]["custom_action_param"]["patches"]
+        # 快照整份替换 next：两个新分支必须排在最前，否则单章模式下认不到提示、也不补点
+        self.assertEqual(patches[ABSORB]["next"][:2], [NO_TARGET, RETRY])
         self.assertNotIn(ABSORB, patches[ABSORB]["next"])
         for name in (NO_TARGET, GIVE_UP):
             self.assertEqual(patches[name]["next"], ["[JumpBack]Collect_OnlyOnce_SkillUsed", *used_next])

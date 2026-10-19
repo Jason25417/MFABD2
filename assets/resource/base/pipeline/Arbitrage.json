@@ -125,6 +125,7 @@
         "focus": "箱庭模块启动"
     },
     "Arbitrage_Sandplay_SeeMerchant": {
+        "desc": "小地图认到商人，转入寻路。每次寻路前清零 NviGuide_Butt 的命中计数：重启后重新寻路、补买和出售再次寻路都要从这里重新进入 Butt",
         "recognition": "TemplateMatch",
         "roi": [
             163,
@@ -135,12 +136,19 @@
         "template": [
             "Map_Merchant.png"
         ],
+        "action": "Custom",
+        "custom_action": "ClearNodeHitCount",
+        "custom_action_param": {
+            "node_name": "Arbitrage_NviGuide_Butt"
+        },
         "next": [
             "Arbitrage_NviGuide_Butt"
         ],
         "focus": "小地图发现商人"
     },
     "Arbitrage_NviGuide_Butt": {
+        "desc": "点开寻路列表，连点 11 次仍打不开就重启游戏。按钮是开关，列表打开后本模板认不到，自引用不会把已打开的列表点关。on_error 不经 Exception 直接 Panic：游戏不响应点击时退栈会掉进 Global_ToHomePage_HomeButton 同样无限连点；Panic 用满 3 次后无节点接住，任务判失败",
+        "max_hit": 11,
         "recognition": "TemplateMatch",
         "roi": [
             208,
@@ -154,9 +162,13 @@
         "green_mask": true,
         "pre_delay": 500,
         "action": "Click",
+        "timeout": 5000,
         "next": [
             "Arbitrage_NviGuide_Merchant_Ocr",
             "Arbitrage_NviGuide_Butt"
+        ],
+        "on_error": [
+            "Global_Null_Panic"
         ],
         "focus": "点击小地图导航按钮"
     },

@@ -2,6 +2,7 @@
     "Daily_HomePage": {
         "timeout": 2000,
         "next": [
+            "Env_AgentLost_Stop",
             "[JumpBack]Daily_HomePage_Hub",
             "[JumpBack]Daily_Union_Hub",
             "[JumpBack]Daily_VisitCabin_Hub",
@@ -60,7 +61,9 @@
         "desc": "主菜单,公会存在红点标记",
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             298,
             88,
@@ -337,7 +340,9 @@
     "Daily_GetBusinRewardBack": {
         "desc": "点击领取全部返回",
         "recognition": "Or",
-        "any_of": ["Rec_Reward_Ocr"],
+        "any_of": [
+            "Rec_Reward_Ocr"
+        ],
         "action": "Click",
         "target": [
             1,
@@ -614,7 +619,9 @@
                     163,
                     49
                 ],
-                "expected": ["全部获得"]
+                "expected": [
+                    "全部获得"
+                ]
             },
             "Sub_Ocr_Enable_Clr"
         ],
@@ -626,7 +633,9 @@
     },
     "Daily_Busin_DiaDetour_Reward": {
         "recognition": "And",
-        "all_of": ["Daily_GetBusinRewardBack"],
+        "all_of": [
+            "Daily_GetBusinRewardBack"
+        ],
         "action": "Click",
         "target": [
             1,
@@ -635,7 +644,9 @@
     },
     "Daily_Busin_DecorCoin_LocReset_Enter": {
         "recognition": "And",
-        "all_of": ["Daily_Busin_Entered"],
+        "all_of": [
+            "Daily_Busin_Entered"
+        ],
         "next": [
             "Daily_Busin_DecorCoin_Move_1",
             "Daily_Busin_DecorCoin_Move_2",
@@ -845,7 +856,9 @@
     "Daily_Square_Hub": {
         "desc": "走到广场的公共子程序。日常祈求(经Daily_Square_Switch进来)与钓鱼(Fishing_Move_Hub直接进来)共用这条路,所以这里既不挂存档闸也不挂enabled抓手,两者都在Daily_Square_Switch上",
         "max_hit": 1,
-        "anchor": {"QCPack": "Daily_Square_ToSquare"},
+        "anchor": {
+            "QCPack": "Daily_Square_ToSquare"
+        },
         "next": [
             "Daily_FantasiaSquare",
             "[JumpBack]Global_BackToQC_Lifeplay_Anc",
@@ -872,7 +885,9 @@
             0,
             0
         ],
-        "anchor": {"QCPack": ""},
+        "anchor": {
+            "QCPack": ""
+        },
         "post_delay": 2000,
         "timeout": 3000,
         "next": [
@@ -1095,9 +1110,13 @@
     "Daily_Intimacy_Ready": {
         "desc": "在主菜单,准备",
         "recognition": "Or",
-        "any_of": ["Global_ToHomePage_Enter"],
+        "any_of": [
+            "Global_ToHomePage_Enter"
+        ],
         "timeout": 3000,
-        "next": ["Daily_Intimacy_Intnet"]
+        "next": [
+            "Daily_Intimacy_Intnet"
+        ]
     },
     "Daily_Intimacy_Intnet": {
         "recognition": "And",
@@ -1117,7 +1136,9 @@
         "desc": "[检测]主页亲密度存在红点",
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             297,
             174,
@@ -1134,7 +1155,9 @@
             78,
             167
         ],
-        "template": ["Intimacy_Intnet.png"]
+        "template": [
+            "Intimacy_Intnet.png"
+        ]
     },
     "Daily_Intimacy_Enter": {
         "recognition": "OCR",
@@ -1224,7 +1247,9 @@
             "tag": "Intimacy_Switch_Set",
             "value": 1
         },
-        "next": ["Daily_Intimacy_Set_FirstPerson"]
+        "next": [
+            "Daily_Intimacy_Set_FirstPerson"
+        ]
     },
     "Daily_Intimacy_Switch_Turn": {
         "recognition": "Custom",
@@ -1239,7 +1264,9 @@
             "tag": "Intimacy_Switch_Turn",
             "value": 1
         },
-        "next": ["Daily_Intimacy_Turn_NextPerson"]
+        "next": [
+            "Daily_Intimacy_Turn_NextPerson"
+        ]
     },
     "Daily_Intimacy_Set_FirstPerson": {
         "desc": "设定第一位人员左边",
@@ -1306,11 +1333,15 @@
             151,
             62
         ],
-        "expected": ["^([1-9]|1[0-9])$"],
-        "replace": [[
+        "expected": [
+            "^([1-9]|1[0-9])$"
+        ],
+        "replace": [
+            [
                 "\\D",
                 ""
-            ]]
+            ]
+        ]
     },
     "Daily_Intimacy_Up_MSG": {
         "recognition": "OCR",
@@ -1336,7 +1367,9 @@
             394,
             86
         ],
-        "template": ["Talk_Status.png"],
+        "template": [
+            "Talk_Status.png"
+        ],
         "post_delay": 3000,
         "next": [
             "[JumpBack]PVP_PVPMes2",
@@ -1349,7 +1382,9 @@
     "Daily_Intimacy_TalkSkip": {
         "desc": "点击对话快进",
         "recognition": "Or",
-        "any_of": ["Fishing_InMap_TalkSkip"],
+        "any_of": [
+            "Fishing_InMap_TalkSkip"
+        ],
         "action": "Click",
         "post_delay": 1000,
         "timeout": 10000
@@ -1357,7 +1392,9 @@
     "Daily_Intimacy_TalkSkip_Ck": {
         "desc": "对话快进可能出现的确认框",
         "recognition": "Or",
-        "any_of": ["Fishing_InMap_TalkSkip_Ck"],
+        "any_of": [
+            "Fishing_InMap_TalkSkip_Ck"
+        ],
         "action": "Click",
         "post_delay": 2000
     },
@@ -1369,13 +1406,17 @@
             522,
             321
         ],
-        "expected": ["^.{2,}$"],
+        "expected": [
+            "^.{2,}$"
+        ],
         "action": "Click",
         "post_delay": 1500
     },
     "Daily_Intimacy_Talk_Out": {
         "recognition": "Or",
-        "any_of": ["Daily_Intimacy_CatalogCard"],
+        "any_of": [
+            "Daily_Intimacy_CatalogCard"
+        ],
         "focus": "一轮谈心结束"
     },
     "Daily_Intimacy_Turn_NextPerson": {
@@ -1414,7 +1455,9 @@
         ],
         "expected": "^0",
         "only_rec": true,
-        "next": ["Daily_Intimacy_End"],
+        "next": [
+            "Daily_Intimacy_End"
+        ],
         "focus": "谈心次数已耗尽"
     },
     "Daily_Intimacy_End": {
@@ -1427,7 +1470,9 @@
             "cycle_type": "g_daily"
         },
         "post_delay": 0,
-        "next": ["Global_ToHomePage"],
+        "next": [
+            "Global_ToHomePage"
+        ],
         "focus": "亲密度谈心完成,已记录"
     },
     "Daily_Intimacy_Swip": {
@@ -1439,7 +1484,9 @@
             92,
             88
         ],
-        "expected": ["^[a-zA-Z\u4e00-\u9fa5]+$"],
+        "expected": [
+            "^[a-zA-Z\u4e00-\u9fa5]+$"
+        ],
         "action": "Custom",
         "custom_action": "SmartSwipe",
         "custom_action_param": {
@@ -1469,7 +1516,9 @@
             "retry_times": 2,
             "threshold": 5.0
         },
-        "next": ["Daily_Intimacy_Swich_Reset"],
+        "next": [
+            "Daily_Intimacy_Swich_Reset"
+        ],
         "on_error": [
             "Global_ToHomePage",
             "Global_Null"
@@ -1484,6 +1533,8 @@
                 "Intimacy_Switch_Turn"
             ]
         },
-        "next": ["Daily_Intimacy_CatalogCard"]
+        "next": [
+            "Daily_Intimacy_CatalogCard"
+        ]
     }
 }

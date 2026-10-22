@@ -3,6 +3,7 @@
         "desc": "肉鸽塔日常入口,本游戏日已完成则跳过",
         "timeout": 1,
         "next": [
+            "Env_AgentLost_Stop",
             "Redemption_Daily_Switch"
         ]
     },
@@ -15,7 +16,9 @@
             "cycle_type": "g_daily"
         },
         "pre_delay": 0,
-        "anchor": {"QCPack": "Redemption_ToPack"},
+        "anchor": {
+            "QCPack": "Redemption_ToPack"
+        },
         "post_delay": 0,
         "next": [
             "Redemption_Mapck",
@@ -45,7 +48,9 @@
             0,
             0
         ],
-        "anchor": {"QCPack": ""},
+        "anchor": {
+            "QCPack": ""
+        },
         "post_delay": 2000,
         "timeout": 3000,
         "next": [
@@ -89,8 +94,12 @@
             229,
             51
         ],
-        "template": ["Evil_Coin.png"],
-        "threshold": [0.75]
+        "template": [
+            "Evil_Coin.png"
+        ],
+        "threshold": [
+            0.75
+        ]
     },
     "Rec_EvilCuff": {
         "desc": "[识别]恶魔城代币",
@@ -101,7 +110,9 @@
             202,
             46
         ],
-        "template": ["Evil_Buff.png"]
+        "template": [
+            "Evil_Buff.png"
+        ]
     },
     "Redemption_Evil_Move": {
         "recognition": "Or",
@@ -295,7 +306,9 @@
             220,
             105
         ],
-        "expected": ["快速战斗"],
+        "expected": [
+            "快速战斗"
+        ],
         "pre_delay": 0,
         "post_delay": 0,
         "timeout": 8000,

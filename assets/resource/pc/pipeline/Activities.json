@@ -1,0 +1,481 @@
+{
+    "Activities_Call_Mail_Start": {
+        "desc": "option[进入前先领取邮件]:检测主页邮件红点。|[PC覆盖] 与Mail_NewRed同一主页邮件图标红点,base roi[1003,14,64,58]按安卓→[1055,10,60,60](同pc/Mail.json的Mail_NewRed)。算法继承base的RedDotDetector(Agt_RedDot_Preset)。",
+        "roi": [
+            1055,
+            10,
+            60,
+            60
+        ]
+    },
+    "Activities_InIndex": {
+        "desc": "主页活动入口红点检测进入活动页。|[PC覆盖] 主页底部菜单整体左移,活动图标720中心x593;红点在图标右上角720(611,645)(native(916,968)),base roi[694,611,54,56]按安卓→[595,632,35,30]。target_offset继承base[-5,5]。实机验证有红点→点击进入活动页。",
+        "roi": [
+            593,
+            625,
+            36,
+            31
+        ],
+        "target_offset": [
+            -10,
+            10,
+            0,
+            0
+        ]
+    },
+    "Activities_Index": {
+        "desc": "进入活动页确认(OCR标题'活动')。|[PC覆盖] 720标题'活动'在box(152,13,85,39),base roi[108,110,529,483]按安卓罩不到顶部标题→[148,8,95,45]。",
+        "roi": [
+            148,
+            8,
+            95,
+            45
+        ],
+        "expected": [
+            "活动",
+            "活動"
+        ]
+    },
+    "Activities_FindActive": {
+        "desc": "左侧列表竖条扫描红点选可领活动。|[PC覆盖] 红点在活动卡片右上角(x同列~335-350)。【2026-07-03实机定案】PC 720列表小红点仅12×11px,感叹号断层被抗锯齿糊平→检测器gap分项恒0,无gap置信上限0.55(权重gap0.45/vert0.35/white0.15/cent0.05),实测conf 0.442<Panoram预设阈0.5永远miss(log stage=confidence实锤,内布利斯Pickup红点漏检)。preset模式不支持参数覆盖→改独立模式(参数照抄Panoram)+min_confidence降0.4(仍高于精准roi默认0.25,靠enclosed拓扑+vert防杂红)。roi左扩补回被切2px(红点box x335起,原x337切左缘),y按实测列表可视区(卡片y95~600)扩[330,100,30,460](原y173-527首尾卡红点会漏)。点红点后左下偏选卡片主体target_offset[-85,30]。【2026-08-29重校准】检测器已升v2权重(vert0.45/white0.45/gap0.06/cent0.04),gap不再是主轴,07-03降阈的前提失效;0.4阈值破坏v2硬不变量(阈值须>最大单项权重0.45,强制竖长+偏白两项背书),致WAY OF THE DEMON横幅红美术(9x13竖条,white=0.04无白芯)以conf 0.503误判为红点→无可领活动22轮无界环。恢复v2默认0.55(真红点v2实测0.64~0.67,余量0.09);若PC糊红点回归漏检(log stage=confidence),按v2实测分回调,勿直接回0.4。",
+        "custom_recognition_param": {
+            "gap_ratio": 0.35,
+            "hsv_ranges": [
+                {
+                    "lower": [
+                        0,
+                        140,
+                        120
+                    ],
+                    "upper": [
+                        12,
+                        255,
+                        255
+                    ]
+                },
+                {
+                    "lower": [
+                        165,
+                        140,
+                        120
+                    ],
+                    "upper": [
+                        180,
+                        255,
+                        255
+                    ]
+                }
+            ],
+            "min_confidence": 0.55,
+            "red_area": [
+                50,
+                450
+            ]
+        },
+        "roi": [
+            330,
+            100,
+            30,
+            460
+        ],
+        "target_offset": [
+            -85,
+            30,
+            0,
+            0
+        ]
+    },
+    "Activities_GetAll": {
+        "desc": "活动任务页'全部领取'(领代币/常规奖励)。|[PC覆盖] 720'全部领取'在box(960,507,57,19)中心(989,516)右下角,base roi[544,527,595,37]按安卓在中间偏左罩不到→[950,503,75,25]。实机验证:活动任务'全部领取'领到拼图代币(弹REWARD触控笔)。",
+        "roi": [
+            431,
+            486,
+            632,
+            57
+        ],
+        "expected": [
+            "全部领取",
+            "全部領取"
+        ]
+    },
+    "Activities_GetRoll": {
+        "roi": [
+            991,
+            463,
+            88,
+            38
+        ],
+        "expected": [
+            "自动进行",
+            "自動進行"
+        ]
+    },
+    "Activities_GetRoll_AutoOff": {
+        "roi": [
+            1003,
+            502,
+            12,
+            14
+        ]
+    },
+    "Activities_GetRoll_AutoOn": {
+        "roi": [
+            1002,
+            499,
+            58,
+            22
+        ]
+    },
+    "Activities_GetBorn": {
+        "roi": [
+            546,
+            473,
+            98,
+            65
+        ],
+        "expected": [
+            "兑换[0-9]+次",
+            "交换[0-9]+次"
+        ]
+    },
+    "Activities_GetBorn2": {
+        "roi": [
+            636,
+            369,
+            121,
+            89
+        ],
+        "expected": [
+            "确认",
+            "確認"
+        ]
+    },
+    "Activities_GetPinTu": {
+        "desc": "拼图活动'全部解锁'(用代币一键解锁领奖)。|[PC覆盖] 720拼图'全部解锁'在box(957,487,64,24)中心(989,499)右下角,base roi[1002,514,120,49]按安卓→[950,485,75,28]。实机验证:有代币时点击全部解锁→弹REWARD多物品;旁边[820,499]'即刻刷新'勿点。",
+        "roi": [
+            950,
+            485,
+            75,
+            50
+        ],
+        "expected": [
+            "全部解锁",
+            "開啟全部"
+        ]
+    },
+    "Activities_GetBingo": {
+        "desc": "宾果活动'全部解锁'。|[PC覆盖] 720宾果'全部解锁'在box(571,493,61,20)中心(601,503)中间偏左(与拼图右下角位置不同,base本就区分),base roi[533,518,119,54]按安卓→[565,488,70,24]。坐标OCR确认;宾果券不足时按钮禁用(本次无券未触发领取),领取行为待MFA复验。",
+        "roi": [
+            565,
+            488,
+            70,
+            57
+        ],
+        "expected": [
+            "全部解锁",
+            "開啟全部"
+        ]
+    },
+    "Activities_Roulette": {
+        "expected": [
+            "1次免费",
+            "1次免費"
+        ]
+    },
+    "Activities_Roulette_Pay_CkIn": {
+        "all_of": [
+            {
+                "sub_name": "OCR",
+                "recognition": "OCR",
+                "roi": [
+                    934,
+                    481,
+                    136,
+                    63
+                ],
+                "expected": [
+                    "旋转",
+                    "^轉[0-9]+次$"
+                ]
+            },
+            "Sub_Ocr_Enable_Clr"
+        ]
+    },
+    "Activities_FreeClothing": {
+        "desc": "[PC覆盖·2026-09-14] 0911 联动活动「Chained Soldier 2」免费+5强化服装页 PC 首次出现。base target[1047,204] 按安卓布局,PC 紧凑面板的「完成/领取」钮实测在(998,236)(on_error 帧 06:01:59);位移量与同页 GetRoll(-77)/GetPinTu(-52) 覆盖同族。",
+        "roi": [
+            391,
+            187,
+            486,
+            347
+        ],
+        "expected": [
+            "强化免费赠送",
+            "獲得限定[+5]",
+            "强化服装的机会",
+            "強化服裝的機會",
+            "\\+5强化"
+        ],
+        "target": [
+            998,
+            236,
+            1,
+            1
+        ]
+    },
+    "Activities_FreeClothing_Ty2": {
+        "desc": "[PC覆盖·2026-09-14] 逐行领取钮列。base roi[1060,284,86,269] 在 PC 帧内最高仅 0.32(全空)→next 超时→无 on_error→Global_Null 假成功,活动页任务 48 秒静默结束、其余活动全跳过。离线全帧匹配 Ac_Getbutton.png 真实命中 (1011,315) 分 0.713(1080p 降采样帧),行距 ~76px;roi 左移覆盖 x995-1065、y 不变。threshold 0.65:实测 0.713、全帧次高峰 ≤0.515,余量充足;原生 720p 帧分应更高。",
+        "roi": [
+            995,
+            284,
+            70,
+            269
+        ],
+        "threshold": [
+            0.65
+        ]
+    },
+    "Activities_PaidDiamonds": {
+        "roi": [
+            695,
+            478,
+            93,
+            45
+        ],
+        "expected": [
+            "免费1次",
+            "1次免費",
+            "免費1次"
+        ]
+    },
+    "Activities_PaidDiamonds_Sub": {
+        "expected": [
+            "购买",
+            "購買"
+        ]
+    },
+    "Activities_ResultBack": {
+        "desc": "抽卡/活动结果页返回。|[PC覆盖] OCR'活动':base roi[313,139,334,441]→720[148,8,95,45];target返回箭头base[120,35]→(15,20)。",
+        "target": [
+            108,
+            29,
+            5,
+            5
+        ]
+    },
+    "Activities_Slip": {
+        "desc": "下滑左侧活动列表寻找活动。|[PC覆盖] OCR'活动'确认仍在活动页:base roi[165,12,347,606]→720[140,8,230,560];Swipe在左侧列表列上滑:base begin/end[210,300]->[210,100]→720 begin(260,400)->end(260,133)。实机验证swipe生效(fast duration1500;slow3000曾被当长按无效),滚出宾果/活动任务/拼图等下半屏活动。|[2026-07-10行为修订] base自环next无滑动预算,PC终止词失效当晚连滑53次(00:40起实录)|[2026-08-23验尸] 上游bfde3d5(08-15)把base迁到SmartAction的proxy_override参数形,本PC覆盖仍是旧SmartSwipe形(顶层begin/end+retry_times+Custom_Proxy_Swipe);custom_action_param整字段替换→proxy_override被抹,代理节点无坐标,MaaFw在全屏框内随机取点滑(maafw实录begin[611,554]/[761,7]),diff=0.00即判到底.本次重写为新形:坐标入proxy_override(代理换Agt_Proxy_Blank并补post_delay1000),retry_times1→unchanged_streak2(=1+n忠实迁移,base为3).08-15起PC活动页首屏以下奖励被静默跳过(02:28三次diff=0.00实录).",
+        "custom_action_param": {
+            "detect_roi": [
+                218,
+                188,
+                129,
+                53
+            ],
+            "on_changed": "next",
+            "on_unchanged": "error",
+            "proxy_node": "Agt_Proxy_Blank",
+            "proxy_override": {
+                "action": "Swipe",
+                "begin": [
+                    260,
+                    400
+                ],
+                "duration": 1000,
+                "end": [
+                    260,
+                    133
+                ],
+                "end_hold": 1000,
+                "post_delay": 1000
+            },
+            "settle_delay": 2000,
+            "threshold": 3.0,
+            "unchanged_streak": 2
+        }
+    },
+    "Activities_Fin": {
+        "desc": "退出活动页返回主页。|[PC覆盖] OCR'活动'标题:base roi[170,10,124,60]→720[148,8,95,45];base target[120,35]点返回区→PC点左上返回箭头(15,20)(native(22,30),实机验证回主页)。",
+        "target": [
+            15,
+            20,
+            1,
+            1
+        ]
+    },
+    "Activities_Slip_D2": {
+        "desc": "下滑计数2/3。|[PC新增·2026-07-10] 滑后无红点无底标才会走到这里;找到红点由FindActive领取并经Index复位回Slip(D1)重新计数。",
+        "recognition": "And",
+        "all_of": [
+            "Activities_Index"
+        ],
+        "action": "Swipe",
+        "begin": [
+            260,
+            400,
+            1,
+            1
+        ],
+        "end": [
+            260,
+            133,
+            1,
+            1
+        ],
+        "end_hold": [
+            1000
+        ],
+        "duration": [
+            1000
+        ],
+        "next": [
+            "Activities_FindActive",
+            "Activities_GetAllRe",
+            "Activities_Slip_D3"
+        ],
+        "on_error": [
+            "Activities_Fin"
+        ],
+        "focus": "GA.滑动寻找活动-下2"
+    },
+    "Activities_Slip_D3": {
+        "desc": "下滑计数3/3。|[PC新增·2026-07-10] 连续三次下滑无红点→调头进上滑链。",
+        "recognition": "And",
+        "all_of": [
+            "Activities_Index"
+        ],
+        "action": "Swipe",
+        "begin": [
+            260,
+            400,
+            1,
+            1
+        ],
+        "end": [
+            260,
+            133,
+            1,
+            1
+        ],
+        "end_hold": [
+            1000
+        ],
+        "duration": [
+            1000
+        ],
+        "next": [
+            "Activities_FindActive",
+            "Activities_GetAllRe",
+            "Activities_Slip_U1"
+        ],
+        "on_error": [
+            "Activities_Fin"
+        ],
+        "focus": "GA.滑动寻找活动-下3"
+    },
+    "Activities_Slip_U1": {
+        "desc": "上滑计数1/3。|[PC新增·2026-07-10] 入口两个:下滑三连无果调头,或列表见底(NoFindAndInEnd)提前折返,回扫上方漏领红点。|[2026-07-11帧校准]U滑起点原(260,133)在列表容器上方背景处,拖拽抓不住列表致上滑空转;实测列表y≈168-545,起终点收进容器内(200→467,行程267px与下滑对称)。",
+        "recognition": "And",
+        "all_of": [
+            "Activities_Index"
+        ],
+        "action": "Swipe",
+        "begin": [
+            260,
+            200,
+            1,
+            1
+        ],
+        "end": [
+            260,
+            467,
+            1,
+            1
+        ],
+        "end_hold": [
+            1000
+        ],
+        "duration": [
+            1000
+        ],
+        "next": [
+            "Activities_FindActive",
+            "Activities_GetAllRe",
+            "Activities_Slip_U2"
+        ],
+        "on_error": [
+            "Activities_Fin"
+        ],
+        "focus": "GA.滑动寻找活动-上1"
+    },
+    "Activities_Slip_U2": {
+        "desc": "上滑计数2/3。|[PC新增·2026-07-10]|[2026-07-11帧校准]U滑起点原(260,133)在列表容器上方背景处,拖拽抓不住列表致上滑空转;实测列表y≈168-545,起终点收进容器内(200→467,行程267px与下滑对称)。",
+        "recognition": "And",
+        "all_of": [
+            "Activities_Index"
+        ],
+        "action": "Swipe",
+        "begin": [
+            260,
+            200,
+            1,
+            1
+        ],
+        "end": [
+            260,
+            467,
+            1,
+            1
+        ],
+        "end_hold": [
+            1000
+        ],
+        "duration": [
+            1000
+        ],
+        "next": [
+            "Activities_FindActive",
+            "Activities_GetAllRe",
+            "Activities_Slip_U3"
+        ],
+        "on_error": [
+            "Activities_Fin"
+        ],
+        "focus": "GA.滑动寻找活动-上2"
+    },
+    "Activities_Slip_U3": {
+        "desc": "上滑计数3/3。|[PC新增·2026-07-10] 连续上滑三次无红点=遍历完成,next耗尽走on_error→Fin收尾。timeout收短免空等。|[2026-07-11帧校准]U滑起点原(260,133)在列表容器上方背景处,拖拽抓不住列表致上滑空转;实测列表y≈168-545,起终点收进容器内(200→467,行程267px与下滑对称)。",
+        "recognition": "And",
+        "all_of": [
+            "Activities_Index"
+        ],
+        "action": "Swipe",
+        "begin": [
+            260,
+            200,
+            1,
+            1
+        ],
+        "end": [
+            260,
+            467,
+            1,
+            1
+        ],
+        "end_hold": [
+            1000
+        ],
+        "duration": [
+            1000
+        ],
+        "timeout": 6000,
+        "next": [
+            "Activities_FindActive",
+            "Activities_GetAllRe"
+        ],
+        "on_error": [
+            "Activities_Fin"
+        ],
+        "focus": "GA.滑动寻找活动-上3(收尾)"
+    }
+}

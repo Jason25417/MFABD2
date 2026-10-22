@@ -1,0 +1,809 @@
+{
+    "Collect_QC_RewardSwitch_Off_Click": {
+        "roi": [
+            1150,
+            570,
+            46,
+            27
+        ],
+        "target": [
+            1169,
+            582,
+            3,
+            3
+        ]
+    },
+    "Collect_QuickCart_SelectType_StoryPack": {
+        "roi": [
+            15,
+            563,
+            1105,
+            49
+        ],
+        "expected": [
+            "剧情游戏卡",
+            "故事遊戲卡"
+        ]
+    },
+    "Collect_QuickCart_SelectType_CharacterPack": {
+        "roi": [
+            15,
+            563,
+            1105,
+            49
+        ],
+        "expected": [
+            "角色游戏卡",
+            "角色遊戲卡"
+        ]
+    },
+    "Collect_QuickCart_SelectType_EventPack": {
+        "roi": [
+            15,
+            563,
+            1105,
+            49
+        ],
+        "expected": [
+            "活动游戏卡",
+            "活動遊戲卡"
+        ]
+    },
+    "Collect_QuickCart_SelectType_ManagerPack": {
+        "roi": [
+            15,
+            563,
+            1105,
+            49
+        ],
+        "expected": [
+            "店长游戏卡",
+            "店長遊戲卡"
+        ]
+    },
+    "Collect_QuickCart_SelectType_BattleplayPack": {
+        "roi": [
+            15,
+            563,
+            1105,
+            49
+        ],
+        "expected": [
+            "战斗玩法游戏卡",
+            "戰鬥遊戲卡"
+        ]
+    },
+    "Collect_QuickCart_SelectType_LifeplayPack": {
+        "roi": [
+            15,
+            563,
+            1105,
+            49
+        ],
+        "expected": [
+            "生活玩法游戏卡",
+            "生活遊戲卡"
+        ]
+    },
+    "Collect_QuickCart_EventPack_OcrCheck": {
+        "desc": "PC:选中态页签文字框仅65x12=780px,base的count 500需64%覆盖率,PC字形上限约48%(实测373/374)恒判负->SelectType自环无界;下调至300(与CharacterPack同lower同值,PC实测406通过),未选中态实测0,分离度充足",
+        "count": 300
+    },
+    "Collect_QuickCart_ManagerPack_OcrCheck": {
+        "desc": "PC:同EventPack,base count 500在PC不可达,预防性下调300",
+        "count": 300
+    },
+    "Collect_QuickCart_BattleplayPack_OcrCheck": {
+        "desc": "PC:同EventPack,base count 500在PC不可达,预防性下调300",
+        "count": 300
+    },
+    "Collect_QuickCart_LifeplayPack_OcrCheck": {
+        "desc": "PC:同EventPack,base count 500在PC不可达,预防性下调300",
+        "count": 300
+    },
+    "Rec_Collect_PackBadgesReady_Tpl": {
+        "roi": [
+            0,
+            678,
+            1240,
+            32
+        ],
+        "template": [
+            "Pack_Pickup_PC.png",
+            "Pack_Monster_PC.png"
+        ]
+    },
+    "Rec_Collect_PackFrames_Tpl": {
+        "roi": [
+            0,
+            600,
+            1240,
+            90
+        ],
+        "template": [
+            "UI_StoryPack_PC.png",
+            "UI_StoryPack_PC2.png",
+            "UI_CharacterPack_PC.png",
+            "UI_EventPack_PC.png"
+        ]
+    },
+    "Cpt_Collect_PackBadgeFull_Clr": {
+        "all_of": [
+            {
+                "sub_name": "ChosenColor",
+                "recognition": "Or",
+                "any_of": [
+                    {
+                        "sub_name": "And",
+                        "recognition": "And",
+                        "all_of": [
+                            {
+                                "sub_name": "Badge",
+                                "recognition": "TemplateMatch",
+                                "roi": [
+                                    0,
+                                    678,
+                                    1240,
+                                    32
+                                ],
+                                "template": [
+                                    "Pack_Pickup_PC.png",
+                                    "Pack_Monster_PC.png"
+                                ],
+                                "green_mask": true,
+                                "threshold": [
+                                    0.85
+                                ]
+                            },
+                            {
+                                "sub_name": "ColorMatch",
+                                "recognition": "ColorMatch",
+                                "roi": "Badge",
+                                "method": 40,
+                                "lower": [
+                                    [
+                                        68,
+                                        29,
+                                        103
+                                    ],
+                                    [
+                                        0,
+                                        39,
+                                        130
+                                    ]
+                                ],
+                                "upper": [
+                                    [
+                                        93,
+                                        158,
+                                        185
+                                    ],
+                                    [
+                                        14,
+                                        167,
+                                        194
+                                    ]
+                                ],
+                                "count": 20
+                            }
+                        ],
+                        "box_index": 1
+                    }
+                ]
+            },
+            "Sub_Collect_PackBadgeBox_Tpl"
+        ]
+    },
+    "Cpt_Collect_PackBadgeRight_Clr": {
+        "all_of": [
+            {
+                "sub_name": "ChosenColor",
+                "recognition": "Or",
+                "any_of": [
+                    {
+                        "sub_name": "And",
+                        "recognition": "And",
+                        "all_of": [
+                            {
+                                "sub_name": "Room",
+                                "recognition": "ColorMatch",
+                                "roi": "[Anchor]PackFrame_Loc",
+                                "roi_offset": [
+                                    100,
+                                    70,
+                                    -100,
+                                    -74
+                                ],
+                                "lower": [
+                                    [
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                ],
+                                "upper": [
+                                    [
+                                        255,
+                                        255,
+                                        255
+                                    ]
+                                ],
+                                "count": 41
+                            },
+                            {
+                                "sub_name": "Badge",
+                                "recognition": "TemplateMatch",
+                                "roi": "Room",
+                                "roi_offset": [
+                                    0,
+                                    0,
+                                    -40,
+                                    31
+                                ],
+                                "template": [
+                                    "Pack_Pickup_PC.png",
+                                    "Pack_Monster_PC.png"
+                                ],
+                                "green_mask": true,
+                                "threshold": [
+                                    0.85
+                                ]
+                            },
+                            {
+                                "sub_name": "ColorMatch",
+                                "recognition": "ColorMatch",
+                                "roi": "Badge",
+                                "method": 40,
+                                "lower": [
+                                    [
+                                        68,
+                                        29,
+                                        103
+                                    ],
+                                    [
+                                        0,
+                                        39,
+                                        130
+                                    ]
+                                ],
+                                "upper": [
+                                    [
+                                        93,
+                                        158,
+                                        185
+                                    ],
+                                    [
+                                        14,
+                                        167,
+                                        194
+                                    ]
+                                ],
+                                "count": 20
+                            }
+                        ],
+                        "box_index": 2
+                    }
+                ]
+            },
+            "Sub_Collect_PackBadgeBox_Tpl"
+        ]
+    },
+    "Cpt_Collect_PackBadgeAdvance_Clr": {
+        "all_of": [
+            {
+                "sub_name": "ChosenColor",
+                "recognition": "Or",
+                "any_of": [
+                    {
+                        "sub_name": "And",
+                        "recognition": "And",
+                        "all_of": [
+                            {
+                                "sub_name": "Room",
+                                "recognition": "ColorMatch",
+                                "roi": "[Anchor]PackBadge_Loc",
+                                "roi_offset": [
+                                    40,
+                                    -6,
+                                    -20,
+                                    -19
+                                ],
+                                "lower": [
+                                    [
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                ],
+                                "upper": [
+                                    [
+                                        255,
+                                        255,
+                                        255
+                                    ]
+                                ],
+                                "count": 41
+                            },
+                            {
+                                "sub_name": "Badge",
+                                "recognition": "TemplateMatch",
+                                "roi": "Room",
+                                "roi_offset": [
+                                    0,
+                                    0,
+                                    -40,
+                                    31
+                                ],
+                                "template": [
+                                    "Pack_Pickup_PC.png",
+                                    "Pack_Monster_PC.png"
+                                ],
+                                "green_mask": true,
+                                "threshold": [
+                                    0.85
+                                ]
+                            },
+                            {
+                                "sub_name": "ColorMatch",
+                                "recognition": "ColorMatch",
+                                "roi": "Badge",
+                                "method": 40,
+                                "lower": [
+                                    [
+                                        68,
+                                        29,
+                                        103
+                                    ],
+                                    [
+                                        0,
+                                        39,
+                                        130
+                                    ]
+                                ],
+                                "upper": [
+                                    [
+                                        93,
+                                        158,
+                                        185
+                                    ],
+                                    [
+                                        14,
+                                        167,
+                                        194
+                                    ]
+                                ],
+                                "count": 20
+                            }
+                        ],
+                        "box_index": 2
+                    }
+                ]
+            },
+            "Sub_Collect_PackBadgeBox_Tpl"
+        ]
+    },
+    "Sub_Collect_PackBadgeBox_Tpl": {
+        "roi_offset": [
+            20,
+            20,
+            -40,
+            -40
+        ],
+        "template": [
+            "Pack_Pickup_PC.png",
+            "Pack_Monster_PC.png"
+        ]
+    },
+    "Anc_Collect_PackFrame_Tpl": {
+        "roi_offset": [
+            80,
+            -84,
+            -185,
+            70
+        ],
+        "template": [
+            "UI_StoryPack_PC.png",
+            "UI_StoryPack_PC2.png",
+            "UI_CharacterPack_PC.png",
+            "UI_EventPack_PC.png"
+        ]
+    },
+    "Cpt_Collect_PackFrameRight_Tpl": {
+        "all_of": [
+            {
+                "sub_name": "Room",
+                "recognition": "ColorMatch",
+                "roi": "[Anchor]PackFrame_Loc",
+                "roi_offset": [
+                    100,
+                    0,
+                    -100,
+                    -74
+                ],
+                "lower": [
+                    [
+                        0,
+                        0,
+                        0
+                    ]
+                ],
+                "upper": [
+                    [
+                        255,
+                        255,
+                        255
+                    ]
+                ],
+                "count": 41
+            },
+            {
+                "sub_name": "TemplateMatch",
+                "recognition": "TemplateMatch",
+                "roi": "Room",
+                "roi_offset": [
+                    0,
+                    0,
+                    -40,
+                    74
+                ],
+                "template": [
+                    "UI_StoryPack_PC.png",
+                    "UI_StoryPack_PC2.png",
+                    "UI_CharacterPack_PC.png",
+                    "UI_EventPack_PC.png"
+                ],
+                "green_mask": true
+            }
+        ]
+    },
+    "Collect_PackScroll_Restore": {
+        "custom_action_param": {
+            "detect_roi": [
+                1068,
+                622,
+                212,
+                53
+            ],
+            "on_changed": "next",
+            "on_unchanged": "error",
+            "proxy_node": "Agt_Proxy_Blank",
+            "proxy_override": {
+                "action": "Swipe",
+                "begin": [
+                    1252,
+                    662
+                ],
+                "duration": 500,
+                "end": [
+                    55,
+                    662
+                ],
+                "end_hold": 800,
+                "post_delay": 1000
+            },
+            "settle_delay": 1000,
+            "threshold": 3.0,
+            "unchanged_streak": 4
+        }
+    },
+    "Collect_LocatePackFrame_Loc1_ResetLoc": {
+        "roi": [
+            0,
+            609,
+            16,
+            75
+        ],
+        "template": [
+            "PackReset_PC.png"
+        ],
+        "begin": [
+            49,
+            659,
+            1,
+            1
+        ],
+        "end": [
+            64,
+            659,
+            1,
+            1
+        ]
+    },
+    "Collect_Pack_Story_1": {
+        "template": [
+            "Cartridges/Q_sp1_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_2": {
+        "template": [
+            "Cartridges/Q_sp2_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_3": {
+        "template": [
+            "Cartridges/Q_sp3_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_4": {
+        "template": [
+            "Cartridges/Q_sp4_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_5": {
+        "template": [
+            "Cartridges/Q_sp5_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_6": {
+        "template": [
+            "Cartridges/Q_sp6_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_7": {
+        "template": [
+            "Cartridges/Q_sp7_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_8": {
+        "template": [
+            "Cartridges/Q_sp8_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_9": {
+        "template": [
+            "Cartridges/Q_sp9_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_10": {
+        "template": [
+            "Cartridges/Q_sp10_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_11": {
+        "template": [
+            "Cartridges/Q_sp11_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_12": {
+        "template": [
+            "Cartridges/Q_sp12_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_13": {
+        "template": [
+            "Cartridges/Q_sp13_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_14": {
+        "template": [
+            "Cartridges/Q_sp14_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_15": {
+        "template": [
+            "Cartridges/Q_sp15_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_16": {
+        "template": [
+            "Cartridges/Q_sp16_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_17": {
+        "template": [
+            "Cartridges/Q_sp17_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_18": {
+        "template": [
+            "Cartridges/Q_sp18_PC.png"
+        ]
+    },
+    "Collect_Pack_Story_19": {
+        "template": [
+            "Cartridges/Q_sp19_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Story_20": {
+        "template": [
+            "Cartridges/Q_sp20_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Character_1": {
+        "template": [
+            "Cartridges/Q_cp1_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Character_2": {
+        "template": [
+            "Cartridges/Q_cp2_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Character_3": {
+        "template": [
+            "Cartridges/Q_cp3_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Character_4": {
+        "template": [
+            "Cartridges/Q_cp4_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Character_5": {
+        "template": [
+            "Cartridges/Q_cp5_PC.png"
+        ]
+    },
+    "Collect_Pack_Character_6": {
+        "template": [
+            "Cartridges/Q_cp6_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Character_7": {
+        "template": [
+            "Cartridges/Q_cp7_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Event_1": {
+        "template": [
+            "Cartridges/Q_vp1_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Event_2": {
+        "template": [
+            "Cartridges/Q_vp2_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Event_3": {
+        "template": [
+            "Cartridges/Q_vp3_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Event_4": {
+        "template": [
+            "Cartridges/Q_vp4_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Event_5": {
+        "template": [
+            "Cartridges/Q_vp5_PC.png"
+        ],
+        "threshold": [
+            0.85
+        ]
+    },
+    "Collect_Pack_Click": {
+        "target_offset": [
+            -10,
+            5,
+            0,
+            0
+        ]
+    },
+    "Collect_FirstPack": {
+        "desc": "事件图可能会有新卡带||全是猜的",
+        "roi": [
+            375,
+            469,
+            478,
+            190
+        ],
+        "expected": [
+            "未插好游戏卡",
+            "未插好遊戲卡"
+        ]
+    },
+    "Collect_FirstPack_Talk": {
+        "desc": "初次卡带对话跳过||范围猜的",
+        "roi": [
+            955,
+            15,
+            262,
+            50
+        ],
+        "template": [
+            "UI_TalkSkip.png"
+        ],
+        "green_mask": true
+    },
+    "Collect_FirstPack_Talk_Ck": {
+        "desc": "初次卡带对话跳过,确认||全是猜的",
+        "roi": [
+            626,
+            368,
+            255,
+            320
+        ],
+        "expected": [
+            "确认",
+            "確認"
+        ]
+    }
+}

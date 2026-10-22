@@ -35,6 +35,7 @@ class WindowsAPI:
             (self.user, "IsWindowVisible", W.BOOL, [W.HWND]),
             (self.user, "IsIconic", W.BOOL, [W.HWND]),
             (self.user, "IsZoomed", W.BOOL, [W.HWND]),
+            (self.user, "GetForegroundWindow", W.HWND, []),
             (self.user, "GetWindowThreadProcessId", W.DWORD, [W.HWND, C.POINTER(W.DWORD)]),
             (self.user, "GetClassNameW", C.c_int, [W.HWND, W.LPWSTR, C.c_int]),
             (self.user, "GetWindowTextW", C.c_int, [W.HWND, W.LPWSTR, C.c_int]),
@@ -44,6 +45,7 @@ class WindowsAPI:
             (self.user, "SetWindowPos", W.BOOL, [W.HWND, W.HWND, C.c_int, C.c_int, C.c_int, C.c_int, W.UINT]),
             (self.user, "PostMessageW", W.BOOL, [W.HWND, W.UINT, W.WPARAM, W.LPARAM]),
             (self.user, "GetWindowLongW", W.LONG, [W.HWND, C.c_int]),
+            (self.user, "SetWindowLongW", W.LONG, [W.HWND, C.c_int, W.LONG]),
             (self.user, "GetLayeredWindowAttributes", W.BOOL, [W.HWND, C.POINTER(W.DWORD), C.POINTER(W.BYTE), C.POINTER(W.DWORD)]),
             (self.user, "SetThreadDpiAwarenessContext", W.HANDLE, [W.HANDLE]),
             (self.kernel, "OpenProcess", W.HANDLE, [W.DWORD, W.BOOL, W.DWORD]),
@@ -176,11 +178,9 @@ class WindowsAPI:
         return selected
 
     def restore(self, hwnd):
-        # 伪最小化（框架的后台截图机制）状态下，窗口按定义就不是 iconic —— 上游文档
-        # 写的是框架会「以不激活的方式恢复窗口」，所以 IsIconic 早已是 False，这里必然
-        # 走 return True，resize 会直接透过那个透明状态去做。这是对的：layered/alpha
-        # 属于框架自己的状态，既没有公开 API 能令其回退（post_inactive 只管取消置顶与
-        # 解除输入阻断），也不该由我们改写——框架的 monitor 线程会与我们竞态。
+        # 正常伪最小化会还原窗口并保持透明，但控制器重建或窗口消息尚未处理时，
+        # 透明与 iconic 可能同时存在，所以以实际状态为准。这里只调整窗口几何状态；
+        # 不改写截图控制器保存的透明度，避免与其恢复逻辑相互覆盖。
         if self.user.IsIconic(hwnd) or self.user.IsZoomed(hwnd):
             self.user.ShowWindowAsync(hwnd, 9)
             return False
@@ -192,6 +192,9 @@ class WindowsAPI:
     def maximized(self, hwnd):
         return bool(self.user.IsZoomed(hwnd))
 
+    def foreground(self, hwnd):
+        return (self.user.GetForegroundWindow() or 0) == hwnd
+
     def pseudo_minimized(self, hwnd):
         style = self.user.GetWindowLongW(hwnd, -20)
         if style & 0x80020 != 0x80020:
@@ -199,6 +202,17 @@ class WindowsAPI:
         color, alpha, flags = W.DWORD(), W.BYTE(), W.DWORD()
         return bool(self.user.GetLayeredWindowAttributes(hwnd, C.byref(color), C.byref(alpha), C.byref(flags))
                     and flags.value & 2 and alpha.value == 0)
+
+    def clear_pseudo_minimize(self, hwnd):
+        # 只在控制器连接前调用：此时没有截图控制器持有这个窗口，透明状态只可能是
+        # 上次会话的遗留。连接后再改会与框架保存的原始状态相互覆盖，见 restore()。
+        # 去掉 WS_EX_LAYERED 时系统一并丢弃 alpha，不必再写 SetLayeredWindowAttributes。
+        style = self.user.GetWindowLongW(hwnd, -20)
+        C.set_last_error(0)
+        if not self.user.SetWindowLongW(hwnd, -20, style & ~0x80020) and C.get_last_error():
+            raise C.WinError(C.get_last_error())
+        if self.user.GetWindowLongW(hwnd, -20) & 0x80020:
+            raise PreparationError("写入后窗口仍带透明或点击穿透样式")
 
     def minimize(self, hwnd):
         if not self.user.IsWindow(hwnd):

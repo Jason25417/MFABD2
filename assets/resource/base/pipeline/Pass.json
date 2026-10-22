@@ -1,6 +1,7 @@
 {
     "Pass_HomePage": {
         "next": [
+            "Env_AgentLost_Stop",
             "Pass_InToPass",
             "[JumpBack]Global_ToHomePage"
         ]
@@ -65,7 +66,9 @@
         "max_hit": 20,
         "recognition": "Custom",
         "custom_recognition": "RedDotDetector",
-        "custom_recognition_param": {"preset": "Agt_RedDot_Preset"},
+        "custom_recognition_param": {
+            "preset": "Agt_RedDot_Preset"
+        },
         "roi": [
             262,
             130,
@@ -150,7 +153,9 @@
     "Pass_GetAllBack": {
         "desc": "领取后'点击画面即可返回'提示。",
         "recognition": "And",
-        "all_of": ["Rec_Reward_Ocr"],
+        "all_of": [
+            "Rec_Reward_Ocr"
+        ],
         "action": "Click",
         "post_delay": 1000
     },

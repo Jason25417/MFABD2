@@ -1,0 +1,622 @@
+{
+    "Event_GoinEvent": {
+        "desc": "|[PC覆盖·2026-08-10实录] base盲点[1118,387]在主页横幅栈被促销横幅插队时正中皮肤购买页(D-24 Prestige Skin压在D-3魔兽追踪者上,17圈入场循环8.5分钟零战斗实录)。改瞄赛季横幅现位y517:促销在场=正中赛季;促销下架横幅上移后517=空位无害,由OcrCk救援腿真点。",
+        "action": "DoNothing",
+        "post_delay": 200,
+        "timeout": 4000,
+        "next": [
+            "Event_GoinEvent_OcrCk"
+        ],
+        "on_error": [
+            "Event_GoinEvent_TarDit"
+        ]
+    },
+    "Rec_<Event_Event_Main>_Ocr_01": {
+        "roi": [
+            896,
+            13,
+            110,
+            48
+        ],
+        "expected": [
+            "活动服装",
+            "活動服装"
+        ]
+    },
+    "Rec_<Event_Event_Main>_Ocr_02": {
+        "expected": [
+            "普通战斗",
+            "魔兽追踪者",
+            "一般戰鬥",
+            "魔獸追蹤者"
+        ]
+    },
+    "SeasonEvent_EnterlBattle_Normal": {
+        "expected": [
+            "普通",
+            "一般戰鬥"
+        ]
+    },
+    "SeasonEvent_EnterlBattle_Challenge": {
+        "expected": [
+            "挑战",
+            "挑戰戰鬥"
+        ]
+    },
+    "SeasonEvent_Battle_Recon_AP_Full": {
+        "roi": [
+            1160,
+            22,
+            38,
+            25
+        ]
+    },
+    "SeasonEvent_Battle_Recon_AP_Empty": {
+        "roi": [
+            1160,
+            22,
+            38,
+            25
+        ]
+    },
+    "Event_Battle_IsMenu": {
+        "roi": [
+            515,
+            184,
+            190,
+            73
+        ],
+        "expected": [
+            "在战斗中获胜",
+            "在戰鬥中獲勝"
+        ]
+    },
+    "SeasonEvent_FastBattle_SubMenu": {
+        "roi": [
+            559,
+            149,
+            174,
+            105
+        ],
+        "expected": [
+            "快速战斗",
+            "快速戰鬥"
+        ]
+    },
+    "Event_FastNormalBattle": {
+        "expected": [
+            "快速战斗",
+            "快速戰鬥"
+        ]
+    },
+    "SeasonEvent_NormlBattle": {
+        "roi": [
+            802,
+            635,
+            164,
+            52
+        ],
+        "expected": [
+            "战斗",
+            "戰鬥"
+        ]
+    },
+    "SeasonEvent_TabTo_Nomarl": {
+        "roi": [
+            154,
+            1,
+            245,
+            66
+        ],
+        "expected": [
+            "挑战",
+            "血界中死战",
+            "挑戰"
+        ]
+    },
+    "SeasonEvent_TabTo_Challenge": {
+        "all_of": [
+            {
+                "sub_name": "OCR",
+                "recognition": "OCR",
+                "roi": [
+                    175,
+                    8,
+                    296,
+                    75
+                ],
+                "expected": [
+                    "普通",
+                    "修炼",
+                    "血染的结界",
+                    "一般戰鬥"
+                ]
+            },
+            {
+                "sub_name": "OCR",
+                "recognition": "OCR",
+                "roi": [
+                    143,
+                    519,
+                    1087,
+                    190
+                ],
+                "expected": [
+                    "快速战斗",
+                    "快速戰鬥"
+                ]
+            },
+            "Sub_Ocr_Enable_Clr"
+        ]
+    },
+    "SeasonEvent_FreeAP_Verdict": {
+        "roi": [
+            816,
+            229,
+            32,
+            43
+        ]
+    },
+    "SeasonEvent_FreeAP_Err": {
+        "roi": [
+            508,
+            441,
+            103,
+            151
+        ]
+    },
+    "SeasonEvent_MiniGame_Quiz_Entry": {
+        "roi": [
+            857,
+            362,
+            146,
+            223
+        ],
+        "expected": [
+            "小活动",
+            "迷你[游遊][戏戲]"
+        ],
+        "post_wait_freezes": {
+            "target": [
+                857,
+                362,
+                146,
+                223
+            ]
+        }
+    },
+    "SeasonEvent_MiniGame_Quiz_GoAction": {
+        "expected": [
+            "^答题",
+            "^問答"
+        ],
+        "post_wait_freezes": {
+            "target": [
+                489,
+                120,
+                338,
+                501
+            ]
+        }
+    },
+    "SeasonEvent_MiniGame_Quiz_SubMenu": {
+        "roi": [
+            467,
+            160,
+            122,
+            58
+        ],
+        "expected": [
+            "能力测试",
+            "能力測驗"
+        ]
+    },
+    "SeasonEvent_MiniGame_Quiz_Enter": {
+        "roi": [
+            706,
+            176,
+            99,
+            391
+        ],
+        "expected": [
+            "开始答题",
+            "^解[题題]"
+        ]
+    },
+    "SeasonEvent_MiniGame_Quiz_Swipe": {
+        "custom_action_param": {
+            "detect_roi": [
+                484,
+                238,
+                96,
+                296
+            ],
+            "on_changed": "next",
+            "on_unchanged": "error",
+            "proxy_node": "Agt_Proxy_Blank",
+            "proxy_override": {
+                "action": "Swipe",
+                "begin": [
+                    530,
+                    500
+                ],
+                "duration": 500,
+                "end": [
+                    530,
+                    235
+                ],
+                "end_hold": 800,
+                "post_delay": 0,
+                "pre_delay": 0
+            },
+            "settle_delay": 500,
+            "threshold": 2.0,
+            "unchanged_streak": 3
+        }
+    },
+    "Event_NoHaveAPBackEventIndex": {
+        "target": [
+            105,
+            30,
+            5,
+            5
+        ]
+    },
+    "Event_NormalBattleMAX": {
+        "target": true
+    },
+    "Event_NormalBattleMAX_cor": {
+        "roi": [
+            737,
+            417,
+            53,
+            45
+        ]
+    },
+    "Event_TouchNormalBattle": {
+        "roi": [
+            648,
+            519,
+            72,
+            41
+        ],
+        "expected": [
+            "战斗",
+            "戰鬥"
+        ]
+    },
+    "Event_NormalBattleIsOver": {
+        "target": [
+            1,
+            1,
+            1,
+            1
+        ]
+    },
+    "Even_MamonoFollowUp_InMamono": {
+        "expected": [
+            "魔兽追踪者",
+            "魔獸追蹤者"
+        ]
+    },
+    "Even_MamonoFollowUp_MamonoEnter": {
+        "roi": [
+            182,
+            19,
+            58,
+            31
+        ],
+        "expected": [
+            "魔兽",
+            "魔獸"
+        ]
+    },
+    "Rec_<SeasonEvent_MamonoFollow_Practice>_Ocr_01": {
+        "roi": [
+            913,
+            10,
+            208,
+            43
+        ],
+        "expected": [
+            "距离开始还",
+            "距離開始還"
+        ],
+        "only_rec": false
+    },
+    "Rec_<SeasonEvent_MamonoFollow_Practice>_Ocr_02": {
+        "roi": [
+            747,
+            225,
+            213,
+            74
+        ],
+        "expected": [
+            "狩猎期间开始解除",
+            "於狩獵期間起解鎖"
+        ]
+    },
+    "Even_MamonoFollow_lv1_Ck": {
+        "roi": [
+            630,
+            109,
+            88,
+            33
+        ]
+    },
+    "SeasonEvent_MamonoFollow_ChallengePassed": {
+        "roi": [
+            681,
+            168,
+            175,
+            37
+        ],
+        "expected": [
+            "完成讨伐",
+            "完成討伐"
+        ]
+    },
+    "SeasonEvent_MamonoFollow_UnChallenged": {
+        "roi": [
+            681,
+            168,
+            175,
+            37
+        ]
+    },
+    "Even_MamonoFollowUp_lvdown": {
+        "target": [
+            619,
+            125,
+            2,
+            2
+        ],
+        "repeat": 1,
+        "focus": null
+    },
+    "Even_MamonoFollowUp_MmnHpUp": {
+        "target": [
+            727,
+            125,
+            2,
+            2
+        ],
+        "focus": null
+    },
+    "SeasonEvent_MamonoFollow_QuickBattle_Enable": {
+        "all_of": [
+            {
+                "sub_name": "OCR",
+                "recognition": "OCR",
+                "roi": [
+                    805,
+                    636,
+                    110,
+                    50
+                ],
+                "expected": [
+                    "快速战斗",
+                    "快速戰鬥"
+                ]
+            },
+            "Sub_Ocr_Enable_Clr"
+        ]
+    },
+    "SeasonEvent_MamonoFollow_QuickBattle_Unable": {
+        "all_of": [
+            {
+                "sub_name": "OCR",
+                "recognition": "OCR",
+                "roi": [
+                    805,
+                    636,
+                    110,
+                    50
+                ],
+                "expected": [
+                    "快速战斗",
+                    "快速戰鬥"
+                ]
+            },
+            "Sub_Ocr_Unable_Clr"
+        ]
+    },
+    "SeasonEvent_MamonoFollow_NormalBattle": {
+        "roi": [
+            950,
+            637,
+            159,
+            43
+        ],
+        "expected": [
+            "去战斗",
+            "前往戰鬥"
+        ]
+    },
+    "SeasonEvent_MamonoFollow_Team_Troubleshoot": {
+        "roi": [
+            502,
+            219,
+            102,
+            88
+        ]
+    },
+    "SeasonEvent_MamonoFollow_Team_Edit": {
+        "roi": [
+            599,
+            624,
+            142,
+            69
+        ],
+        "expected": [
+            "编辑队伍",
+            "編制隊伍"
+        ]
+    },
+    "SeasonEvent_MamonoFollow_Team_UsePreset": {
+        "roi": [
+            817,
+            660,
+            100,
+            37
+        ],
+        "expected": [
+            "推荐部署",
+            "推薦配置"
+        ]
+    },
+    "SeasonEvent_MamonoFollow_Team_FindPreset": {
+        "roi": [
+            911,
+            209,
+            102,
+            354
+        ]
+    },
+    "Even_MamonoFollowUp_QuickBattle_ck": {
+        "desc": "|[PC覆盖·2026-08-10] 原pc覆盖把base简体'确认'换成繁体单飞'確認',简体端补刀确认弹窗恒miss→死轮24秒超时(00:35:37~00:36:01实录,Enable/ck两节点各轮665/504次全败,进度条0/13B补刀未执行)→on_error退出。补简体。同批Event_GoinEvent入场雷。",
+        "roi": [
+            676,
+            514,
+            84,
+            34
+        ],
+        "expected": [
+            "確認",
+            "确认"
+        ]
+    },
+    "Even_MamonoFollowUp_onSubMain": {
+        "roi": [
+            622,
+            171,
+            113,
+            37
+        ],
+        "expected": [
+            "阶段最高",
+            "階段最高",
+            "最高伤害",
+            "最高傷害"
+        ]
+    },
+    "SeasonEvent_Mamono_HP_Lift_Red": {
+        "roi": [
+            608,
+            142,
+            9,
+            26
+        ]
+    },
+    "SeasonEvent_Mamono_HP_Right_Red": {
+        "roi": [
+            1034,
+            143,
+            7,
+            24
+        ]
+    },
+    "SeasonEvent_Mamono_HP_Right_Gray": {
+        "roi": [
+            1032,
+            147,
+            6,
+            17
+        ]
+    },
+    "SeasonEvent_Mamono_HP_Lift_Gray": {
+        "roi": [
+            610,
+            147,
+            6,
+            17
+        ]
+    },
+    "Rec_Mamono_HP_Hunted_Ocr": {
+        "roi": [
+            612,
+            143,
+            272,
+            22
+        ]
+    },
+    "Rec_Mamono_HP_NoMeetHunt_Ocr": {
+        "roi": [
+            612,
+            143,
+            272,
+            22
+        ]
+    },
+    "Rec_Mamono_HP_Hunting_Ocr": {
+        "roi": [
+            612,
+            143,
+            272,
+            22
+        ]
+    },
+    "Event_MiniGame_Run_Goin": {
+        "desc": "全猜的",
+        "expected": [
+            "小活动",
+            "小活動"
+        ]
+    },
+    "Event_Battle_TabAutoBattle_ChangeDifficulty_TryGeneral": {
+        "expected": [
+            "普通",
+            "一般"
+        ]
+    },
+    "SeasonEvent_ReMamono_Enter": {
+        "desc": "",
+        "roi": [
+            880,
+            132,
+            222,
+            148
+        ],
+        "expected": [
+            "回归赛季",
+            "回歸賽季"
+        ]
+    },
+    "Event_GoinEvent_OcrCk": {
+        "desc": "|[PC覆盖·2026-08-10] 原expected仅繁体(作者alpha为繁体端),简体端恒miss致救援腿失效。补简体三词。",
+        "recognition": "OCR",
+        "roi": [
+            866,
+            216,
+            346,
+            358
+        ],
+        "expected": [
+            "魔兽追踪者",
+            "开始",
+            "解锁",
+            "魔獸追蹤者",
+            "開始",
+            "解鎖"
+        ],
+        "action": "Click",
+        "target_offset": [
+            0,
+            -15,
+            0,
+            0
+        ],
+        "post_delay": 8000
+    },
+    "Event_GoinEvent_TarDit": {
+        "desc": "",
+        "action": "Click",
+        "target": [
+            1118,
+            517,
+            1,
+            1
+        ],
+        "post_delay": 8000
+    }
+}

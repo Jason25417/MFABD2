@@ -398,7 +398,7 @@ class SharedStore(PersistentStore):
 
     账号存档继续由 PersistentStore 管理；这里只承载与账号无关、可以跨存档复用的
     观察事实，例如同一天的商店行情。读写、损坏隔离、原子替换与备份策略全部复用
-    PersistentStore，唯一差别是文件名固定且不随 switch_account 切换。
+    PersistentStore，唯一差别是文件名固定、不随账号切换，也不受账号封锁限制。
     """
 
     _initialized = False
@@ -422,8 +422,10 @@ class SharedStore(PersistentStore):
 
     @classmethod
     def _init_paths(cls):
-        """跟随账号存档选定的全局/便携目录，但使用固定共享文件名。"""
+        """与账号存档同目录，但不需要先确定账号。"""
         config_dir = PersistentStore.prepare_directory()
+        if config_dir is None:
+            raise RuntimeError("存档目录不可用，无法确定共享存档目录")
 
         if cls._initialized and cls.CONFIG_DIR == config_dir:
             return

@@ -7,6 +7,7 @@ from .smart_scroller import *
 from .smart_action import *
 from .ocr_decision import *
 from .string_processor import *
+from .pack_type_select import *
 # gold_verify 必须排在 arbitrage_result 之前：后者按包内先例(pipeline_manager 引
 # recognition.counter)用绝对导入引它。
 from .gold_verify import *
@@ -17,6 +18,8 @@ from .arbitrage_buy_precise import *
 from .account_save_checker import *
 from .arbitrage_buy_list import *
 from .shop_buy_fav_controller import *
+from .pc_window import *
+from .startup_prepare import *
 from .cooking_stock import *
 from .bag_stock import *
 from .clear_node_hit_count import *

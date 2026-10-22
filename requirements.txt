@@ -8,17 +8,25 @@ Pillow>=9.0.0
 # -------------------------------------------------------
 # [核心版本配置]
 # 1. 指定资源包版本 (CI 读取此行下载资源)
-# MFAA_TAG=v2.15.2
+# MFAA_TAG=v2.16.2
 #
 # 1.5 [急救覆盖] MFA 内核版本覆盖 (值为 MaaXYZ/MaaFramework 的 release tag，带 v)
 #     留空 = 不覆盖 (等同注释掉，沿用 MFAA 自带内核)
 #     填写 = 急救模式，MFAA 装完后再拉此版本内核【同路径覆盖】，并同步 pip/安卓/资源检查
 #     例: # MFA_CORE_TAG=v5.12.2
-#     留空是当前的有意选择：桌面内核跟着上面那个 MFAA_TAG 浮动，不为了迁就安卓去覆盖。
-#     安卓侧的框架版本由上游 MaaFwApp 的 pin 决定（当前 5.12.3），与桌面（当前 5.12.2）
-#     差一个补丁号——这是已知且接受的口子，差到次版本才会让构建停下。
-# MFA_CORE_TAG=
+#     当前覆盖到 5.14.3：MFAA 自带的 5.12.3 有 Agent 通道堵死的缺陷（服务端对控制器事件
+#     逐条回包、客户端不收，PC 实时画面空闲约 2 分钟就塞满），上游 #1505 在 5.14.1 修复。
+#     MFAA 改带 >=5.14.1 的内核后清空此行，回到跟着 MFAA_TAG 浮动。
+# MFA_CORE_TAG=v5.14.3
 #
-# 2. 这里的 pip 版本暂时由人工维护，需匹配上方 Tag 对应的 Core 版本
-#    (Meta 任务会自动探测校验，如果不匹配 CI 会报错/警告)
+# 1.6 安卓 agent core (Aliothmoon/MaaAgentCoreAndroid 的 release tag)
+#     通过上游 build_agent_bundle.py 的 --core-tag 选择；原生库、pip 与 APK 校验跟随此值。
+#     显式选择时框架版本必须与桌面完全一致，Python 版本必须与 MaaFwApp 构建器一致。
+#     MaaFwApp v0.2.2 默认仍为 5.13.0；本项目选择已发布的 5.14.3，与桌面对齐。
+# ANDROID_AGENT_CORE_TAG=3.13.15-maafw5.14.3
+#
+# 2. 桌面 maafw 不单独维护 pip 版号：
+#    桌面发布包由 CI 从上方 Tag 的 MFAAvalonia 探测内核版本后安装；
+#    开发侧 .venv 跟随客户端注入的 PI_CLIENT_MAAFW_VERSION：agent 启动时核对，
+#    不一致就拉起独立的同步窗口 (见 agent/utils/venv_ops.py)
 # -------------------------------------------------------

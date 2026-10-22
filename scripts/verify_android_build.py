@@ -185,6 +185,8 @@ class AndroidBuildChecks(unittest.TestCase):
             preferences = upstream / "app/src/main/java/com/aliothmoon/maafw/settings/AppSettings.kt"
             preferences.parent.mkdir(parents=True)
             shutil.copy2(UPSTREAM / "app/src/main/java/com/aliothmoon/maafw/settings/AppSettings.kt", preferences)
+            properties = upstream / "local.properties"
+            properties.write_text("sdk.dir=/android-sdk\nbuild.releaseAbi=arm64-v8a,x86_64\n", encoding="utf-8")
             android_build.prepare_ui(upstream, {"application_id": "io.github.sunyink.mfabd2",
                                                 "certificate_sha256": "a" * 64},
                                      12345, android_build.RELEASE, profile)
@@ -192,7 +194,9 @@ class AndroidBuildChecks(unittest.TestCase):
             version = (gradle / "GitVersion.kt").read_text(encoding="utf-8")
             self.assertIn('BASE_APPLICATION_ID = "io.github.sunyink"', app)
             self.assertIn('app.id', app)
-            self.assertIn('SHIPPED_ABIS = listOf("arm64-v8a")', app)
+            self.assertIn('val releaseAbis = abiSetting("build.releaseAbi")', app)
+            self.assertEqual(properties.read_text(encoding="utf-8"),
+                             "sdk.dir=/android-sdk\nbuild.releaseAbi=arm64-v8a\n")
             self.assertIn("return 12345", version)
             self.assertIn("Mfabd2GitHubUpdateClient(get(), get())", module.read_text())
             self.assertIn('val updateSource: String = "GITHUB"', preferences.read_text(encoding="utf-8"))
@@ -227,13 +231,51 @@ class FrameworkVersionChecks(unittest.TestCase):
             environment = {key: value for key, value in os.environ.items() if key != "GITHUB_OUTPUT"}
             result = subprocess.run(
                 [sys.executable, str(ROOT / "scripts/detect_maa_version.py"), "agent-core-tag",
-                 "--maafw", "5.12.3", "--upstream", str(upstream)],
+                 "--maafw", "5.12.3", "--upstream", str(upstream), "--core-tag", "3.13.15-maafw5.12.3"],
                 capture_output=True, text=True, encoding="utf-8", env=environment, check=True,
             )
-            outputs = dict(line.split("=", 1) for line in result.stdout.splitlines())
+            # ::warning:: annotations are for humans; outputs are the key=value lines.
+            outputs = dict(line.split("=", 1) for line in result.stdout.splitlines()
+                           if not line.startswith("::"))
             self.assertEqual(outputs["python_version"], "3.13.15")
             self.assertEqual(outputs["maafw_version"], "5.12.3")
             self.assertEqual(outputs["agent_core_tag"], "3.13.15-maafw5.12.3")
+
+    def test_explicit_core_selects_matching_framework_without_rewriting_upstream(self):
+        with tempfile.TemporaryDirectory() as work:
+            upstream = self._upstream(work, "3.13.15-maafw5.13.0")
+            source = upstream / "scripts/build_agent_bundle.py"
+            before = source.read_bytes()
+            self.assertEqual(detect_maa_version.agent_core_tag(
+                "5.14.3", upstream, override_tag="3.13.15-maafw5.14.3"),
+                ("3.13.15-maafw5.14.3", "5.14.3"))
+            self.assertEqual(source.read_bytes(), before)
+
+    def test_explicit_core_rejects_framework_and_python_drift(self):
+        with tempfile.TemporaryDirectory() as work:
+            upstream = self._upstream(work, "3.13.15-maafw5.13.0")
+            for selected in ("3.13.15-maafw5.14.2", "3.14.0-maafw5.14.3", "latest",
+                             "3.13.15-maafw5.15.0-beta.1"):
+                with self.subTest(selected=selected), self.assertRaises(ValueError):
+                    detect_maa_version.agent_core_tag("5.14.3", upstream, override_tag=selected)
+            with self.assertRaisesRegex(ValueError, "ANDROID_MAAFW_LINE"):
+                detect_maa_version.agent_core_tag("5.14.3", upstream, "5.12", "3.13.15-maafw5.14.3")
+            source = upstream / "scripts/build_agent_bundle.py"
+            source.write_text('CORE_TAG = "3.13.15-maafw5.13.0"\n', encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "CORE_PY"):
+                detect_maa_version.agent_core_tag("5.14.3", upstream, override_tag="3.13.15-maafw5.14.3")
+
+    def test_explicit_core_requirement_does_not_parse_documentation_example(self):
+        with tempfile.TemporaryDirectory() as work:
+            requirements = Path(work) / "requirements.txt"
+            requirements.write_text(
+                "# MFAA_TAG=v2.16.2\n# Example: # ANDROID_AGENT_CORE_TAG=3.13.15-maafw5.13.0\n",
+                encoding="utf-8")
+            self.assertEqual(detect_maa_version.parse_tags(requirements)["android_agent_core_tag"], "")
+            with requirements.open("a", encoding="utf-8") as stream:
+                stream.write("# ANDROID_AGENT_CORE_TAG=3.13.15-maafw5.14.3\n")
+            self.assertEqual(detect_maa_version.parse_tags(requirements)["android_agent_core_tag"],
+                             "3.13.15-maafw5.14.3")
 
     def test_patch_drift_is_tolerated_and_reported(self):
         with tempfile.TemporaryDirectory() as work:
@@ -252,8 +294,43 @@ class FrameworkVersionChecks(unittest.TestCase):
             upstream = self._upstream(work, "3.13.15-maafw5.13.0")
             with self.assertRaises(ValueError) as raised:
                 detect_maa_version.agent_core_tag("5.12.2", upstream)
-            for fragment in ("5.13.0", "5.12.2"):
+            for fragment in ("5.13.0", "5.12.2", "ANDROID_MAAFW_LINE=5.13"):
                 self.assertIn(fragment, str(raised.exception))
+
+    def test_declared_android_line_lets_desktop_move_ahead(self):
+        with tempfile.TemporaryDirectory() as work:
+            upstream = self._upstream(work, "3.13.15-maafw5.12.3")
+            with contextlib.redirect_stdout(io.StringIO()) as captured:
+                tag, version = detect_maa_version.agent_core_tag("5.14.3", upstream, "5.12")
+            # Android still builds on its own core; the fork is announced, not hidden.
+            self.assertEqual((tag, version), ("3.13.15-maafw5.12.3", "5.12.3"))
+            self.assertIn("::warning::", captured.getvalue())
+            self.assertIn("ANDROID_MAAFW_LINE=5.12", captured.getvalue())
+
+    def test_declared_line_must_match_what_upstream_pins(self):
+        """Upstream moving to another line invalidates the old decision instead of riding on it."""
+        with tempfile.TemporaryDirectory() as work:
+            upstream = self._upstream(work, "3.13.15-maafw5.13.0")
+            with self.assertRaises(ValueError) as raised:
+                detect_maa_version.agent_core_tag("5.14.3", upstream, "5.12")
+            for fragment in ("ANDROID_MAAFW_LINE=5.12", "5.13.0"):
+                self.assertIn(fragment, str(raised.exception))
+
+    def test_stale_declaration_is_reported_once_lines_agree(self):
+        with tempfile.TemporaryDirectory() as work:
+            upstream = self._upstream(work, "3.13.15-maafw5.14.3")
+            with contextlib.redirect_stdout(io.StringIO()) as captured:
+                detect_maa_version.agent_core_tag("5.14.3", upstream, "5.12")
+            self.assertIn("可以删了", captured.getvalue())
+
+    def test_requirements_declaration_is_parsed_but_its_example_is_not(self):
+        with tempfile.TemporaryDirectory() as work:
+            requirements = Path(work) / "requirements.txt"
+            requirements.write_text(
+                "# MFAA_TAG=v2.16.2\n#     例: # ANDROID_MAAFW_LINE=5.12\n", encoding="utf-8")
+            self.assertEqual(detect_maa_version.parse_tags(requirements)["android_maafw_line"], "")
+            requirements.write_text("# MFAA_TAG=v2.16.2\n# ANDROID_MAAFW_LINE=5.12\n", encoding="utf-8")
+            self.assertEqual(detect_maa_version.parse_tags(requirements)["android_maafw_line"], "5.12")
 
     def test_missing_or_reshaped_upstream_stops_the_build(self):
         with tempfile.TemporaryDirectory() as work:
@@ -266,7 +343,8 @@ class FrameworkVersionChecks(unittest.TestCase):
                 detect_maa_version.agent_core_tag("5.12.3", upstream)
 
     def test_pinned_upstream_stays_within_one_patch_of_the_desktop_line(self):
-        """Guards the accepted gap: the real checkout must not have drifted a minor away."""
+        """Guards the accepted gap: the real checkout must not have drifted a minor away,
+        unless requirements.txt declares the line Android is knowingly left on."""
         if not (UPSTREAM / "scripts" / "build_agent_bundle.py").is_file():
             if os.environ.get("MFABD2_REQUIRE_ANDROID_UPSTREAM") == "1":
                 self.fail(f"Required Android upstream not checked out: {UPSTREAM}")
@@ -277,7 +355,9 @@ class FrameworkVersionChecks(unittest.TestCase):
                 self.fail("Required detected desktop MaaFw version is missing")
             # Only CI knows it — it comes out of the MFAAvalonia binary, not a constant.
             self.skipTest("set MFABD2_DESKTOP_MAAFW to the detected desktop version")
-        detect_maa_version.agent_core_tag(desktop, UPSTREAM)
+        tags = detect_maa_version.parse_tags(ROOT / "requirements.txt")
+        detect_maa_version.agent_core_tag(desktop, UPSTREAM, tags["android_maafw_line"],
+                                         tags["android_agent_core_tag"])
 
 
 if __name__ == "__main__":

@@ -1,6 +1,15 @@
 {
     "Arbitrage_Start": {
-        "desc": "读取五个阶段开关并准备套利入口。ArbitrageStagePrepare在导航前插入库存位置A；全部关闭时清空next，不创建归档运行。",
+        "desc": "套利任务入口：先确认 Agent 通信正常，再进入阶段准备。阶段准备是自定义动作，通道断开时会一直卡住，所以不能放在入口节点上。",
+        "pre_delay": 0,
+        "post_delay": 0,
+        "next": [
+            "Env_AgentLost_Stop",
+            "Arbitrage_StagePrepare"
+        ]
+    },
+    "Arbitrage_StagePrepare": {
+        "desc": "读取五个阶段开关并准备套利入口。ArbitrageStagePrepare在导航前插入库存位置A；全部关闭时清空本节点next，不创建归档运行。",
         "pre_delay": 0,
         "action": "Custom",
         "custom_action": "ArbitrageStagePrepare",
@@ -116,6 +125,7 @@
         "focus": "箱庭模块启动"
     },
     "Arbitrage_Sandplay_SeeMerchant": {
+        "desc": "小地图认到商人，转入寻路。每次寻路前清零 NviGuide_Butt 的命中计数：重启后重新寻路、补买和出售再次寻路都要从这里重新进入 Butt",
         "recognition": "TemplateMatch",
         "roi": [
             163,
@@ -126,12 +136,19 @@
         "template": [
             "Map_Merchant.png"
         ],
+        "action": "Custom",
+        "custom_action": "ClearNodeHitCount",
+        "custom_action_param": {
+            "node_name": "Arbitrage_NviGuide_Butt"
+        },
         "next": [
             "Arbitrage_NviGuide_Butt"
         ],
         "focus": "小地图发现商人"
     },
     "Arbitrage_NviGuide_Butt": {
+        "desc": "点开寻路列表，连点 11 次仍打不开就重启游戏。按钮是开关，列表打开后本模板认不到，自引用不会把已打开的列表点关。on_error 不经 Exception 直接 Panic：游戏不响应点击时退栈会掉进 Global_ToHomePage_HomeButton 同样无限连点；Panic 用满 3 次后无节点接住，任务判失败",
+        "max_hit": 11,
         "recognition": "TemplateMatch",
         "roi": [
             208,
@@ -145,9 +162,13 @@
         "green_mask": true,
         "pre_delay": 500,
         "action": "Click",
+        "timeout": 5000,
         "next": [
             "Arbitrage_NviGuide_Merchant_Ocr",
             "Arbitrage_NviGuide_Butt"
+        ],
+        "on_error": [
+            "Global_Null_Panic"
         ],
         "focus": "点击小地图导航按钮"
     },
@@ -2267,7 +2288,7 @@
         "focus": "[WRN]常规购买不能验证"
     },
     "Arbitrage_ShopOut": {
-        "desc": "[复用.末端]从商店退出去",
+        "desc": "[复用.末端]从商店退出去。退不出去（游戏无响应、返回次数用尽）时，调用方会经 [JumpBack] 反复进来；超时次数过多由 Panic 重启游戏并放弃本任务",
         "recognition": "Or",
         "any_of": [
             "Arbitrage_ItemList_Swip"
@@ -2277,6 +2298,10 @@
             "[JumpBack]Global_BackPageHub_Once",
             "[JumpBack]Global_WaitingForLoading",
             "Global_ToSandBox_Enter"
+        ],
+        "on_error": [
+            "Global_Null_Exception",
+            "Global_Null_Panic"
         ]
     },
     "Arbitrage_Select_Swip": {
@@ -2918,11 +2943,24 @@
         }
     },
     "Agt_PriceList_Swip": {
-        "desc": "py独占，勿挂进管路：价目表翻页及微调后等待300ms再比较商品区；最多尝试3次，无变化交回py复核判底。空on_error确保截图等异常向调用方返回失败。",
+        "desc": "py独占，勿挂进管路：仅比较价目表下滑前后的商品区，最多尝试3次；正常结束后执行位置微调，再交回py读表判底。空on_error确保截图等异常向调用方返回失败。",
         "action": "Custom",
         "custom_action": "SmartAction",
         "custom_action_param": {
-            "proxy_node": "Arbitrage_Swip_PriceList",
+            "proxy_node": "Agt_Proxy_Blank",
+            "proxy_override": {
+                "action": "Swipe",
+                "begin": [
+                    653,
+                    511
+                ],
+                "end": [
+                    653,
+                    150
+                ],
+                "end_hold": 500,
+                "duration": 700
+            },
             "detect_roi": [
                 478,
                 209,
@@ -2937,24 +2975,10 @@
             "loop_exhausted": "next"
         },
         "timeout": 1,
-        "on_error": []
-    },
-    "Arbitrage_Swip_PriceList": {
-        "desc": "【非孤立节点】由Agent调用,价目表下滑Runtask入口",
-        "action": "Swipe",
-        "begin": [
-            653,
-            511
-        ],
-        "end": [
-            653,
-            150
-        ],
-        "end_hold": 500,
-        "duration": 700,
         "next": [
             "Arbitrage_Swip_Calibration_Hub"
-        ]
+        ],
+        "on_error": []
     },
     "Arbitrage_Swip_Calibration_Hub": {
         "desc": "滑动后微调,使价目表完整显示,设定多种情况不同力度调整,反复运作后能准确控制位置",
@@ -3504,6 +3528,43 @@
             }
         }
     },
+    "Agt_SellList_NameSlot": {
+        "desc": "【Py引用·被动数据节点,不入任何流程】出售查找按卡片对账的版面参数：以类型标签定位每张卡，只读标签上方的名字框，星级、角标、价格行不再参与判零。columns=各列标签左缘x，不在列上的同名字样（ADB分区标题◆食物）不算卡；slot=名字框相对标签左上角[dx,dy,w,h]，右缘不得碰到同一行下一张卡的角标；band_start=最后一排标签往下多少像素起，按列检查底部标签被切掉的卡。base为ADB三列实测，PC由pc覆盖。",
+        "enabled": false,
+        "attach": {
+            "tag_pattern": "^(食物|材料|升[级級])$",
+            "name_node": "Agt_SellList_NameSlot_Ocr",
+            "columns": [
+                476,
+                742,
+                1007
+            ],
+            "slot": [
+                -6,
+                -28,
+                175,
+                26
+            ],
+            "column_tolerance": 8,
+            "band_start": 48
+        }
+    },
+    "Agt_SellList_NameSlot_Ocr": {
+        "desc": "【Py引用·纯识别】出售查找名字框OCR，roi由Py按类型标签逐卡改写；框内先检测再识别，实测优于only_rec整框识别（短名不丢字）。",
+        "recognition": "OCR",
+        "roi": [
+            392,
+            94,
+            733,
+            540
+        ],
+        "replace": [
+            [
+                " ",
+                ""
+            ]
+        ]
+    },
     "Arbitrage_Sell_Item_ListTraverse_End": {
         "desc": "列表关注项类已结束",
         "recognition": "OCR",
@@ -3878,7 +3939,7 @@
         ],
         "pre_delay": 0,
         "action": "Custom",
-        "custom_action": "GoldVerdict",
+        "custom_action": "GoldVerdictAction",
         "custom_action_param": {
             "node": "Arbitrage_Sell_GoldRead"
         },
@@ -4175,13 +4236,13 @@
             "[JumpBack]Arbitrage_Cooking_B21_Entry",
             "[JumpBack]Arbitrage_Cooking_B11_Entry",
             "[JumpBack]Arbitrage_Cooking_B14_Entry",
+            "[JumpBack]Arbitrage_Cooking_B17_Entry",
             "[JumpBack]Arbitrage_Cooking_B20_Entry",
             "[JumpBack]Arbitrage_Cooking_B15_Entry",
             "[JumpBack]Arbitrage_Cooking_B12_Entry",
-            "[JumpBack]Arbitrage_Cooking_B19_Entry",
-            "[JumpBack]Arbitrage_Cooking_B17_Entry",
-            "[JumpBack]Arbitrage_Cooking_B18_Entry",
             "[JumpBack]Arbitrage_Cooking_B16_Entry",
+            "[JumpBack]Arbitrage_Cooking_B19_Entry",
+            "[JumpBack]Arbitrage_Cooking_B18_Entry",
             "[JumpBack]Arbitrage_Cooking_B13_Entry",
             "[JumpBack]Arbitrage_Cooking_Page1"
         ],
@@ -4345,7 +4406,7 @@
         }
     },
     "Arbitrage_Cooking_Swip_Page2": {
-        "desc": "翻到第二页（五星料理）。ROI是第二行料理",
+        "desc": "翻到第二页（五星料理）。ROI是第二行料理。翻完仍认出第一页特征时，由 Swip_Page2_Stuck 停用本节点",
         "recognition": "TemplateMatch",
         "roi": [
             581,
@@ -4378,7 +4439,29 @@
                 168
             ]
         },
+        "next": [
+            "Arbitrage_Cooking_Swip_Page2_Stuck",
+            "Global_Null"
+        ],
         "focus": "Arb.下滑料理页面"
+    },
+    "Arbitrage_Cooking_Swip_Page2_Stuck": {
+        "desc": "下滑后第一页特征还在：配方只有一页，列表滑不动。本任务内停用 Swip_Page2，调用方改走自己的其余分支，不再反复下滑",
+        "recognition": "Or",
+        "any_of": [
+            "Arbitrage_Cooking_Swip_Page2"
+        ],
+        "pre_delay": 0,
+        "action": "Custom",
+        "custom_action": "PatchPipeline",
+        "custom_action_param": {
+            "target": "Arbitrage_Cooking_Swip_Page2",
+            "patch": {
+                "enabled": false
+            }
+        },
+        "post_delay": 0,
+        "focus": "Arb.料理只有一页，停止下滑"
     },
     "Arbitrage_Cooking_B10_Entry": {
         "desc": "「地狱火紫菜包饭」入口。先在当前页试识别，看不到就翻页再试。max_hit保证MenuEnter每轮往下挑一个。",
@@ -8305,7 +8388,7 @@
         }
     },
     "Agt_Arbitrage_StageConfig": {
-        "desc": "保存套利总入口的导航候选，供ArbitrageStagePrepare读取。主页寻路使用JumpBack，找到商人后返回总入口，再由Arbitrage_Merchant_Ico进入总调度。",
+        "desc": "保存套利总入口的导航候选，供ArbitrageStagePrepare读取并写入Arbitrage_StagePrepare的next。主页寻路使用JumpBack，找到商人后返回Arbitrage_StagePrepare，再由Arbitrage_Merchant_Ico进入总调度。",
         "enabled": false,
         "attach": {
             "start_next": [

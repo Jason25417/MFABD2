@@ -76,7 +76,7 @@ utils.mfaalog.info(f"[周期检查] 周期策略管理器已加载。")
 #
 # "Task_Check_Action": {
 #     "action": "Custom",                    // ⚡️ 注意：Action 模式也建议写全
-#     "custom_action": "CheckCoolDown",
+#     "custom_action": "CheckCoolDownAction",
 #     "custom_action_param": {
 #         "card_name": "Map_01"
 #     },
@@ -91,19 +91,19 @@ utils.mfaalog.info(f"[周期检查] 周期策略管理器已加载。")
 # ⚠️ 它**不返回**"哪几项可跑"。CustomAction 读不到识别的 detail，身份信息传不下去。
 #    要按项分发仍然得靠 pipeline 把候选展开成多个节点；批量只适合做总闸。
 #
-# "Collect_AllLibGone": {
+# "Example_AllDone": {
 #     "recognition": "Custom",
 #     "custom_recognition": "CheckCoolDown",
 #     "custom_recognition_param": {
 #         "targets": [                       // ← 有 targets 就走批量，否则走单个
-#             { "card_name": "Pack_Story_SimpleDone", "cycle_type": "g_weekly" },
-#             { "card_name": "Pack_Event_SimpleDone", "cycle_type": "g_weekly" }
+#             { "card_name": "Map_Boss_Reward", "cycle_type": "g_weekly" },
+#             { "card_name": "Map_Hidden_Path", "cycle_type": "g_weekly" }
 #         ],
 #         "match": "all_done"                // ← 见下表，缺省 "any"
 #     },
 #     "pre_delay": 0,
 #     "post_delay": 0,
-#     "focus": "全类已完成,收尾"
+#     "focus": "全部目标已有完成记录,收尾"
 #     // 不写 next = 命中后退栈收尾；要硬停整个 task 才写 "action": "StopTask"
 # }
 #
@@ -237,6 +237,15 @@ CYCLE_STRATEGIES = {
         "timezone": 8,
         "reset_weekday": 3,     # 周四 0 点(即原意的"周三 24:00")
         "blackout_minutes": 540  # 结算540分钟，防止刚好卡点进不去
+    },
+    # 【BD2】国际服-魔兽讨伐重试周期 (每周四 08:00)
+    # 难度梯度机制下,同一队伍输过一次再打大概率还是输,本周期内不再进入。时间点暂定
+    "mamono_weekly": {
+        "type": "weekly",
+        "reset_time": "08:00",
+        "timezone": 8,
+        "reset_weekday": 3,     # 周四
+        "blackout_minutes": 540
     }
     # # 【BD2】国际服-救赎之塔 (半月常, 1号/16号刷新)时间不确定，暂时不写
     # "g_abyss": {
@@ -726,10 +735,11 @@ manager = CooldownManager()
 # ==============================================================================
 # 存档号同步的 pull 路径
 # ==============================================================================
-# 每个入口先确认根任务的存档快照。失败时同步层已封锁账号并停止当前
-# Context；必须立即退出，不能让识别 None 被当成普通冷却分支继续执行。
+# 本文件的三个注册入口都会读写卡带周期标记，所以各自先确认根任务的存档快照。
+# 失败时同步层已封锁账号并停止当前 Context；必须立即退出，不能让识别 None
+# 被当成普通冷却分支继续执行。
 
-@AgentServer.custom_action("CheckCoolDown")
+@AgentServer.custom_action("CheckCoolDownAction")
 class CheckCoolDownAction(CustomAction):
     def run(self, context: Context, argv: CustomAction.RunArg):
         if not sync_from_context(context, where="CheckCoolDown/action"):

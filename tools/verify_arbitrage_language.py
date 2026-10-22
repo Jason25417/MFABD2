@@ -35,6 +35,7 @@ with patch.object(AgentServer, "custom_action", return_value=lambda cls: cls), \
     from action.shop_buy_fav_controller import ShopBuyFavController
     from verify_arbitrage_purchase_cycle import OfflineController
 from utils import arbitrage_cartridge as cart
+from utils.arbitrage_recipe_catalog import inline_recognition
 from utils.name_i18n import canon
 from utils.ocr_item_name import item_aliases
 
@@ -151,8 +152,8 @@ class LanguageTests(unittest.TestCase):
                                  PC[parent]["all_of"][index]["expected"])
             for pc, resource in enumerate(self.resources):
                 children = resource.get_node_data(parent)["recognition"]["param"]["all_of"]
-                child = children[index]
-                self.assertEqual(child["sub_name"], "OCR")
+                self.assertEqual(children[index]["sub_name"], "OCR")
+                child = inline_recognition(children[index])
                 self.assertEqual(child["type"], "OCR")
                 params = child["param"]
                 self.assertEqual(params["roi"], (PC if pc else BASE)[parent]["all_of"][index]["roi"])
@@ -186,7 +187,7 @@ class LanguageTests(unittest.TestCase):
             self.assertTrue(tasker.bind(resource, controller))
             for parent, consumer in BOX_DEPENDENCIES.items():
                 child = resource.get_node_data(parent)["recognition"]["param"]["all_of"][0]
-                x, y, _, _ = child["param"]["roi"]
+                x, y, _, _ = inline_recognition(child)["param"]["roi"]
                 color = [240, 240, 240] if consumer == "Sub_Ocr_Enable_Clr" else [50, 177, 240]
                 for text_hit, current_color, stale_color in [(True, True, False), (True, False, True),
                                                            (False, True, True)]:

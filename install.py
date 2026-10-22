@@ -184,10 +184,21 @@ def copy_resources_for_target(source, destination, target_os):
     )
 
 
+def install_client_config():
+    """Ship first-launch desktop defaults without packaging an active user config."""
+    template = working_dir / "assets" / "config.template.json"
+    if str(target_os).lower().startswith("android") or not template.is_file():
+        return
+    config_dir = install_path / "config"
+    config_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(template, config_dir / "config.template.json")
+
+
 def install_resource():
     configure_ocr_model()
 
     copy_resources_for_target(working_dir / "assets" / "resource", install_path / "resource", target_os)
+    install_client_config()
     
     # ================= [MFAA布局文件预配置写入开始] =================
     # 单文件适配: 显式复制 assets/mfa_layout.json 到 install/resource/
@@ -326,7 +337,10 @@ def install_agent(target_os):
         # 1. Windows: 嵌入式 Python
         if any(target_os.startswith(p) for p in ["win", "windows"]):
             interface["agent"]["child_exec"] = r"{PROJECT_DIR}/python/python.exe"
-            interface["agent"]["child_args"] = ["-u", "-X", "utf8=1", r"{PROJECT_DIR}/agent/main.py"]
+            # -s：嵌入式 Python 的 ._pth 开着 import site，用户目录
+            # %APPDATA%\Python\Python310\site-packages 会排在包内 site-packages 之前。
+            # 用户自己 pip install --user 过 maafw/numpy 时，Agent 会静默用上那一份。
+            interface["agent"]["child_args"] = ["-u", "-s", "-X", "utf8=1", r"{PROJECT_DIR}/agent/main.py"]
             # pretask 的 exec/args 都不做 {PROJECT_DIR} 占位符展开（协议未定义该机制）。
             # 开发时 args 里写的是脚本相对路径；发布时换成 -c 载荷，让脚本自己从
             # sys.executable 反推安装根，不再依赖 CWD。理由见顶部 PRETASK_* 常量。

@@ -16,13 +16,29 @@
             "type": "Win32",
             "win32": {
                 "class_regex": "UnityWndClass",
-                "window_regex": "^BrownDust II$",
+                "window_regex": "BrownDust II",
                 "screencap": "PrintWindow",
                 "mouse": "PostMessageWithWindowPos",
                 "keyboard": "PostMessageWithWindowPos"
             },
             "permission_required": true,
-            "display_short_side": 720
+            "display_short_side": 720,
+            "description": "鼠标不抢,窗口移动,建议最小化"
+        },
+        {
+            "name": "PC客户端(Cursor)",
+            "label": "PC客户端(Cursor)",
+            "type": "Win32",
+            "win32": {
+                "class_regex": "UnityWndClass",
+                "window_regex": "BrownDust II",
+                "screencap": "PrintWindow",
+                "mouse": "SendMessageWithCursorPos",
+                "keyboard": "PostMessageWithCursorPos"
+            },
+            "permission_required": true,
+            "display_short_side": 720,
+            "description": "短暂抢鼠标控制权,窗口不动"
         }
     ],
     "pretask": [
@@ -31,7 +47,8 @@
             "label": "PC游戏启动准备",
             "description": "游戏未运行时自动拉起官方启动器，等到游戏主窗口出现、再多等约 3 秒让它就绪。<br>窗口分辨率与最小化改在任务开始时处理，不在这一步，因此这里不需要任何选项。<br>游戏本来就在运行时，本步骤瞬间完成。",
             "controller": [
-                "PC客户端"
+                "PC客户端",
+                "PC客户端(Cursor)"
             ],
             "exec": "../../../.venv/Scripts/python.exe",
             "args": [
@@ -48,6 +65,10 @@
             "label": "安卓端",
             "path": [
                 "./resource/base"
+            ],
+            "controller": [
+                "Adb",
+                "PlayCover"
             ]
         },
         {
@@ -68,7 +89,8 @@
                 "./resource/pc"
             ],
             "controller": [
-                "PC客户端"
+                "PC客户端",
+                "PC客户端(Cursor)"
             ]
         }
     ],
@@ -90,17 +112,34 @@
             "name": "[全局]启动脚本(置顶)",
             "entry": "StartGame_Start",
             "default_check": true,
-            "description": "<b>最新版探测 &amp; 下载渠道：</b><br>[![正式版](https://img.shields.io/github/v/release/sunyink/MFABD2?label=仓库源·正式版&color=green&logo=github)](https://github.com/sunyink/MFABD2/releases/latest)<br>[![公测版](https://img.shields.io/github/v/release/sunyink/MFABD2?include_prereleases&sort=date&filter=%2Abeta%2A&label=仓库源·公测版&color=blue&logo=github)](https://github.com/sunyink/MFABD2/releases?q=beta)<br>[![Mirror酱](https://img.shields.io/badge/Mirror%E9%85%B1-镜像源·高速下载-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=MFABD2)<br>自动判断游戏运行状态，按需启动；处理更新弹框、支付失败等异常提示；完成后领取<b>主界面</b>奖励并执行<b>宠物派遣</b>。<br><b>注意：</b>网络环境请提前解决，脚本不处理网络问题。<br><b>首次运行前，务必查看 <code>使用帮助</code> 卡片！</b><br><br>PC端控制器（720P窗口化）资源适配尚不完整，仅供探索。"
+            "description": "<b>最新版探测 &amp; 下载渠道：</b><br>[![正式版](https://img.shields.io/github/v/release/sunyink/MFABD2?label=仓库源·正式版&color=green&logo=github)](https://github.com/sunyink/MFABD2/releases/latest)<br>[![公测版](https://img.shields.io/github/v/release/sunyink/MFABD2?include_prereleases&sort=date&filter=%2Abeta%2A&label=仓库源·公测版&color=blue&logo=github)](https://github.com/sunyink/MFABD2/releases?q=beta)<br>[![Mirror酱](https://img.shields.io/badge/Mirror%E9%85%B1-镜像源·高速下载-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=MFABD2)<br>自动判断游戏运行状态，按需启动；处理更新弹框、支付失败等异常提示；完成后领取<b>主界面</b>奖励并执行<b>宠物派遣</b>。<br><b>注意：</b>网络环境请提前解决，脚本不处理网络问题。<br><b>首次运行前，务必查看 <code>使用帮助</code> 卡片！</b>",
+            "controller": [
+                "Adb",
+                "PlayCover"
+            ]
+        },
+        {
+            "name": "[全局]启动脚本(置顶)PC",
+            "entry": "StartGame_Start",
+            "default_check": true,
+            "description": "<b>最新版探测 &amp; 下载渠道：</b><br>[![正式版](https://img.shields.io/github/v/release/sunyink/MFABD2?label=仓库源·正式版&color=green&logo=github)](https://github.com/sunyink/MFABD2/releases/latest)<br>[![公测版](https://img.shields.io/github/v/release/sunyink/MFABD2?include_prereleases&sort=date&filter=%2Abeta%2A&label=仓库源·公测版&color=blue&logo=github)](https://github.com/sunyink/MFABD2/releases?q=beta)<br>[![Mirror酱](https://img.shields.io/badge/Mirror%E9%85%B1-镜像源·高速下载-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=MFABD2)<br>自动判断游戏运行状态，按需启动；处理更新弹框、支付失败等异常提示；完成后领取<b>主界面</b>奖励并执行<b>宠物派遣</b>。<br><b>注意：</b>网络环境请提前解决，脚本不处理网络问题。<br><b>首次运行前，务必查看 <code>使用帮助</code> 卡片！</b><br>",
+            "controller": [
+                "PC客户端",
+                "PC客户端(Cursor)"
+            ]
         },
         {
             "name": "[执行]快速狩猎扫荡",
             "entry": "QuickHunt_Start",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "default_check": true,
             "option": [
+                "快速狩猎日常-强制重跑",
                 "冒险航线",
                 "狩猎场",
                 "圣石洞穴属性"
@@ -112,12 +151,16 @@
             "entry": "Collect_StartGame_HomePage_OnlyOnce",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "default_check": true,
             "description": "<地图采集[完整]>的单卡带模式，满足日常任务所需即停止。",
             "option": [
+                "采集卡带指定",
                 "采集卡带屏蔽",
+                "采集卡带调试直采",
                 "第三图采集额外等待"
             ]
         },
@@ -126,6 +169,8 @@
             "entry": "Equip_HomePage",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "default_check": true,
@@ -143,10 +188,13 @@
             "entry": "GachaADV_Start",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "default_check": true,
             "option": [
+                "白嫖抽卡-强制重跑",
                 "一键速抽"
             ],
             "description": "<b>白嫖抽卡：</b>每日免费一次的`角色`、`专属装备`抽取。<br><br>关闭`一键速抽`后，可启用保底留存、90钻付费抽等高级功能。<br><br><font color=\"Crimson\"><b>付费钻是危险功能</b><br>务必仔细确认，平时常闭。脚本协议不承担其使用责任！<br>打开此`总开关`，则是你知晓并自行承担相关风险的意思表示！</font><br><br>![](resource/image/GUI/CHAGA_Doc.png)"
@@ -156,6 +204,8 @@
             "entry": "PVP_TaskStart",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "default_check": true,
@@ -169,14 +219,15 @@
             "entry": "Event_HomePage",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "option": [
                 "赛季-强制只跑指定子项",
-                "赛季活动快速战斗难度",
-                "魔兽初始等级"
+                "赛季活动快速战斗难度"
             ],
-            "description": "自动识别并执行赛季三类活动：<br><b>· 剧情关卡</b>（普通/挑战，共15+15关）：优先尝试快速战斗；未解锁或不满足条件时，退回常规战斗自动刷取。<br><b>· 魔兽补刀</b>：每日快速战斗一次领取参与奖。支持手动配队(推荐)或获取推荐配队；赛季外的回归魔兽同样适用。<br><b>· 小游戏</b>：跑酷需先手动通关，脚本负责快速完成；问答由脚本自动执行。两类分别记录每日完成状态。"
+            "description": "自动识别并执行赛季三类活动：<br><b>· 剧情关卡</b>（普通/挑战，共15+15关）：优先尝试快速战斗；未解锁或不满足条件时，退回常规战斗自动刷取。<br><b>· 魔兽讨伐</b>：从 EASY 起逐档挑战尚未完成讨伐的难度，输一场或全部完成后本周不再进入（每周四 08:00 刷新），赛季外的回归魔兽单独记录。难度梯度机制下每档通关一次即可，自己打过的可以不跑。建议手动配队；队伍漏配时自动套用推荐部署。<br><b>· 小游戏</b>：跑酷需先手动通关，脚本负责快速完成；问答由脚本自动执行。两类分别记录每日完成状态。"
         },
         {
             "name": "[执行]肉鸽塔每日快速战斗",
@@ -195,6 +246,8 @@
             "entry": "Weekly_Start",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "option": [
@@ -211,6 +264,8 @@
             "entry": "Daily_HomePage",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "option": [
@@ -228,6 +283,8 @@
             "entry": "RewardsDaily_Start",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "description": "领取主界面<code>任务</code>页内的每日与每周任务奖励。"
@@ -238,6 +295,8 @@
             "entry": "Activities_Start",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "option": [
@@ -251,6 +310,8 @@
             "entry": "Pass_HomePage",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "description": "领取主界面<code>通行证</code>页内的可领奖励。"
@@ -261,6 +322,8 @@
             "entry": "Mail_HomePage",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "description": "领取主界面<code>邮件</code>内的全部邮件奖励（含一般与商品类）。<br>无未读红点时自动跳过，不进入邮件页面。"
@@ -271,12 +334,15 @@
             "default_check": true,
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
-            "description": "进入卡带，对含传送阵的地图依次执行探查、吸取、召集。<br><span style=\"background-color:rgba(255,160,0,0.2)\"><b>前提：</b>传送阵须已激活，且周围箱庭迷雾已探明，使区域地图能完整显示传送阵图标。</span><br><b>周常CD：</b>自动跳过本周已刷卡带，进度记录于 <code>agent_save_data.json</code>，可手动迁移。刷取顺序：卡带框从左到右，依故事→角色→活动大类推进。",
+            "description": "进入卡带，对含传送阵的地图依次执行探查、吸取、召集。<br><span style=\"background-color:rgba(255,160,0,0.2)\"><b>前提：</b>传送阵须已激活，且周围箱庭迷雾已探明，使区域地图能完整显示传送阵图标。</span><br><b>选卡：</b>按剧情→角色→活动推进。某类允许采集的卡带本周均有完成记录时，跳过整类；进入类别后，普通模式只采集徽章彩色亮起且能识别身份的卡带，未知或未识别卡带跳过。成功采集后记录进度并在本轮跳过该卡；扫描结束不代表整类已采完。",
             "option": [
-                "简单类跳过",
+                "采集卡带指定",
                 "采集卡带屏蔽",
+                "采集卡带调试直采",
                 "第三图采集额外等待"
             ]
         },
@@ -286,6 +352,8 @@
             "entry": "Arbitrage_Start",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "description": "<b>低价买进材料，做成料理，等价格涨到峰值再卖出，赚取金币。</b><br>适合每天运行，建议排在<b>地图采集[完整]</b>之后；初次使用保持默认设置即可。<br><br><b>流程：</b>①先卖料理 → ②买材料 → ③做料理 → ④再卖料理 → ⑤卖多余材料（默认关闭）<br>当天未到峰值的料理与材料不会出售，留待下次。<br><br><span style=\"background-color:rgba(255,160,0,0.2)\"><b>⚠️ 运行前须知</b><br>• ①④会卖出背包中已到价的料理，不论是否由本任务制作；想保留料理请关闭①④。<br>• ②会按采购名单调整游戏内的商店收藏，名单外的收藏会被取消（采购名单可在②中自定义）。<br>• ③缺料时会额外补买材料，可在③中设置补买支出上限。</span><br><small>各开关的细则见其说明。</small>",
@@ -314,6 +382,8 @@
             "name": "[全局]结束游戏",
             "controller": [
                 "Adb",
+                "PC客户端",
+                "PC客户端(Cursor)",
                 "PlayCover"
             ],
             "entry": "Close_HomePage"
@@ -324,7 +394,9 @@
             "entry": "Practise_Start",
             "controller": [
                 "Adb",
-                "PlayCover"
+                "PlayCover",
+                "PC客户端",
+                "PC客户端(Cursor)"
             ],
             "option": [
                 "选择要刷取的技能"
@@ -335,7 +407,9 @@
             "entry": "SemiAuto_HomePage",
             "controller": [
                 "Adb",
-                "PlayCover"
+                "PlayCover",
+                "PC客户端",
+                "PC客户端(Cursor)"
             ],
             "option": [
                 "半自动作业"
@@ -348,7 +422,8 @@
             "type": "select",
             "label": "PC窗口分辨率",
             "controller": [
-                "PC客户端"
+                "PC客户端",
+                "PC客户端(Cursor)"
             ],
             "default_case": "720p",
             "description": "调整游戏窗口内部画面的尺寸：720p 为 1280×720，1080p 为 1920×1080。<br>每个任务开始时自动校正（连接之后、第一次识别之前），无需重新连接。识别坐标仍由框架按短边 720 缩放。<br>若游戏拒绝调整、但窗口长宽比仍是 16:9，识别不受影响，任务会带一条提示继续执行；只有长宽比明显偏离 16:9 才会停止当前任务，下个任务重新检查。",
@@ -590,7 +665,7 @@
             "label": "[手动开关]-强制只跑指定子项",
             "type": "switch",
             "default_case": "No",
-            "description": "<span style=\"color:Crimson\"><b>开启后本任务默认什么都不跑</b>，只执行下面展开的清单里勾选的子项——一项都不勾就等于整个任务空跑。</span><br><b>小游戏</b>包含跑酷与问答，两类分别记录每日完成状态，默认当天完成后各自跳过；勾选后两类都无视记录重跑。完成记录按游戏日计（每日 08:00 刷新）。<br>15战与魔兽讨伐的完成态是 AP 耗尽、而 AP 会随时间恢复，回归魔兽与魔兽讨伐共用收尾链无法区分，这三项<b>不做按日跳过</b>，勾选与否只决定跑不跑。",
+            "description": "<span style=\"color:Crimson\"><b>开启后本任务默认什么都不跑</b>，只执行下面展开的清单里勾选的子项——一项都不勾就等于整个任务空跑。</span><br><b>小游戏</b>包含跑酷与问答，两类分别记录每日完成状态，默认当天完成后各自跳过；勾选后两类都无视记录重跑。完成记录按游戏日计（每日 08:00 刷新）。<br><b>魔兽讨伐、回归魔兽</b>分别记录本周是否挑战过，默认挑战过一次后本周跳过（每周四 08:00 刷新）；勾选后无视记录重跑。<br>15战的完成态是 AP 耗尽、而 AP 会随时间恢复，<b>不做按日跳过</b>，勾选与否只决定跑不跑。",
             "cases": [
                 {
                     "name": "No"
@@ -624,7 +699,7 @@
             "label": "手控开关",
             "type": "checkbox",
             "default_case": [],
-            "description": "勾选的子项才执行，未勾选的一律不跑。<br><b>小游戏（跑酷 / 问答）</b>勾选后，两类都无视各自的每日完成记录重跑。",
+            "description": "勾选的子项才执行，未勾选的一律不跑。<br><b>小游戏（跑酷 / 问答）</b>勾选后，两类都无视各自的每日完成记录重跑。<br><b>魔兽讨伐 / 回归魔兽</b>勾选后，无视本周的挑战记录重跑。",
             "cases": [
                 {
                     "name": "剧情15战",
@@ -639,6 +714,9 @@
                     "pipeline_override": {
                         "Event_Mamono_Hub": {
                             "enabled": true
+                        },
+                        "Event_Mamono_Switch": {
+                            "recognition": "DirectHit"
                         }
                     }
                 },
@@ -665,6 +743,9 @@
                     "pipeline_override": {
                         "SeasonEvent_ReMamono_Hub": {
                             "enabled": true
+                        },
+                        "SeasonEvent_ReMamono_Switch": {
+                            "recognition": "DirectHit"
                         }
                     }
                 }
@@ -689,6 +770,25 @@
                 }
             ]
         },
+        "白嫖抽卡-强制重跑": {
+            "type": "switch",
+            "default_case": "No",
+            "description": "关：当前存档本游戏日已完成抽卡时直接跳过。<br>开：忽略完成记录，重新检查并尝试抽卡；首页无红点时仍会结束本轮。<br>只有正常收尾后确认主界面抽卡入口亮起且无红点才记录完成；完成记录按游戏日刷新（北京时间每日 08:00）。",
+            "cases": [
+                {
+                    "name": "No",
+                    "pipeline_override": {}
+                },
+                {
+                    "name": "Yes",
+                    "pipeline_override": {
+                        "GachaADV_Daily_Switch": {
+                            "recognition": "DirectHit"
+                        }
+                    }
+                }
+            ]
+        },
         "肉鸽塔日常-强制重跑": {
             "type": "switch",
             "default_case": "No",
@@ -702,6 +802,25 @@
                     "name": "Yes",
                     "pipeline_override": {
                         "Redemption_Daily_Switch": {
+                            "recognition": "DirectHit"
+                        }
+                    }
+                }
+            ]
+        },
+        "快速狩猎日常-强制重跑": {
+            "type": "switch",
+            "default_case": "No",
+            "description": "关：当前存档本游戏日已确认免费米饭与火把都用完时直接跳过。<br>开：忽略完成记录，每次运行都完整执行一遍。<br>完成记录按游戏日刷新（北京时间每日 08:00）；只有读到两种免费次数都为 0 才记为完成，中途失败不会记录。",
+            "cases": [
+                {
+                    "name": "No",
+                    "pipeline_override": {}
+                },
+                {
+                    "name": "Yes",
+                    "pipeline_override": {
+                        "QuickHunt_Daily_Switch": {
                             "recognition": "DirectHit"
                         }
                     }
@@ -1012,7 +1131,9 @@
                                 "[JumpBack]QuickHunt_AdventureRoute",
                                 "[JumpBack]QuickHunt_HuntingGrounds",
                                 "[JumpBack]QuickHunt_RiceRecheck",
-                                "[JumpBack]QuickHunt_CrystalCave"
+                                "[JumpBack]QuickHunt_RiceZero_Ck",
+                                "[JumpBack]QuickHunt_CrystalCave",
+                                "[JumpBack]QuickHunt_Daily_Ck"
                             ]
                         }
                     }
@@ -1057,63 +1178,105 @@
                 }
             ]
         },
-        "简单类跳过": {
+        "采集卡带屏蔽": {
+            "label": "排除卡带",
             "type": "switch",
-            "description": "卡带右滑到底时，认为该大类本周已全部刷完并打标，下次运行跳过。<br>可<b>节省时间</b>，每周重置。",
+            "default_case": "No",
+            "description": "名单内的卡带不采集，其余照常。<br>同一张卡带同时在「自选采集卡带范围」里时，以排除为准。",
             "cases": [
                 {
                     "name": "No",
                     "pipeline_override": {
-                        "Collect_StoryPack_SetSimpleSkip": {
-                            "recognition": "DirectHit"
-                        },
-                        "Collect_CharacterPack_SetSimpleSkip": {
-                            "recognition": "DirectHit"
-                        },
-                        "Collect_EventPack_SetSimpleSkip": {
-                            "recognition": "DirectHit"
+                        "Collect_BlackList_User": {
+                            "action": "DoNothing",
+                            "focus": "<span style=\"color:Green\">CM.P.未设定[排除卡带]</span>"
                         }
                     }
                 },
                 {
-                    "name": "Yes"
-                }
-            ]
-        },
-        "采集卡带屏蔽": {
-            "description": "启用后，带有屏蔽标记的卡带将被跳过，不参与识别也不写入周期标记。",
-            "type": "switch",
-            "cases": [
-                {
-                    "name": "No"
-                },
-                {
                     "name": "Yes",
-                    "pipeline_override": {
-                        "Collect_BlackList_User": {
-                            "enabled": true
-                        }
-                    },
+                    "pipeline_override": {},
                     "option": [
-                        "故事卡带屏蔽",
-                        "角色卡带屏蔽",
-                        "活动卡带屏蔽"
+                        "剧情游戏卡屏蔽",
+                        "角色游戏卡屏蔽",
+                        "活动游戏卡屏蔽"
                     ]
                 }
             ]
         },
-        "故事卡带屏蔽": {
+        "采集卡带指定": {
+            "label": "自选采集卡带范围",
+            "type": "switch",
+            "default_case": "No",
+            "description": "只允许采集范围内的卡带，范围外的（包括没填写的类别）都不采集。<br>此选项只限制范围：某类允许采集的卡带本周均有完成记录时，跳过整类；进入类别后，普通模式只采集徽章彩色亮起且能识别身份的卡带。未知或未识别卡带跳过，默认不支持采集的卡带不会因填写编号而启用。<br>同一张卡带同时在「排除卡带」里时，不采集。三类都不填写时不限制范围。",
+            "cases": [
+                {
+                    "name": "No",
+                    "pipeline_override": {
+                        "Collect_WhiteList_User": {
+                            "action": "DoNothing",
+                            "focus": "<span style=\"color:Green\">CM.P.未设定[自选采集卡带范围]</span>"
+                        }
+                    }
+                },
+                {
+                    "name": "Yes",
+                    "pipeline_override": {},
+                    "option": [
+                        "剧情游戏卡指定",
+                        "角色游戏卡指定",
+                        "活动游戏卡指定"
+                    ]
+                }
+            ]
+        },
+        "采集卡带调试直采": {
+            "label": "【调试】仅采集指定卡带（含已完成）",
+            "type": "switch",
+            "default_case": "No",
+            "description": "调试用：只进入下面填写的卡带，本周已完成或暂不支持采集的也会进入。<br>此时「自选采集卡带范围」与「排除卡带」不生效；没填写的卡带一律不进入。",
+            "cases": [
+                {
+                    "name": "No",
+                    "pipeline_override": {
+                        "Collect_DebugList_User": {
+                            "enabled": false
+                        },
+                        "Collect_PackScan_DebugMode": {
+                            "enabled": false
+                        }
+                    }
+                },
+                {
+                    "name": "Yes",
+                    "pipeline_override": {
+                        "Collect_DebugList_User": {
+                            "enabled": true
+                        },
+                        "Collect_PackScan_DebugMode": {
+                            "enabled": true
+                        }
+                    },
+                    "option": [
+                        "剧情游戏卡调试",
+                        "角色游戏卡调试",
+                        "活动游戏卡调试"
+                    ]
+                }
+            ]
+        },
+        "剧情游戏卡屏蔽": {
             "type": "input",
             "label": "",
             "inputs": [
                 {
                     "name": "要屏蔽的剧情游戏卡",
-                    "label": "故事卡带屏蔽",
+                    "label": "排除的剧情游戏卡",
                     "pipeline_type": "string",
                     "default": "",
                     "verify": "^[0-9\\s,，;\\-~～]*$",
                     "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
-                    "description": "填入要跳过的章节编号，多个用逗号分隔，支持范围写法（如 1,3~5）。"
+                    "description": "填不采集的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。<br>编号对照：1 血骑士 · 2 苍蓝魔女 · 3 迷雾神射手 · 4 眼镜与猫 · 5 沙漠之花 · 6 异教塔 · 7 愤怒天使 · 8 血之狂想曲 · 9 铁假面 · 10 霍尔蒙克斯 · 11 虚假游戏 · 12 黑羽毛 · 13 雪之歌 · 14 神圣审判 · 15 复仇的誓言 · 16 三国同盟 · 17 试炼之路 · 18 救赎 · 19 被遗忘的战争"
                 }
             ],
             "pipeline_override": {
@@ -1124,18 +1287,18 @@
                 }
             }
         },
-        "角色卡带屏蔽": {
+        "角色游戏卡屏蔽": {
             "type": "input",
             "label": "",
             "inputs": [
                 {
                     "name": "要屏蔽的角色游戏卡",
-                    "label": "角色卡带屏蔽",
+                    "label": "排除的角色游戏卡",
                     "pipeline_type": "string",
                     "default": "",
                     "verify": "^[0-9\\s,，;\\-~～]*$",
                     "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
-                    "description": "填入要跳过的章节编号，多个用逗号分隔，支持范围写法（如 1,3~5）。"
+                    "description": "填不采集的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。<br>编号对照：1 杰登之门 · 2 火晶片 · 3 美丽无望 · 4 大逃脱 · 5 鲁的迷宫 · 6 御剑传 · 7 合约之战"
                 }
             ],
             "pipeline_override": {
@@ -1146,24 +1309,156 @@
                 }
             }
         },
-        "活动卡带屏蔽": {
+        "活动游戏卡屏蔽": {
             "type": "input",
             "label": "",
             "inputs": [
                 {
                     "name": "要屏蔽的活动游戏卡",
-                    "label": "活动卡带屏蔽",
+                    "label": "排除的活动游戏卡",
                     "pipeline_type": "string",
                     "default": "",
                     "verify": "^[0-9\\s,，;\\-~～]*$",
                     "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
-                    "description": "填入要跳过的章节编号，多个用逗号分隔，支持范围写法（如 1,3~5）。"
+                    "description": "填不采集的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。<br>编号对照：1 夏日骑士 · 2 恶梦之冬 · 3 海滨天使 · 4 记忆边缘 · 5 戏水女王"
                 }
             ],
             "pipeline_override": {
                 "Collect_BlackList_User": {
                     "attach": {
                         "EventPack": "{要屏蔽的活动游戏卡}"
+                    }
+                }
+            }
+        },
+        "剧情游戏卡指定": {
+            "type": "input",
+            "label": "",
+            "inputs": [
+                {
+                    "name": "要指定的剧情游戏卡",
+                    "label": "范围内的剧情游戏卡",
+                    "pipeline_type": "string",
+                    "default": "",
+                    "verify": "^[0-9\\s,，;\\-~～]*$",
+                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
+                    "description": "填要采集的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。不填的类别不采集；三类都不填则不限制范围。<br>编号对照：1 血骑士 · 2 苍蓝魔女 · 3 迷雾神射手 · 4 眼镜与猫 · 5 沙漠之花 · 6 异教塔 · 7 愤怒天使 · 8 血之狂想曲 · 9 铁假面 · 10 霍尔蒙克斯 · 11 虚假游戏 · 12 黑羽毛 · 13 雪之歌 · 14 神圣审判 · 15 复仇的誓言 · 16 三国同盟 · 17 试炼之路 · 18 救赎 · 19 被遗忘的战争"
+                }
+            ],
+            "pipeline_override": {
+                "Collect_WhiteList_User": {
+                    "attach": {
+                        "StoryPack": "{要指定的剧情游戏卡}"
+                    }
+                }
+            }
+        },
+        "角色游戏卡指定": {
+            "type": "input",
+            "label": "",
+            "inputs": [
+                {
+                    "name": "要指定的角色游戏卡",
+                    "label": "范围内的角色游戏卡",
+                    "pipeline_type": "string",
+                    "default": "",
+                    "verify": "^[0-9\\s,，;\\-~～]*$",
+                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
+                    "description": "填要采集的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。不填的类别不采集；三类都不填则不限制范围。<br>编号对照：1 杰登之门 · 2 火晶片 · 3 美丽无望 · 4 大逃脱 · 5 鲁的迷宫 · 6 御剑传 · 7 合约之战"
+                }
+            ],
+            "pipeline_override": {
+                "Collect_WhiteList_User": {
+                    "attach": {
+                        "CharacterPack": "{要指定的角色游戏卡}"
+                    }
+                }
+            }
+        },
+        "活动游戏卡指定": {
+            "type": "input",
+            "label": "",
+            "inputs": [
+                {
+                    "name": "要指定的活动游戏卡",
+                    "label": "范围内的活动游戏卡",
+                    "pipeline_type": "string",
+                    "default": "",
+                    "verify": "^[0-9\\s,，;\\-~～]*$",
+                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
+                    "description": "填要采集的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。不填的类别不采集；三类都不填则不限制范围。<br>编号对照：1 夏日骑士 · 2 恶梦之冬 · 3 海滨天使 · 4 记忆边缘 · 5 戏水女王"
+                }
+            ],
+            "pipeline_override": {
+                "Collect_WhiteList_User": {
+                    "attach": {
+                        "EventPack": "{要指定的活动游戏卡}"
+                    }
+                }
+            }
+        },
+        "剧情游戏卡调试": {
+            "type": "input",
+            "label": "",
+            "inputs": [
+                {
+                    "name": "要调试的剧情游戏卡",
+                    "label": "调试采集的剧情游戏卡",
+                    "pipeline_type": "string",
+                    "default": "",
+                    "verify": "^[0-9\\s,，;\\-~～]*$",
+                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
+                    "description": "填调试时要进入的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。不填的类别不进入。<br>编号对照：1 血骑士 · 2 苍蓝魔女 · 3 迷雾神射手 · 4 眼镜与猫 · 5 沙漠之花 · 6 异教塔 · 7 愤怒天使 · 8 血之狂想曲 · 9 铁假面 · 10 霍尔蒙克斯 · 11 虚假游戏 · 12 黑羽毛 · 13 雪之歌 · 14 神圣审判 · 15 复仇的誓言 · 16 三国同盟 · 17 试炼之路 · 18 救赎 · 19 被遗忘的战争 · 20 堕入深渊（暂不支持采集）"
+                }
+            ],
+            "pipeline_override": {
+                "Collect_DebugList_User": {
+                    "attach": {
+                        "StoryPack": "{要调试的剧情游戏卡}"
+                    }
+                }
+            }
+        },
+        "角色游戏卡调试": {
+            "type": "input",
+            "label": "",
+            "inputs": [
+                {
+                    "name": "要调试的角色游戏卡",
+                    "label": "调试采集的角色游戏卡",
+                    "pipeline_type": "string",
+                    "default": "",
+                    "verify": "^[0-9\\s,，;\\-~～]*$",
+                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
+                    "description": "填调试时要进入的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。不填的类别不进入。<br>编号对照：1 杰登之门 · 2 火晶片 · 3 美丽无望 · 4 大逃脱 · 5 鲁的迷宫 · 6 御剑传 · 7 合约之战 · 8 妖魔讨伐团（暂不支持采集）"
+                }
+            ],
+            "pipeline_override": {
+                "Collect_DebugList_User": {
+                    "attach": {
+                        "CharacterPack": "{要调试的角色游戏卡}"
+                    }
+                }
+            }
+        },
+        "活动游戏卡调试": {
+            "type": "input",
+            "label": "",
+            "inputs": [
+                {
+                    "name": "要调试的活动游戏卡",
+                    "label": "调试采集的活动游戏卡",
+                    "pipeline_type": "string",
+                    "default": "",
+                    "verify": "^[0-9\\s,，;\\-~～]*$",
+                    "pattern_msg": "请输入数字，支持区间(1-3)和逗号(1,5)",
+                    "description": "填调试时要进入的卡带编号，多个用逗号分隔，支持范围写法（如 1,3~5）。不填的类别不进入。<br>编号对照：1 夏日骑士 · 2 恶梦之冬 · 3 海滨天使 · 4 记忆边缘 · 5 戏水女王"
+                }
+            ],
+            "pipeline_override": {
+                "Collect_DebugList_User": {
+                    "attach": {
+                        "EventPack": "{要调试的活动游戏卡}"
                     }
                 }
             }
@@ -1623,28 +1918,6 @@
                 }
             ]
         },
-        "魔兽初始等级": {
-            "type": "input",
-            "label": "",
-            "inputs": [
-                {
-                    "name": "魔兽初始等级",
-                    "label": "魔兽补刀起步等级",
-                    "description": "从指定等级开始进行魔兽补刀。默认从1级起，逐级跟随。",
-                    "pipeline_type": "string",
-                    "default": "1",
-                    "verify": "^(0|[1-9][0-9]*)$",
-                    "pattern_msg": "仅数字，不可有前导零"
-                }
-            ],
-            "pipeline_override": {
-                "Even_MamonoFollow_lvCustom_Ck": {
-                    "expected": [
-                        "[lL][Vv][^a-zA-Z0-9]?{魔兽初始等级}$"
-                    ]
-                }
-            }
-        },
         "末日之书": {
             "type": "switch",
             "description": "参与末日之书副本一轮，领取每周参与奖励。关闭后跳过此项。",
@@ -1743,17 +2016,7 @@
             "cases": [
                 {
                     "name": "Yes",
-                    "pipeline_override": {
-                        "Daily_Busin_NoGift": {
-                            "next": []
-                        },
-                        "Daily_Busin_Nothing_Binary": {
-                            "next": []
-                        },
-                        "Daily_Busin_DecorCoin_IsFull_Binary": {
-                            "next": []
-                        }
-                    }
+                    "pipeline_override": {}
                 },
                 {
                     "name": "No",
@@ -2094,6 +2357,7 @@
                     "pipeline_override": {
                         "Practise_Start": {
                             "next": [
+                                "Env_AgentLost_Stop",
                                 "Practise_Skill_Bargaining"
                             ]
                         }
@@ -7140,7 +7404,7 @@
                             "enabled": true
                         },
                         "Arbitrage_Cooking_B11_Entry": {
-                            "enabled": true
+                            "enabled": false
                         },
                         "Arbitrage_Cooking_B11": {
                             "enabled": true
@@ -7276,7 +7540,6 @@
                 "煤炭饼干",
                 "卢戈山参烤串",
                 "香草牛排",
-                "洛克菲勒生蚝",
                 "橄榄油意面",
                 "街头烤鸡肉串",
                 "汉堡排便当",
@@ -7843,6 +8106,10 @@
                     "enabled": true
                 },
                 {
+                    "name": "[全局]启动脚本(置顶)PC",
+                    "enabled": true
+                },
+                {
                     "name": "[执行]快速狩猎扫荡",
                     "enabled": true
                 },
@@ -7860,10 +8127,7 @@
                 },
                 {
                     "name": "[执行]地图采集[单章]",
-                    "enabled": true,
-                    "option": {
-                        "简单类跳过": "Yes"
-                    }
+                    "enabled": true
                 },
                 {
                     "name": "[执行]竞技场",
@@ -7903,10 +8167,7 @@
                 },
                 {
                     "name": "[执行]地图采集[完整]",
-                    "enabled": true,
-                    "option": {
-                        "简单类跳过": "Yes"
-                    }
+                    "enabled": true
                 },
                 {
                     "name": "[执行]商店套利",
@@ -7932,6 +8193,10 @@
                 },
                 {
                     "name": "[全局]启动脚本(置顶)",
+                    "enabled": true
+                },
+                {
+                    "name": "[全局]启动脚本(置顶)PC",
                     "enabled": true
                 },
                 {
@@ -8002,10 +8267,7 @@
                 },
                 {
                     "name": "[执行]地图采集[完整]",
-                    "enabled": true,
-                    "option": {
-                        "简单类跳过": "Yes"
-                    }
+                    "enabled": true
                 },
                 {
                     "name": "[执行]商店套利",
